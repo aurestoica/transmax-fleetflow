@@ -5,8 +5,10 @@ import { useI18n } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/auth-store';
 import StatusBadge from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, MapPin, Calendar, Truck, User, Package, DollarSign, FileText, Image, Eye, Download } from 'lucide-react';
+import { ArrowLeft, MapPin, Truck, User, Package, DollarSign, FileText, Image, Eye, Download, Pencil, X, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -23,6 +25,11 @@ export default function TripDetailPage() {
   const [loading, setLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+  // Financial edit mode
+  const [editingFinancial, setEditingFinancial] = useState(false);
+  const [finForm, setFinForm] = useState({ revenue: '', fuel_cost: '', road_taxes: '', other_expenses: '', driver_advance: '', distance_km: '' });
+  const [savingFin, setSavingFin] = useState(false);
+
   useEffect(() => { loadTrip(); }, [id]);
 
   const loadTrip = async () => {
@@ -30,6 +37,16 @@ export default function TripDetailPage() {
       .select('*, clients(company_name), drivers(full_name), vehicles(plate_number, model), trailers(plate_number)')
       .eq('id', id!).single();
     setTrip(data);
+    if (data) {
+      setFinForm({
+        revenue: data.revenue?.toString() || '0',
+        fuel_cost: data.fuel_cost?.toString() || '0',
+        road_taxes: data.road_taxes?.toString() || '0',
+        other_expenses: data.other_expenses?.toString() || '0',
+        driver_advance: data.driver_advance?.toString() || '0',
+        distance_km: data.distance_km?.toString() || '',
+      });
+    }
 
     const { data: ev } = await supabase.from('trip_events')
       .select('*').eq('trip_id', id!).order('created_at', { ascending: false });
@@ -52,6 +69,23 @@ export default function TripDetailPage() {
       description: `Status schimbat: ${newStatus}`
     });
     toast.success('Status actualizat!');
+    loadTrip();
+  };
+
+  const saveFinancial = async () => {
+    setSavingFin(true);
+    const { error } = await supabase.from('trips').update({
+      revenue: parseFloat(finForm.revenue) || 0,
+      fuel_cost: parseFloat(finForm.fuel_cost) || 0,
+      road_taxes: parseFloat(finForm.road_taxes) || 0,
+      other_expenses: parseFloat(finForm.other_expenses) || 0,
+      driver_advance: parseFloat(finForm.driver_advance) || 0,
+      distance_km: finForm.distance_km ? parseFloat(finForm.distance_km) : null,
+    }).eq('id', id!);
+    setSavingFin(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Date financiare actualizate!');
+    setEditingFinancial(false);
     loadTrip();
   };
 
@@ -103,18 +137,67 @@ export default function TripDetailPage() {
 
         {/* Financial */}
         <div className="bg-card rounded-xl border p-5 space-y-4" style={{ boxShadow: 'var(--shadow-card)' }}>
-          <h3 className="font-display font-semibold flex items-center gap-2"><DollarSign className="h-4 w-4" />Financiar</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-muted-foreground">Venit</span><span className="font-medium">€{Number(trip.revenue || 0).toLocaleString()}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Combustibil</span><span>-€{Number(trip.fuel_cost || 0).toLocaleString()}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Taxe drum</span><span>-€{Number(trip.road_taxes || 0).toLocaleString()}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Alte cheltuieli</span><span>-€{Number(trip.other_expenses || 0).toLocaleString()}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Avans șofer</span><span>-€{Number(trip.driver_advance || 0).toLocaleString()}</span></div>
-            <div className="flex justify-between pt-2 border-t font-semibold">
-              <span>Profit brut</span>
-              <span className={profit >= 0 ? 'text-success' : 'text-destructive'}>€{profit.toLocaleString()} ({margin}%)</span>
-            </div>
+          <div className="flex items-center justify-between">
+            <h3 className="font-display font-semibold flex items-center gap-2"><DollarSign className="h-4 w-4" />Financiar</h3>
+            {!editingFinancial ? (
+              <Button variant="ghost" size="sm" onClick={() => setEditingFinancial(true)}>
+                <Pencil className="h-3.5 w-3.5 mr-1" />Editează
+              </Button>
+            ) : (
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => setEditingFinancial(false)}>
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+                <Button size="sm" onClick={saveFinancial} disabled={savingFin}>
+                  <Check className="h-3.5 w-3.5 mr-1" />Salvează
+                </Button>
+              </div>
+            )}
           </div>
+
+          {editingFinancial ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">Venit (€)</Label>
+                  <Input type="number" value={finForm.revenue} onChange={e => setFinForm({...finForm, revenue: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Combustibil (€)</Label>
+                  <Input type="number" value={finForm.fuel_cost} onChange={e => setFinForm({...finForm, fuel_cost: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Taxe drum (€)</Label>
+                  <Input type="number" value={finForm.road_taxes} onChange={e => setFinForm({...finForm, road_taxes: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Alte cheltuieli (€)</Label>
+                  <Input type="number" value={finForm.other_expenses} onChange={e => setFinForm({...finForm, other_expenses: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Avans șofer (€)</Label>
+                  <Input type="number" value={finForm.driver_advance} onChange={e => setFinForm({...finForm, driver_advance: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Distanță (km)</Label>
+                  <Input type="number" value={finForm.distance_km} onChange={e => setFinForm({...finForm, distance_km: e.target.value})} className="h-8 text-sm" />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between"><span className="text-muted-foreground">Venit</span><span className="font-medium">€{Number(trip.revenue || 0).toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Combustibil</span><span>-€{Number(trip.fuel_cost || 0).toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Taxe drum</span><span>-€{Number(trip.road_taxes || 0).toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Alte cheltuieli</span><span>-€{Number(trip.other_expenses || 0).toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Avans șofer</span><span>-€{Number(trip.driver_advance || 0).toLocaleString()}</span></div>
+              {trip.distance_km && <div className="flex justify-between"><span className="text-muted-foreground">Distanță</span><span>{trip.distance_km} km</span></div>}
+              <div className="flex justify-between pt-2 border-t font-semibold">
+                <span>Profit brut</span>
+                <span className={profit >= 0 ? 'text-success' : 'text-destructive'}>€{profit.toLocaleString()} ({margin}%)</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Search, MapPin, Calendar, ChevronRight } from 'lucide-react';
+import { Plus, Search, MapPin, ChevronRight, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -23,6 +24,7 @@ export default function TripsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     client_id: '', driver_id: '', vehicle_id: '', trailer_id: '',
@@ -34,18 +36,18 @@ export default function TripsPage() {
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
-    const [t, c, d, v, tr] = await Promise.all([
+    const [tr, c, d, v, trailers] = await Promise.all([
       supabase.from('trips').select('*, clients(company_name), drivers(full_name), vehicles(plate_number)').order('created_at', { ascending: false }),
       supabase.from('clients').select('id, company_name'),
-      supabase.from('drivers').select('id, full_name').eq('status', 'available'),
-      supabase.from('vehicles').select('id, plate_number').eq('status', 'available'),
-      supabase.from('trailers').select('id, plate_number').eq('status', 'available'),
+      supabase.from('drivers').select('id, full_name, status'),
+      supabase.from('vehicles').select('id, plate_number, status'),
+      supabase.from('trailers').select('id, plate_number, status'),
     ]);
-    setTrips(t.data ?? []);
+    setTrips(tr.data ?? []);
     setClients(c.data ?? []);
     setDrivers(d.data ?? []);
     setVehicles(v.data ?? []);
-    setTrailers(tr.data ?? []);
+    setTrailers(trailers.data ?? []);
     setLoading(false);
   };
 
@@ -67,7 +69,7 @@ export default function TripsPage() {
       road_taxes: form.road_taxes ? parseFloat(form.road_taxes) : 0,
       other_expenses: form.other_expenses ? parseFloat(form.other_expenses) : 0,
       driver_advance: form.driver_advance ? parseFloat(form.driver_advance) : 0,
-      trip_number: '',
+      trip_number: 'TEMP', // va fi suprascris de trigger
     });
     if (error) { toast.error(error.message); return; }
     toast.success('Cursă creată!');
@@ -76,11 +78,25 @@ export default function TripsPage() {
     loadData();
   };
 
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    const { error } = await supabase.from('trips').delete().eq('id', deleteId);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Cursă ștearsă!');
+    setDeleteId(null);
+    loadData();
+  };
+
   const filtered = trips.filter(trip => {
     const matchSearch = !search || trip.pickup_address?.toLowerCase().includes(search.toLowerCase()) || trip.delivery_address?.toLowerCase().includes(search.toLowerCase()) || trip.trip_number?.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === 'all' || trip.status === statusFilter;
     return matchSearch && matchStatus;
   });
+
+  // Available for selection (include current selected in edit)
+  const availableDrivers = drivers.filter(d => d.status === 'available');
+  const availableVehicles = vehicles.filter(v => v.status === 'available');
+  const availableTrailers = trailers.filter(tr => tr.status === 'available');
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
 
@@ -103,24 +119,24 @@ export default function TripsPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Șofer</Label>
+                <Label>Șofer <span className="text-xs text-muted-foreground">(disponibili)</span></Label>
                 <Select value={form.driver_id} onValueChange={v => setForm({...form, driver_id: v})}>
                   <SelectTrigger><SelectValue placeholder="Selectează..." /></SelectTrigger>
-                  <SelectContent>{drivers.map(d => <SelectItem key={d.id} value={d.id}>{d.full_name}</SelectItem>)}</SelectContent>
+                  <SelectContent>{availableDrivers.map(d => <SelectItem key={d.id} value={d.id}>{d.full_name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Camion</Label>
+                <Label>Camion <span className="text-xs text-muted-foreground">(disponibile)</span></Label>
                 <Select value={form.vehicle_id} onValueChange={v => setForm({...form, vehicle_id: v})}>
                   <SelectTrigger><SelectValue placeholder="Selectează..." /></SelectTrigger>
-                  <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number}</SelectItem>)}</SelectContent>
+                  <SelectContent>{availableVehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Remorcă</Label>
+                <Label>Remorcă <span className="text-xs text-muted-foreground">(disponibile)</span></Label>
                 <Select value={form.trailer_id} onValueChange={v => setForm({...form, trailer_id: v})}>
                   <SelectTrigger><SelectValue placeholder="Selectează..." /></SelectTrigger>
-                  <SelectContent>{trailers.map(tr => <SelectItem key={tr.id} value={tr.id}>{tr.plate_number}</SelectItem>)}</SelectContent>
+                  <SelectContent>{availableTrailers.map(tr => <SelectItem key={tr.id} value={tr.id}>{tr.plate_number}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
@@ -180,6 +196,19 @@ export default function TripsPage() {
         </Dialog>
       </div>
 
+      <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ștergi cursa?</AlertDialogTitle>
+            <AlertDialogDescription>Această acțiune nu poate fi anulată. Cursa și toate datele asociate vor fi șterse permanent.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Anulează</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Șterge</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Filters */}
       <div className="flex gap-3 mb-4 flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
@@ -206,36 +235,48 @@ export default function TripsPage() {
         {filtered.map(trip => {
           const profit = (Number(trip.revenue) || 0) - (Number(trip.fuel_cost) || 0) - (Number(trip.road_taxes) || 0) - (Number(trip.other_expenses) || 0) - (Number(trip.driver_advance) || 0);
           return (
-            <Link key={trip.id} to={`/trips/${trip.id}`} className="block bg-card rounded-xl border p-4 hover:shadow-md transition-all group" style={{ boxShadow: 'var(--shadow-card)' }}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-display font-semibold text-foreground">{trip.trip_number}</span>
-                    <StatusBadge status={trip.status} />
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span className="truncate">{trip.pickup_address}</span>
-                    <span>→</span>
-                    <span className="truncate">{trip.delivery_address}</span>
-                  </div>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
-                    {trip.clients?.company_name && <span>📦 {trip.clients.company_name}</span>}
-                    {trip.drivers?.full_name && <span>👤 {trip.drivers.full_name}</span>}
-                    {trip.vehicles?.plate_number && <span>🚛 {trip.vehicles.plate_number}</span>}
-                  </div>
-                </div>
-                <div className="text-right flex-shrink-0 flex items-center gap-3">
-                  <div>
-                    <div className="text-sm font-semibold text-foreground">€{Number(trip.revenue || 0).toLocaleString()}</div>
-                    <div className={`text-xs ${profit >= 0 ? 'text-success' : 'text-destructive'}`}>
-                      Profit: €{profit.toLocaleString()}
+            <div key={trip.id} className="bg-card rounded-xl border" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <Link to={`/trips/${trip.id}`} className="block p-4 hover:bg-muted/30 transition-all group rounded-xl">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-display font-semibold text-foreground">{trip.trip_number}</span>
+                      <StatusBadge status={trip.status} />
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                      <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                      <span className="truncate">{trip.pickup_address}</span>
+                      <span>→</span>
+                      <span className="truncate">{trip.delivery_address}</span>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
+                      {trip.clients?.company_name && <span>📦 {trip.clients.company_name}</span>}
+                      {trip.drivers?.full_name && <span>👤 {trip.drivers.full_name}</span>}
+                      {trip.vehicles?.plate_number && <span>🚛 {trip.vehicles.plate_number}</span>}
                     </div>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  <div className="text-right flex-shrink-0 flex items-center gap-3">
+                    <div>
+                      <div className="text-sm font-semibold text-foreground">€{Number(trip.revenue || 0).toLocaleString()}</div>
+                      <div className={`text-xs ${profit >= 0 ? 'text-success' : 'text-destructive'}`}>
+                        Profit: €{profit.toLocaleString()}
+                      </div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </div>
                 </div>
+              </Link>
+              <div className="px-4 pb-3 flex justify-end border-t">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 mt-2"
+                  onClick={(e) => { e.preventDefault(); setDeleteId(trip.id); }}
+                >
+                  <Trash2 className="h-3.5 w-3.5 mr-1" />Șterge
+                </Button>
               </div>
-            </Link>
+            </div>
           );
         })}
         {filtered.length === 0 && (
