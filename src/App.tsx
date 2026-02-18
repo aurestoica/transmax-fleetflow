@@ -57,7 +57,7 @@ function AppRoutes() {
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/users" element={<UsersPage />} />
       </Route>
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
