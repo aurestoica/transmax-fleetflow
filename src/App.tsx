@@ -17,6 +17,7 @@ import ClientsPage from "@/pages/ClientsPage";
 import FinancialPage from "@/pages/FinancialPage";
 import ChatPage from "@/pages/ChatPage";
 import UsersPage from "@/pages/UsersPage";
+import DocumentsPage from "@/pages/DocumentsPage";
 import DriverTripsPage from "@/pages/driver/DriverTripsPage";
 import DriverDocumentsPage from "@/pages/driver/DriverDocumentsPage";
 import DriverLocationPage from "@/pages/driver/DriverLocationPage";
@@ -53,6 +54,7 @@ function AppRoutes() {
         <Route path="/vehicles" element={<VehiclesPage />} />
         <Route path="/trailers" element={<TrailersPage />} />
         <Route path="/clients" element={<ClientsPage />} />
+        <Route path="/documents" element={<DocumentsPage />} />
         <Route path="/financial" element={<FinancialPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/users" element={<UsersPage />} />

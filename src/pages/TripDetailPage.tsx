@@ -6,7 +6,8 @@ import { useAuthStore } from '@/lib/auth-store';
 import StatusBadge from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, MapPin, Calendar, Truck, User, Package, DollarSign } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Truck, User, Package, DollarSign, FileText, Image, Eye, Download } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -18,7 +19,9 @@ export default function TripDetailPage() {
   const { userId } = useAuthStore();
   const [trip, setTrip] = useState<any>(null);
   const [events, setEvents] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => { loadTrip(); }, [id]);
 
@@ -31,6 +34,13 @@ export default function TripDetailPage() {
     const { data: ev } = await supabase.from('trip_events')
       .select('*').eq('trip_id', id!).order('created_at', { ascending: false });
     setEvents(ev ?? []);
+
+    const { data: docs } = await supabase.from('documents')
+      .select('*, profiles:uploaded_by(full_name)')
+      .eq('trip_id', id!)
+      .order('created_at', { ascending: false });
+    setDocuments(docs ?? []);
+
     setLoading(false);
   };
 
@@ -108,6 +118,46 @@ export default function TripDetailPage() {
         </div>
       </div>
 
+      {/* Documents section */}
+      <div className="bg-card rounded-xl border p-5 mt-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+        <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
+          <FileText className="h-4 w-4" />{t('nav.documents')} ({documents.length})
+        </h3>
+        {documents.length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t('common.noData')}</p>
+        ) : (
+          <div className="space-y-2">
+            {documents.map(doc => (
+              <div key={doc.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                <div className="h-10 w-10 rounded-lg bg-background border flex items-center justify-center flex-shrink-0">
+                  {doc.file_type?.startsWith('image/') ? (
+                    <Image className="h-5 w-5 text-muted-foreground" />
+                  ) : (
+                    <FileText className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium truncate">{doc.name}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {doc.profiles?.full_name && <span>de {doc.profiles.full_name} · </span>}
+                    {doc.doc_category && <span className="capitalize">{doc.doc_category.replace('_', ' ')} · </span>}
+                    {doc.created_at && format(new Date(doc.created_at), 'dd.MM.yyyy HH:mm')}
+                  </div>
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={() => setPreviewUrl(doc.file_url)} className="p-2 text-muted-foreground hover:text-primary rounded-md hover:bg-background transition-colors">
+                    <Eye className="h-4 w-4" />
+                  </button>
+                  <a href={doc.file_url} download target="_blank" rel="noopener" className="p-2 text-muted-foreground hover:text-primary rounded-md hover:bg-background transition-colors">
+                    <Download className="h-4 w-4" />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Timeline */}
       <div className="bg-card rounded-xl border p-5 mt-6" style={{ boxShadow: 'var(--shadow-card)' }}>
         <h3 className="font-display font-semibold mb-4">Timeline</h3>
@@ -127,6 +177,20 @@ export default function TripDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Preview dialog */}
+      <Dialog open={!!previewUrl} onOpenChange={(open) => !open && setPreviewUrl(null)}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-auto">
+          <DialogHeader><DialogTitle>Previzualizare</DialogTitle></DialogHeader>
+          {previewUrl && (
+            previewUrl.match(/\.(jpg|jpeg|png|gif|webp)/i) ? (
+              <img src={previewUrl} alt="Document" className="w-full rounded-lg" />
+            ) : (
+              <iframe src={previewUrl} className="w-full h-[70vh] rounded-lg border" />
+            )
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
