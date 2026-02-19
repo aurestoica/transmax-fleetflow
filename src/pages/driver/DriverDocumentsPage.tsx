@@ -24,6 +24,7 @@ export default function DriverDocumentsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [activeTrip, setActiveTrip] = useState<any>(null);
+  const [driverId, setDriverId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,6 +36,7 @@ export default function DriverDocumentsPage() {
     // Find driver & active trip
     const { data: driver } = await supabase.from('drivers').select('id').eq('user_id', userId!).single();
     if (!driver) { setLoading(false); return; }
+    setDriverId(driver.id);
 
     const { data: trip } = await supabase.from('trips')
       .select('id, trip_number')
@@ -88,6 +90,7 @@ export default function DriverDocumentsPage() {
         file_type: file.type,
         doc_category: category,
         trip_id: activeTrip.id,
+        driver_id: driverId,
         uploaded_by: userId,
       });
 
