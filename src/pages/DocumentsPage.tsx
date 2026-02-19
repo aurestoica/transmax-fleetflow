@@ -31,7 +31,7 @@ export default function DocumentsPage() {
 
   const loadData = async () => {
     const { data } = await supabase.from('documents')
-      .select('*, profiles:uploaded_by(full_name)')
+      .select('*, profiles:uploaded_by(full_name), trips:trip_id(trip_number), drivers:driver_id(full_name)')
       .order('created_at', { ascending: false });
     setDocuments(data ?? []);
     setLoading(false);
@@ -81,7 +81,8 @@ export default function DocumentsPage() {
                 <tr className="border-b bg-muted/50">
                   <th className="text-left p-3 font-medium text-muted-foreground">Document</th>
                   <th className="text-left p-3 font-medium text-muted-foreground">Categorie</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Încărcat de</th>
+                  <th className="text-left p-3 font-medium text-muted-foreground">Cursă</th>
+                  <th className="text-left p-3 font-medium text-muted-foreground">Autor</th>
                   <th className="text-left p-3 font-medium text-muted-foreground">Data</th>
                   <th className="text-right p-3 font-medium text-muted-foreground">Acțiuni</th>
                 </tr>
@@ -106,8 +107,17 @@ export default function DocumentsPage() {
                         {categoryLabels[doc.doc_category] || doc.doc_category || 'Altele'}
                       </span>
                     </td>
+                    <td className="p-3">
+                      {(doc as any).trips?.trip_number ? (
+                        <a href={`/trips/${doc.trip_id}`} className="text-primary hover:underline text-xs font-medium">
+                          {(doc as any).trips.trip_number}
+                        </a>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </td>
                     <td className="p-3 text-muted-foreground">
-                      {doc.profiles?.full_name || 'Necunoscut'}
+                      {doc.profiles?.full_name || (doc as any).drivers?.full_name || 'Necunoscut'}
                     </td>
                     <td className="p-3 text-muted-foreground">
                       {doc.created_at && format(new Date(doc.created_at), 'dd.MM.yyyy HH:mm')}
