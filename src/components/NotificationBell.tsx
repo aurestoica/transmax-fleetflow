@@ -3,8 +3,8 @@ import { Bell } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/lib/auth-store';
 import { useI18n } from '@/lib/i18n';
-import { formatDistanceToNow } from 'date-fns';
-import { ro, enUS, es } from 'date-fns/locale';
+import { formatDistanceToNow, type Locale } from 'date-fns';
+import { ro, es } from 'date-fns/locale';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,7 @@ interface Notification {
   created_at: string | null;
 }
 
-const localeMap = { ro, en: enUS, es } as const;
+const localeMap: Record<string, Locale> = { ro, es };
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
