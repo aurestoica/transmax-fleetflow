@@ -31,7 +31,7 @@ export default function DocumentsPage() {
 
   const loadData = async () => {
     const { data } = await supabase.from('documents')
-      .select('*, profiles:uploaded_by(full_name), trips:trip_id(trip_number), drivers:driver_id(full_name)')
+      .select('*, profiles!documents_uploaded_by_fkey(full_name), trips:trip_id(trip_number), drivers:driver_id(full_name)')
       .order('created_at', { ascending: false });
     setDocuments(data ?? []);
     setLoading(false);

@@ -53,7 +53,7 @@ export default function TripDetailPage() {
     setEvents(ev ?? []);
 
     const { data: docs } = await supabase.from('documents')
-      .select('*, profiles:uploaded_by(full_name)')
+      .select('*, profiles!documents_uploaded_by_fkey(full_name), drivers:driver_id(full_name)')
       .eq('trip_id', id!)
       .order('created_at', { ascending: false });
     setDocuments(docs ?? []);
@@ -222,7 +222,7 @@ export default function TripDetailPage() {
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium truncate">{doc.name}</div>
                   <div className="text-xs text-muted-foreground">
-                    {doc.profiles?.full_name && <span>de {doc.profiles.full_name} · </span>}
+                    {(doc.profiles?.full_name || (doc as any).drivers?.full_name) && <span>de {doc.profiles?.full_name || (doc as any).drivers?.full_name} · </span>}
                     {doc.doc_category && <span className="capitalize">{doc.doc_category.replace('_', ' ')} · </span>}
                     {doc.created_at && format(new Date(doc.created_at), 'dd.MM.yyyy HH:mm')}
                   </div>
