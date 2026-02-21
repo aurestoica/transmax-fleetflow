@@ -591,6 +591,14 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      notify_admins: {
+        Args: { _message?: string; _title: string }
+        Returns: undefined
+      }
+      notify_user: {
+        Args: { _message?: string; _title: string; _user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "owner" | "dispatcher" | "driver"

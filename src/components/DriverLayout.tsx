@@ -4,6 +4,7 @@ import { useAuthStore } from '@/lib/auth-store';
 import { supabase } from '@/integrations/supabase/client';
 import { Route, FileText, MapPin, MessageSquare, LogOut, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import NotificationBell from '@/components/NotificationBell';
 
 const driverLinks = [
   { key: 'nav.myTrip', to: '/driver', icon: Route },
@@ -26,6 +27,7 @@ export default function DriverLayout() {
           <span className="font-display font-bold text-sm">TRANS MAX SIB</span>
         </div>
         <div className="flex items-center gap-3">
+          <NotificationBell />
           <span className="text-xs text-muted-foreground">{fullName}</span>
           <button onClick={() => supabase.auth.signOut()} className="text-muted-foreground hover:text-destructive">
             <LogOut className="h-4 w-4" />
