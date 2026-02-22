@@ -53,10 +53,18 @@ export default function TripDetailPage() {
     setEvents(ev ?? []);
 
     const { data: docs } = await supabase.from('documents')
-      .select('*, profiles!documents_uploaded_by_fkey(full_name), drivers:driver_id(full_name)')
+      .select('*, drivers:driver_id(full_name)')
       .eq('trip_id', id!)
       .order('created_at', { ascending: false });
-    setDocuments(docs ?? []);
+    
+    // Fetch uploader names from profiles separately (FK points to auth.users, not public.profiles)
+    const uploaderIds = [...new Set((docs ?? []).map(d => d.uploaded_by).filter(Boolean))];
+    let profileMap: Record<string, string> = {};
+    if (uploaderIds.length > 0) {
+      const { data: profiles } = await supabase.from('profiles').select('user_id, full_name').in('user_id', uploaderIds);
+      profileMap = Object.fromEntries((profiles ?? []).map(p => [p.user_id, p.full_name]));
+    }
+    setDocuments((docs ?? []).map(d => ({ ...d, uploader_name: d.uploaded_by ? profileMap[d.uploaded_by] : null })));
 
     setLoading(false);
   };
@@ -222,7 +230,7 @@ export default function TripDetailPage() {
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium truncate">{doc.name}</div>
                   <div className="text-xs text-muted-foreground">
-                    {(doc.profiles?.full_name || (doc as any).drivers?.full_name) && <span>de {doc.profiles?.full_name || (doc as any).drivers?.full_name} · </span>}
+                    {(doc.uploader_name || doc.drivers?.full_name) && <span>de {doc.uploader_name || doc.drivers?.full_name} · </span>}
                     {doc.doc_category && <span className="capitalize">{doc.doc_category.replace('_', ' ')} · </span>}
                     {doc.created_at && format(new Date(doc.created_at), 'dd.MM.yyyy HH:mm')}
                   </div>
