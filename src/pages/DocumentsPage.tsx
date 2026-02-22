@@ -30,10 +30,20 @@ export default function DocumentsPage() {
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
-    const { data } = await supabase.from('documents')
-      .select('*, profiles!documents_uploaded_by_fkey(full_name), trips:trip_id(trip_number), drivers:driver_id(full_name)')
-      .order('created_at', { ascending: false });
-    setDocuments(data ?? []);
+    const [docsRes, profilesRes] = await Promise.all([
+      supabase.from('documents')
+        .select('*, trips:trip_id(trip_number), drivers:driver_id(full_name)')
+        .order('created_at', { ascending: false }),
+      supabase.from('profiles').select('user_id, full_name'),
+    ]);
+
+    const profileMap = new Map((profilesRes.data ?? []).map(p => [p.user_id, p.full_name]));
+    const docs = (docsRes.data ?? []).map(doc => ({
+      ...doc,
+      uploader_name: doc.uploaded_by ? profileMap.get(doc.uploaded_by) : null,
+    }));
+
+    setDocuments(docs);
     setLoading(false);
   };
 
@@ -108,16 +118,16 @@ export default function DocumentsPage() {
                       </span>
                     </td>
                     <td className="p-3">
-                      {(doc as any).trips?.trip_number ? (
+                      {doc.trips?.trip_number ? (
                         <a href={`/trips/${doc.trip_id}`} className="text-primary hover:underline text-xs font-medium">
-                          {(doc as any).trips.trip_number}
+                          {doc.trips.trip_number}
                         </a>
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </td>
                     <td className="p-3 text-muted-foreground">
-                      {doc.profiles?.full_name || (doc as any).drivers?.full_name || 'Necunoscut'}
+                      {doc.uploader_name || doc.drivers?.full_name || 'Necunoscut'}
                     </td>
                     <td className="p-3 text-muted-foreground">
                       {doc.created_at && format(new Date(doc.created_at), 'dd.MM.yyyy HH:mm')}
