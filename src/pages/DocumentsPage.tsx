@@ -62,7 +62,7 @@ export default function DocumentsPage() {
         <span className="text-sm text-muted-foreground">{documents.length} documente</span>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4 md:mb-6">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder={t('common.search')} value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
@@ -84,70 +84,79 @@ export default function DocumentsPage() {
       {filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">{t('common.noData')}</div>
       ) : (
-        <div className="bg-card rounded-xl border overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 font-medium text-muted-foreground">Document</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Categorie</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Cursă</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Autor</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Data</th>
-                  <th className="text-right p-3 font-medium text-muted-foreground">Acțiuni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(doc => (
-                  <tr key={doc.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                    <td className="p-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                          {doc.file_type?.startsWith('image/') ? (
-                            <Image className="h-4 w-4 text-muted-foreground" />
-                          ) : (
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                          )}
-                        </div>
-                        <span className="font-medium truncate max-w-[200px]">{doc.name}</span>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <span className="text-xs bg-muted px-2 py-1 rounded-full capitalize">
-                        {categoryLabels[doc.doc_category] || doc.doc_category || 'Altele'}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      {doc.trips?.trip_number ? (
-                        <a href={`/trips/${doc.trip_id}`} className="text-primary hover:underline text-xs font-medium">
-                          {doc.trips.trip_number}
-                        </a>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
-                    </td>
-                    <td className="p-3 text-muted-foreground">
-                      {doc.uploader_name || doc.drivers?.full_name || 'Necunoscut'}
-                    </td>
-                    <td className="p-3 text-muted-foreground">
-                      {doc.created_at && format(new Date(doc.created_at), 'dd.MM.yyyy HH:mm')}
-                    </td>
-                    <td className="p-3">
-                      <div className="flex justify-end gap-1">
-                        <button onClick={() => setPreviewUrl(doc.file_url)} className="p-2 text-muted-foreground hover:text-primary rounded-md hover:bg-muted transition-colors">
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <a href={doc.file_url} download target="_blank" rel="noopener" className="p-2 text-muted-foreground hover:text-primary rounded-md hover:bg-muted transition-colors">
-                          <Download className="h-4 w-4" />
-                        </a>
-                      </div>
-                    </td>
+        <>
+          {/* Desktop table */}
+          <div className="hidden md:block bg-card rounded-xl border overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="text-left p-3 font-medium text-muted-foreground">Document</th>
+                    <th className="text-left p-3 font-medium text-muted-foreground">Categorie</th>
+                    <th className="text-left p-3 font-medium text-muted-foreground">Cursă</th>
+                    <th className="text-left p-3 font-medium text-muted-foreground">Autor</th>
+                    <th className="text-left p-3 font-medium text-muted-foreground">Data</th>
+                    <th className="text-right p-3 font-medium text-muted-foreground">Acțiuni</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filtered.map(doc => (
+                    <tr key={doc.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                      <td className="p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                            {doc.file_type?.startsWith('image/') ? <Image className="h-4 w-4 text-muted-foreground" /> : <FileText className="h-4 w-4 text-muted-foreground" />}
+                          </div>
+                          <span className="font-medium truncate max-w-[200px]">{doc.name}</span>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <span className="text-xs bg-muted px-2 py-1 rounded-full capitalize">{categoryLabels[doc.doc_category] || doc.doc_category || 'Altele'}</span>
+                      </td>
+                      <td className="p-3">
+                        {doc.trips?.trip_number ? <a href={`/trips/${doc.trip_id}`} className="text-primary hover:underline text-xs font-medium">{doc.trips.trip_number}</a> : <span className="text-xs text-muted-foreground">—</span>}
+                      </td>
+                      <td className="p-3 text-muted-foreground">{doc.uploader_name || doc.drivers?.full_name || 'Necunoscut'}</td>
+                      <td className="p-3 text-muted-foreground">{doc.created_at && format(new Date(doc.created_at), 'dd.MM.yyyy HH:mm')}</td>
+                      <td className="p-3">
+                        <div className="flex justify-end gap-1">
+                          <button onClick={() => setPreviewUrl(doc.file_url)} className="p-2 text-muted-foreground hover:text-primary rounded-md hover:bg-muted transition-colors"><Eye className="h-4 w-4" /></button>
+                          <a href={doc.file_url} download target="_blank" rel="noopener" className="p-2 text-muted-foreground hover:text-primary rounded-md hover:bg-muted transition-colors"><Download className="h-4 w-4" /></a>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {filtered.map(doc => (
+              <div key={doc.id} className="bg-card rounded-xl border p-3 space-y-2" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                    {doc.file_type?.startsWith('image/') ? <Image className="h-4 w-4 text-muted-foreground" /> : <FileText className="h-4 w-4 text-muted-foreground" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{doc.name}</div>
+                    <div className="text-xs text-muted-foreground">{categoryLabels[doc.doc_category] || 'Altele'}</div>
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <button onClick={() => setPreviewUrl(doc.file_url)} className="p-2 text-muted-foreground hover:text-primary rounded-md"><Eye className="h-4 w-4" /></button>
+                    <a href={doc.file_url} download target="_blank" rel="noopener" className="p-2 text-muted-foreground hover:text-primary rounded-md"><Download className="h-4 w-4" /></a>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  {doc.trips?.trip_number && <a href={`/trips/${doc.trip_id}`} className="text-primary hover:underline">{doc.trips.trip_number}</a>}
+                  <span>{doc.uploader_name || doc.drivers?.full_name || 'Necunoscut'}</span>
+                  {doc.created_at && <span>{format(new Date(doc.created_at), 'dd.MM.yyyy')}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Preview dialog */}

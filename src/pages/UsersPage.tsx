@@ -140,7 +140,7 @@ export default function UsersPage() {
 
       <div className="space-y-3">
         {users.map(user => (
-          <div key={user.id} className="bg-card rounded-xl border p-4 flex items-center justify-between" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div key={user.id} className="bg-card rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div>
               <div className="font-semibold text-foreground">{user.full_name || 'N/A'}</div>
               <div className="text-sm text-muted-foreground">{user.email}</div>

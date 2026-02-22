@@ -110,7 +110,7 @@ export default function TripDetailPage() {
         <StatusBadge status={trip.status} />
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Trip info */}
         <div className="bg-card rounded-xl border p-5 space-y-4" style={{ boxShadow: 'var(--shadow-card)' }}>
           <h3 className="font-display font-semibold">{t('common.details')}</h3>
@@ -165,7 +165,7 @@ export default function TripDetailPage() {
 
           {editingFinancial ? (
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label className="text-xs">Venit (€)</Label>
                   <Input type="number" value={finForm.revenue} onChange={e => setFinForm({...finForm, revenue: e.target.value})} className="h-8 text-sm" />
