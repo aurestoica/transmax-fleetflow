@@ -65,13 +65,13 @@ export default function DashboardPage() {
         <h1 className="page-title">{t('nav.dashboard')}</h1>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
         {statCards.map((card, i) => (
           <div key={i} className="stat-card" style={{ animationDelay: `${i * 50}ms` }}>
             <div className="flex items-center justify-between mb-2">
               <card.icon className={`h-5 w-5 ${card.color}`} />
             </div>
-            <div className="text-2xl font-display font-bold text-foreground">{card.value}</div>
+            <div className="text-xl md:text-2xl font-display font-bold text-foreground">{card.value}</div>
             <div className="text-xs text-muted-foreground mt-1">{card.label}</div>
           </div>
         ))}
@@ -79,11 +79,13 @@ export default function DashboardPage() {
 
       {/* Recent trips */}
       <div className="bg-card rounded-xl border overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
-        <div className="px-5 py-4 border-b flex items-center justify-between">
+        <div className="px-4 md:px-5 py-4 border-b flex items-center justify-between">
           <h2 className="font-display font-semibold text-foreground">{t('dash.recentTrips')}</h2>
           <Link to="/trips" className="text-sm text-primary hover:underline">{t('common.details')} →</Link>
         </div>
-        <div className="overflow-x-auto">
+
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
@@ -109,6 +111,23 @@ export default function DashboardPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile list */}
+        <div className="md:hidden divide-y">
+          {recentTrips.map(trip => (
+            <Link key={trip.id} to={`/trips/${trip.id}`} className="block p-3 hover:bg-muted/30 transition-colors">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-medium text-sm">{trip.trip_number}</span>
+                <StatusBadge status={trip.status} />
+              </div>
+              <div className="text-xs text-muted-foreground truncate">{trip.pickup_address} → {trip.delivery_address}</div>
+              <div className="text-xs font-medium mt-1">€{Number(trip.revenue || 0).toLocaleString()}</div>
+            </Link>
+          ))}
+          {recentTrips.length === 0 && (
+            <div className="px-4 py-8 text-center text-muted-foreground">{t('common.noData')}</div>
+          )}
         </div>
       </div>
     </div>

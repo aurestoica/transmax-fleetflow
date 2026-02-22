@@ -110,7 +110,7 @@ export default function TripsPage() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Cursă nouă</DialogTitle></DialogHeader>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Client</Label>
                 <Select value={form.client_id} onValueChange={v => setForm({...form, client_id: v})}>
@@ -183,7 +183,7 @@ export default function TripsPage() {
                 <Label>Avans șofer (€)</Label>
                 <Input type="number" value={form.driver_advance} onChange={e => setForm({...form, driver_advance: e.target.value})} />
               </div>
-              <div className="col-span-2 space-y-2">
+              <div className="col-span-1 sm:col-span-2 space-y-2">
                 <Label>Observații</Label>
                 <Textarea value={form.observations} onChange={e => setForm({...form, observations: e.target.value})} />
               </div>
