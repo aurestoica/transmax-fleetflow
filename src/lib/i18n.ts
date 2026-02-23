@@ -16,6 +16,7 @@ const translations: Record<string, Record<Language, string>> = {
   'nav.myTrip': { ro: 'Cursa mea', en: 'My Trip', es: 'Mi Viaje' },
   'nav.documents': { ro: 'Documente', en: 'Documents', es: 'Documentos' },
   'nav.location': { ro: 'Locație', en: 'Location', es: 'Ubicación' },
+  'nav.map': { ro: 'Hartă Live', en: 'Live Map', es: 'Mapa en Vivo' },
   'nav.logout': { ro: 'Deconectare', en: 'Logout', es: 'Cerrar sesión' },
 
   // Dashboard
