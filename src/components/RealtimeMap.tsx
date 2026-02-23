@@ -110,6 +110,6 @@ export default function RealtimeMap({ locations, className = '', center, zoom = 
   }, [locations, pickupCoords, deliveryCoords]);
 
   return (
-    <div ref={mapRef} className={`w-full rounded-xl border overflow-hidden ${className}`} style={{ minHeight: 350 }} />
+    <div ref={mapRef} className={`w-full rounded-xl border overflow-hidden relative z-0 ${className}`} style={{ minHeight: 350 }} />
   );
 }
