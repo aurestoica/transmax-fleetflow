@@ -12,6 +12,7 @@ import { ArrowLeft, MapPin, Truck, User, Package, DollarSign, FileText, Image, E
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import RealtimeMap, { MapLocation } from '@/components/RealtimeMap';
 
 const allStatuses = ['planned', 'loading', 'in_transit', 'unloading', 'completed', 'cancelled', 'delayed'];
 
@@ -24,6 +25,7 @@ export default function TripDetailPage() {
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [driverLocation, setDriverLocation] = useState<MapLocation[]>([]);
 
   // Financial edit mode
   const [editingFinancial, setEditingFinancial] = useState(false);
@@ -31,6 +33,18 @@ export default function TripDetailPage() {
   const [savingFin, setSavingFin] = useState(false);
 
   useEffect(() => { loadTrip(); }, [id]);
+
+  // Realtime location updates for this trip
+  useEffect(() => {
+    const channel = supabase
+      .channel(`trip-location-${id}`)
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'public', table: 'locations',
+        filter: `trip_id=eq.${id}`,
+      }, () => { loadTrip(); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [id]);
 
   const loadTrip = async () => {
     const { data } = await supabase.from('trips')
@@ -65,6 +79,27 @@ export default function TripDetailPage() {
       profileMap = Object.fromEntries((profiles ?? []).map(p => [p.user_id, p.full_name]));
     }
     setDocuments((docs ?? []).map(d => ({ ...d, uploader_name: d.uploaded_by ? profileMap[d.uploaded_by] : null })));
+
+    // Load driver location
+    const isActive = data && ['loading', 'in_transit', 'unloading'].includes(data.status);
+    if (isActive) {
+      const { data: locs } = await supabase.from('locations')
+        .select('*').eq('trip_id', id!).order('created_at', { ascending: false }).limit(1);
+      if (locs && locs.length > 0) {
+        setDriverLocation([{
+          id: locs[0].id,
+          lat: Number(locs[0].lat),
+          lng: Number(locs[0].lng),
+          driverName: data.drivers?.full_name,
+          tripNumber: data.trip_number,
+          updatedAt: locs[0].created_at ? format(new Date(locs[0].created_at), 'dd.MM.yyyy HH:mm') : undefined,
+        }]);
+      } else {
+        setDriverLocation([]);
+      }
+    } else {
+      setDriverLocation([]);
+    }
 
     setLoading(false);
   };
@@ -208,6 +243,20 @@ export default function TripDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Live Map for active trips */}
+      {['loading', 'in_transit', 'unloading'].includes(trip.status) && (
+        <div className="bg-card rounded-xl border p-5 mt-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-primary" />Locație șofer în timp real
+          </h3>
+          {driverLocation.length === 0 ? (
+            <p className="text-muted-foreground text-sm">Șoferul nu a trimis încă locația pe această cursă.</p>
+          ) : (
+            <RealtimeMap locations={driverLocation} className="h-[350px]" />
+          )}
+        </div>
+      )}
 
       {/* Documents section */}
       <div className="bg-card rounded-xl border p-5 mt-6" style={{ boxShadow: 'var(--shadow-card)' }}>

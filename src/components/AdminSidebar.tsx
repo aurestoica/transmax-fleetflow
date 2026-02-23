@@ -4,7 +4,7 @@ import { useAuthStore } from '@/lib/auth-store';
 import { supabase } from '@/integrations/supabase/client';
 import {
   LayoutDashboard, Route, Users, Truck, Container, Building2,
-  DollarSign, MessageSquare, Settings, LogOut, ChevronLeft, ChevronRight, Globe, FileText, X
+  DollarSign, MessageSquare, Settings, LogOut, ChevronLeft, ChevronRight, Globe, FileText, X, MapPin
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -17,6 +17,7 @@ const adminLinks = [
   { key: 'nav.trailers', to: '/trailers', icon: Container },
   { key: 'nav.clients', to: '/clients', icon: Building2 },
   { key: 'nav.documents', to: '/documents', icon: FileText },
+  { key: 'nav.map', to: '/map', icon: MapPin },
   { key: 'nav.financial', to: '/financial', icon: DollarSign },
   { key: 'nav.chat', to: '/chat', icon: MessageSquare },
   { key: 'nav.users', to: '/users', icon: Settings },
