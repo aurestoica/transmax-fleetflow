@@ -40,6 +40,7 @@ export default function VehiclesPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadCategory, setUploadCategory] = useState('');
+  const [deleteDocId, setDeleteDocId] = useState<string | null>(null);
 
   useEffect(() => { loadData(); }, []);
   const loadData = async () => {
@@ -143,6 +144,19 @@ export default function VehiclesPage() {
     e.target.value = '';
   };
 
+  const handleDeleteDoc = async () => {
+    if (!deleteDocId) return;
+    const { error } = await supabase.from('documents').delete().eq('id', deleteDocId);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Document șters!');
+    setDeleteDocId(null);
+    if (selectedVehicle) openVehicleDocs(selectedVehicle);
+  };
+
+  const getDocForCategory = (category: string) => {
+    return vehicleDocs.find(d => d.doc_category === category);
+  };
+
   const filtered = vehicles.filter(v => !search || v.plate_number?.toLowerCase().includes(search.toLowerCase()) || v.model?.toLowerCase().includes(search.toLowerCase()));
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
@@ -233,47 +247,65 @@ export default function VehiclesPage() {
           <DialogHeader>
             <DialogTitle>Documente {selectedVehicle?.plate_number}</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            {vehicleDocTypes.map(({ key, category }) => (
-              <Button key={category} variant="outline" size="sm" className="justify-start" disabled={uploading}
-                onClick={() => { setUploadCategory(category); fileInputRef.current?.click(); }}>
-                <Upload className="h-3.5 w-3.5 mr-2" />{key}
-              </Button>
-            ))}
-          </div>
           {uploading && (
             <div className="flex items-center justify-center gap-2 py-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" /> Se încarcă...
             </div>
           )}
-          {vehicleDocs.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">Niciun document încărcat</p>
-          ) : (
-            <div className="space-y-2">
-              {vehicleDocs.map(doc => (
-                <div key={doc.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                  <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{doc.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {doc.profiles?.full_name && <span>de {doc.profiles.full_name} · </span>}
-                      {doc.created_at && format(new Date(doc.created_at), 'dd.MM.yyyy HH:mm')}
-                    </div>
+          <div className="space-y-3">
+            {vehicleDocTypes.map(({ key, category }) => {
+              const existingDoc = getDocForCategory(category);
+              return (
+                <div key={category} className="rounded-lg border p-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-semibold">{key}</span>
                   </div>
-                  <button onClick={() => setPreviewUrl(doc.file_url)} className="p-1.5 text-muted-foreground hover:text-primary">
-                    <Eye className="h-4 w-4" />
-                  </button>
-                  <a href={doc.file_url} download target="_blank" rel="noopener" className="p-1.5 text-muted-foreground hover:text-primary">
-                    <Download className="h-4 w-4" />
-                  </a>
+                  {existingDoc ? (
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-muted-foreground truncate">
+                          {existingDoc.profiles?.full_name && <span>de {existingDoc.profiles.full_name} · </span>}
+                          {existingDoc.created_at && format(new Date(existingDoc.created_at), 'dd.MM.yyyy HH:mm')}
+                        </div>
+                      </div>
+                      <button onClick={() => setPreviewUrl(existingDoc.file_url)} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary" title="Vizualizare">
+                        <Eye className="h-4 w-4" />
+                      </button>
+                      <button onClick={() => { setUploadCategory(category); fileInputRef.current?.click(); }} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary" title="Înlocuire" disabled={uploading}>
+                        <Upload className="h-4 w-4" />
+                      </button>
+                      <button onClick={() => setDeleteDocId(existingDoc.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive" title="Șterge">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <Button variant="outline" size="sm" className="mt-2 w-full" disabled={uploading}
+                      onClick={() => { setUploadCategory(category); fileInputRef.current?.click(); }}>
+                      <Upload className="h-3.5 w-3.5 mr-2" />Adaugă document
+                    </Button>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
         </DialogContent>
       </Dialog>
 
       <input ref={fileInputRef} type="file" accept="image/*,.pdf,.doc,.docx" className="hidden" onChange={onFileChange} />
+
+      {/* Delete doc confirmation */}
+      <AlertDialog open={!!deleteDocId} onOpenChange={open => !open && setDeleteDocId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ștergi documentul?</AlertDialogTitle>
+            <AlertDialogDescription>Documentul va fi șters permanent.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Anulează</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteDoc} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Șterge</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog open={!!previewUrl} onOpenChange={(open) => !open && setPreviewUrl(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-auto">
