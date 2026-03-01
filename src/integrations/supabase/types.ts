@@ -96,6 +96,7 @@ export type Database = {
           file_url: string
           id: string
           name: string
+          trailer_id: string | null
           trip_id: string | null
           uploaded_by: string | null
           vehicle_id: string | null
@@ -109,6 +110,7 @@ export type Database = {
           file_url: string
           id?: string
           name: string
+          trailer_id?: string | null
           trip_id?: string | null
           uploaded_by?: string | null
           vehicle_id?: string | null
@@ -122,6 +124,7 @@ export type Database = {
           file_url?: string
           id?: string
           name?: string
+          trailer_id?: string | null
           trip_id?: string | null
           uploaded_by?: string | null
           vehicle_id?: string | null
@@ -132,6 +135,13 @@ export type Database = {
             columns: ["driver_id"]
             isOneToOne: false
             referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_trailer_id_fkey"
+            columns: ["trailer_id"]
+            isOneToOne: false
+            referencedRelation: "trailers"
             referencedColumns: ["id"]
           },
           {

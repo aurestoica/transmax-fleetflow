@@ -97,11 +97,9 @@ export default function TrailersPage() {
   const openTrailerDocs = async (trailer: any) => {
     setSelectedTrailer(trailer);
     setDocsDialogOpen(true);
-    // Use vehicle_id field since trailers share the documents table pattern
-    // We store trailer docs with a naming convention in doc_category
     const { data } = await supabase.from('documents')
       .select('*')
-      .eq('vehicle_id', trailer.id)
+      .eq('trailer_id', trailer.id)
       .order('created_at', { ascending: false });
     setTrailerDocs(data ?? []);
   };
@@ -120,8 +118,8 @@ export default function TrailersPage() {
         name: `${docLabel} - ${selectedTrailer.plate_number}`,
         file_url: urlData.publicUrl,
         file_type: file.type,
-        doc_category: uploadCategory,
-        vehicle_id: selectedTrailer.id,
+        trailer_id: selectedTrailer.id,
+        vehicle_id: null,
         uploaded_by: userId,
       });
       toast.success('Document încărcat!');
