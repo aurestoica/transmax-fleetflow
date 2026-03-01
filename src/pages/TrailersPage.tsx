@@ -100,7 +100,7 @@ export default function TrailersPage() {
     // Use vehicle_id field since trailers share the documents table pattern
     // We store trailer docs with a naming convention in doc_category
     const { data } = await supabase.from('documents')
-      .select('*, profiles:uploaded_by(full_name)')
+      .select('*')
       .eq('vehicle_id', trailer.id)
       .order('created_at', { ascending: false });
     setTrailerDocs(data ?? []);
@@ -247,7 +247,6 @@ export default function TrailersPage() {
                     <div className="flex items-center gap-2 mt-2">
                       <div className="flex-1 min-w-0">
                         <div className="text-xs text-muted-foreground truncate">
-                          {existingDoc.profiles?.full_name && <span>de {existingDoc.profiles.full_name} · </span>}
                           {existingDoc.created_at && format(new Date(existingDoc.created_at), 'dd.MM.yyyy HH:mm')}
                         </div>
                       </div>
