@@ -104,7 +104,7 @@ export default function VehiclesPage() {
     setSelectedVehicle(vehicle);
     setDocsDialogOpen(true);
     const { data } = await supabase.from('documents')
-      .select('*, profiles:uploaded_by(full_name)')
+      .select('*')
       .eq('vehicle_id', vehicle.id)
       .order('created_at', { ascending: false });
     setVehicleDocs(data ?? []);
@@ -264,7 +264,6 @@ export default function VehiclesPage() {
                     <div className="flex items-center gap-2 mt-2">
                       <div className="flex-1 min-w-0">
                         <div className="text-xs text-muted-foreground truncate">
-                          {existingDoc.profiles?.full_name && <span>de {existingDoc.profiles.full_name} · </span>}
                           {existingDoc.created_at && format(new Date(existingDoc.created_at), 'dd.MM.yyyy HH:mm')}
                         </div>
                       </div>
