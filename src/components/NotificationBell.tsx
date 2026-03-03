@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/lib/auth-store';
 import { useI18n } from '@/lib/i18n';
@@ -25,6 +26,7 @@ interface Notification {
 const localeMap: Record<string, Locale> = { ro, es };
 
 export default function NotificationBell() {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const { language } = useI18n();
@@ -52,6 +54,23 @@ export default function NotificationBell() {
   }, []);
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  const getNotificationRoute = (title: string, message: string | null): string | null => {
+    const text = `${title} ${message || ''}`.toLowerCase();
+    if (text.includes('cursă') || text.includes('cursa') || text.includes('status cursă') || text.includes('trip')) return '/trips';
+    if (text.includes('document')) return '/documents';
+    if (text.includes('locație') || text.includes('locatie') || text.includes('gps')) return '/map';
+    if (text.includes('mesaj') || text.includes('chat')) return '/chat';
+    if (text.includes('șofer') || text.includes('sofer') || text.includes('driver')) return '/drivers';
+    return null;
+  };
+
+  const handleNotificationClick = async (n: Notification) => {
+    await markAsRead(n.id);
+    setOpen(false);
+    const route = getNotificationRoute(n.title, n.message);
+    if (route) navigate(route);
+  };
 
   const markAsRead = async (id: string) => {
     await supabase.from('notifications').update({ read: true }).eq('id', id);
@@ -110,7 +129,7 @@ export default function NotificationBell() {
                 "flex flex-col items-start gap-1 px-3 py-2.5 cursor-pointer",
                 !n.read && "bg-accent/50"
               )}
-              onClick={() => markAsRead(n.id)}
+              onClick={() => handleNotificationClick(n)}
             >
               <div className="flex items-center gap-2 w-full">
                 {!n.read && <span className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />}
