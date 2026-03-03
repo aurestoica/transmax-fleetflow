@@ -1,10 +1,12 @@
-import { useEffect, useCallback, ReactNode } from 'react';
+import { useEffect, useCallback, useRef, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore, UserRole } from '@/lib/auth-store';
+import { initPushNotifications, removePushToken } from '@/lib/push-notifications';
 import LoginPage from '@/pages/LoginPage';
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const { setAuth, clearAuth, isLoading, userId } = useAuthStore();
+  const pushInitialized = useRef(false);
 
   const loadUserData = useCallback(async (uid: string, email: string) => {
     try {
@@ -19,8 +21,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         fullName: profile?.full_name ?? '',
         roles: (roles?.map(r => r.role) ?? []) as UserRole[],
       });
+
+      // Initialize push notifications once
+      if (!pushInitialized.current) {
+        pushInitialized.current = true;
+        initPushNotifications(uid);
+      }
     } catch {
-      // If queries fail, still authenticate with minimal data
       setAuth({ userId: uid, email, fullName: '', roles: [] });
     }
   }, [setAuth]);
@@ -39,6 +46,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === 'SIGNED_OUT') {
+          if (userId) removePushToken(userId);
+          pushInitialized.current = false;
           clearAuth();
           return;
         }
