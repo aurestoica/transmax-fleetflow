@@ -38,7 +38,7 @@ export default function NotificationBell() {
       .from('notifications')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(20);
+      .limit(10);
     if (data) setNotifications(data);
   };
 
@@ -159,6 +159,17 @@ export default function NotificationBell() {
               </span>
             </DropdownMenuItem>
           ))
+        )}
+        {notifications.length > 0 && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="justify-center text-xs text-primary font-medium cursor-pointer"
+              onClick={() => { setOpen(false); navigate('/notifications'); }}
+            >
+              Vezi toate notificările
+            </DropdownMenuItem>
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
