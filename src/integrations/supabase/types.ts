@@ -311,6 +311,8 @@ export type Database = {
       notifications: {
         Row: {
           created_at: string | null
+          entity_id: string | null
+          entity_type: string | null
           id: string
           message: string | null
           read: boolean | null
@@ -319,6 +321,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
           id?: string
           message?: string | null
           read?: boolean | null
@@ -327,6 +331,8 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
           id?: string
           message?: string | null
           read?: boolean | null
@@ -628,14 +634,32 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
-      notify_admins: {
-        Args: { _message?: string; _title: string }
-        Returns: undefined
-      }
-      notify_user: {
-        Args: { _message?: string; _title: string; _user_id: string }
-        Returns: undefined
-      }
+      notify_admins:
+        | { Args: { _message?: string; _title: string }; Returns: undefined }
+        | {
+            Args: {
+              _entity_id?: string
+              _entity_type?: string
+              _message?: string
+              _title: string
+            }
+            Returns: undefined
+          }
+      notify_user:
+        | {
+            Args: { _message?: string; _title: string; _user_id: string }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              _entity_id?: string
+              _entity_type?: string
+              _message?: string
+              _title: string
+              _user_id: string
+            }
+            Returns: undefined
+          }
     }
     Enums: {
       app_role: "owner" | "dispatcher" | "driver"
