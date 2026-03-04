@@ -238,6 +238,33 @@ export type Database = {
         }
         Relationships: []
       }
+      expiry_notifications_sent: {
+        Row: {
+          days_before: number
+          entity_id: string
+          entity_type: string
+          expiry_date: string
+          id: string
+          notified_at: string
+        }
+        Insert: {
+          days_before: number
+          entity_id: string
+          entity_type: string
+          expiry_date: string
+          id?: string
+          notified_at?: string
+        }
+        Update: {
+          days_before?: number
+          entity_id?: string
+          entity_type?: string
+          expiry_date?: string
+          id?: string
+          notified_at?: string
+        }
+        Relationships: []
+      }
       locations: {
         Row: {
           created_at: string | null

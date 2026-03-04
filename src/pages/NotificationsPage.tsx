@@ -68,6 +68,9 @@ export default function NotificationsPage() {
         case 'trip': return `/trips/${n.entity_id}`;
         case 'chat': return `/chat?trip=${n.entity_id}`;
         case 'document': return `/documents`;
+        case 'vehicle': return `/vehicles`;
+        case 'trailer': return `/trailers`;
+        case 'driver': return `/drivers`;
         default: break;
       }
     }
