@@ -21,6 +21,8 @@ interface Notification {
   message: string | null;
   read: boolean | null;
   created_at: string | null;
+  entity_type: string | null;
+  entity_id: string | null;
 }
 
 const localeMap: Record<string, Locale> = { ro, es };
@@ -55,9 +57,19 @@ export default function NotificationBell() {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const getNotificationRoute = (title: string, message: string | null): string | null => {
-    const text = `${title} ${message || ''}`.toLowerCase();
-    if (text.includes('cursă') || text.includes('cursa') || text.includes('status cursă') || text.includes('trip')) return '/trips';
+  const getNotificationRoute = (n: Notification): string | null => {
+    // Use entity_type + entity_id for precise routing
+    if (n.entity_type && n.entity_id) {
+      switch (n.entity_type) {
+        case 'trip': return `/trips/${n.entity_id}`;
+        case 'chat': return `/chat?trip=${n.entity_id}`;
+        case 'document': return `/documents`;
+        default: break;
+      }
+    }
+    // Fallback: keyword-based routing for old notifications without entity data
+    const text = `${n.title} ${n.message || ''}`.toLowerCase();
+    if (text.includes('cursă') || text.includes('cursa') || text.includes('trip')) return '/trips';
     if (text.includes('document')) return '/documents';
     if (text.includes('locație') || text.includes('locatie') || text.includes('gps')) return '/map';
     if (text.includes('mesaj') || text.includes('chat')) return '/chat';
@@ -68,7 +80,7 @@ export default function NotificationBell() {
   const handleNotificationClick = async (n: Notification) => {
     await markAsRead(n.id);
     setOpen(false);
-    const route = getNotificationRoute(n.title, n.message);
+    const route = getNotificationRoute(n);
     if (route) navigate(route);
   };
 
