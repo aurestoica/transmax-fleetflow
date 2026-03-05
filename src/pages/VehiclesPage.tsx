@@ -24,6 +24,7 @@ const emptyForm = { plate_number: '', vin: '', model: '', year: '', avg_consumpt
 
 export default function VehiclesPage() {
   const { t } = useI18n();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { userId } = useAuthStore();
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
