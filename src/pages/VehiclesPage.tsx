@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/auth-store';
@@ -23,6 +24,7 @@ const emptyForm = { plate_number: '', vin: '', model: '', year: '', avg_consumpt
 
 export default function VehiclesPage() {
   const { t } = useI18n();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { userId } = useAuthStore();
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,6 +48,27 @@ export default function VehiclesPage() {
   const loadData = async () => {
     const { data } = await supabase.from('vehicles').select('*').order('plate_number');
     setVehicles(data ?? []); setLoading(false);
+
+    const highlightId = searchParams.get('highlight');
+    if (highlightId && data) {
+      const v = data.find((item: any) => item.id === highlightId);
+      if (v) {
+        setEditingId(v.id);
+        setForm({
+          plate_number: v.plate_number || '',
+          vin: v.vin || '',
+          model: v.model || '',
+          year: v.year?.toString() || '',
+          avg_consumption: v.avg_consumption?.toString() || '',
+          capacity_tons: v.capacity_tons?.toString() || '',
+          itp_expiry: v.itp_expiry || '',
+          rca_expiry: v.rca_expiry || '',
+          insurance_expiry: v.insurance_expiry || '',
+        });
+        setDialogOpen(true);
+        setSearchParams({}, { replace: true });
+      }
+    }
   };
 
   const openCreate = () => {

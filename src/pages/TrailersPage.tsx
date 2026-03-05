@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/auth-store';
@@ -22,6 +23,7 @@ const emptyForm = { plate_number: '', type: '', capacity_tons: '', itp_expiry: '
 
 export default function TrailersPage() {
   const { t } = useI18n();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { userId } = useAuthStore();
   const [trailers, setTrailers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +47,22 @@ export default function TrailersPage() {
   const loadData = async () => {
     const { data } = await supabase.from('trailers').select('*').order('plate_number');
     setTrailers(data ?? []); setLoading(false);
+
+    const highlightId = searchParams.get('highlight');
+    if (highlightId && data) {
+      const tr = data.find((item: any) => item.id === highlightId);
+      if (tr) {
+        setEditingId(tr.id);
+        setForm({
+          plate_number: tr.plate_number || '',
+          type: tr.type || '',
+          capacity_tons: tr.capacity_tons?.toString() || '',
+          itp_expiry: tr.itp_expiry || '',
+        });
+        setDialogOpen(true);
+        setSearchParams({}, { replace: true });
+      }
+    }
   };
 
   const openCreate = () => {
