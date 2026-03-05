@@ -23,6 +23,7 @@ const emptyForm = { plate_number: '', type: '', capacity_tons: '', itp_expiry: '
 
 export default function TrailersPage() {
   const { t } = useI18n();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { userId } = useAuthStore();
   const [trailers, setTrailers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
