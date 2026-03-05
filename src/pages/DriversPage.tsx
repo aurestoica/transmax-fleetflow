@@ -15,6 +15,7 @@ const emptyForm = { full_name: '', phone: '', email: '', license_number: '', lic
 
 export default function DriversPage() {
   const { t } = useI18n();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [drivers, setDrivers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -27,6 +28,27 @@ export default function DriversPage() {
   const loadData = async () => {
     const { data } = await supabase.from('drivers').select('*').order('full_name');
     setDrivers(data ?? []); setLoading(false);
+
+    // Auto-open edit dialog if highlight param is present
+    const highlightId = searchParams.get('highlight');
+    if (highlightId && data) {
+      const driver = data.find((d: any) => d.id === highlightId);
+      if (driver) {
+        setEditingId(driver.id);
+        setForm({
+          full_name: driver.full_name || '',
+          phone: driver.phone || '',
+          email: driver.email || '',
+          license_number: driver.license_number || '',
+          license_expiry: driver.license_expiry || '',
+          tachograph_card: driver.tachograph_card || '',
+          tachograph_expiry: driver.tachograph_expiry || '',
+          notes: driver.notes || '',
+        });
+        setDialogOpen(true);
+        setSearchParams({}, { replace: true });
+      }
+    }
   };
 
   const openCreate = () => {

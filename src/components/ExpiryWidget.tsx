@@ -37,9 +37,9 @@ function getIcon(icon: ExpiryItem['icon']) {
 
 function getRoute(item: ExpiryItem) {
   switch (item.type) {
-    case 'vehicle': return `/vehicles`;
-    case 'trailer': return `/trailers`;
-    case 'driver': return `/drivers`;
+    case 'vehicle': return `/vehicles?highlight=${item.entityId}`;
+    case 'trailer': return `/trailers?highlight=${item.entityId}`;
+    case 'driver': return `/drivers?highlight=${item.entityId}`;
     case 'document': return `/documents`;
   }
 }

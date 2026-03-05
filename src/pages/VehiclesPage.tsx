@@ -48,6 +48,27 @@ export default function VehiclesPage() {
   const loadData = async () => {
     const { data } = await supabase.from('vehicles').select('*').order('plate_number');
     setVehicles(data ?? []); setLoading(false);
+
+    const highlightId = searchParams.get('highlight');
+    if (highlightId && data) {
+      const v = data.find((item: any) => item.id === highlightId);
+      if (v) {
+        setEditingId(v.id);
+        setForm({
+          plate_number: v.plate_number || '',
+          vin: v.vin || '',
+          model: v.model || '',
+          year: v.year?.toString() || '',
+          avg_consumption: v.avg_consumption?.toString() || '',
+          capacity_tons: v.capacity_tons?.toString() || '',
+          itp_expiry: v.itp_expiry || '',
+          rca_expiry: v.rca_expiry || '',
+          insurance_expiry: v.insurance_expiry || '',
+        });
+        setDialogOpen(true);
+        setSearchParams({}, { replace: true });
+      }
+    }
   };
 
   const openCreate = () => {
