@@ -78,6 +78,10 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Expiry widget + Recent trips */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <ExpiryWidget />
+
       {/* Recent trips */}
       <div className="bg-card rounded-xl border overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
         <div className="px-4 md:px-5 py-4 border-b flex items-center justify-between">
