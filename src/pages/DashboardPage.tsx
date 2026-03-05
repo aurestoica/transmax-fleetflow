@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import StatusBadge from '@/components/StatusBadge';
+import ExpiryWidget from '@/components/ExpiryWidget';
 import { Route, Users, Truck, AlertTriangle, DollarSign, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
