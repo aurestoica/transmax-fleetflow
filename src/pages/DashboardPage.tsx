@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import StatusBadge from '@/components/StatusBadge';
+import ExpiryWidget from '@/components/ExpiryWidget';
 import { Route, Users, Truck, AlertTriangle, DollarSign, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -77,6 +78,10 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Expiry widget + Recent trips */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <ExpiryWidget />
+
       {/* Recent trips */}
       <div className="bg-card rounded-xl border overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
         <div className="px-4 md:px-5 py-4 border-b flex items-center justify-between">
@@ -129,6 +134,7 @@ export default function DashboardPage() {
             <div className="px-4 py-8 text-center text-muted-foreground">{t('common.noData')}</div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
