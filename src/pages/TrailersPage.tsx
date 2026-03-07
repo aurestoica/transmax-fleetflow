@@ -126,6 +126,12 @@ export default function TrailersPage() {
     if (!selectedTrailer || !userId || !uploadCategory) return;
     setUploading(true);
     try {
+      // Unlink old docs of same category from this trailer (keep in documents history)
+      await supabase.from('documents')
+        .update({ trailer_id: null })
+        .eq('trailer_id', selectedTrailer.id)
+        .eq('doc_category', uploadCategory);
+
       const ext = file.name.split('.').pop() || 'pdf';
       const filePath = `trailers/${selectedTrailer.id}/${uploadCategory}_${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('documents').upload(filePath, file);
@@ -158,9 +164,10 @@ export default function TrailersPage() {
 
   const handleDeleteDoc = async () => {
     if (!deleteDocId) return;
-    const { error } = await supabase.from('documents').delete().eq('id', deleteDocId);
+    // Unlink from trailer instead of deleting (keeps doc in history)
+    const { error } = await supabase.from('documents').update({ trailer_id: null }).eq('id', deleteDocId);
     if (error) { toast.error(error.message); return; }
-    toast.success('Document șters!');
+    toast.success('Document eliminat!');
     setDeleteDocId(null);
     if (selectedTrailer) openTrailerDocs(selectedTrailer);
   };

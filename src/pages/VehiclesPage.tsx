@@ -137,6 +137,12 @@ export default function VehiclesPage() {
     if (!selectedVehicle || !userId || !uploadCategory) return;
     setUploading(true);
     try {
+      // Unlink old docs of same category from this vehicle (keep in documents history)
+      await supabase.from('documents')
+        .update({ vehicle_id: null })
+        .eq('vehicle_id', selectedVehicle.id)
+        .eq('doc_category', uploadCategory);
+
       const ext = file.name.split('.').pop() || 'pdf';
       const filePath = `vehicles/${selectedVehicle.id}/${uploadCategory}_${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('documents').upload(filePath, file);
@@ -169,9 +175,10 @@ export default function VehiclesPage() {
 
   const handleDeleteDoc = async () => {
     if (!deleteDocId) return;
-    const { error } = await supabase.from('documents').delete().eq('id', deleteDocId);
+    // Unlink from vehicle instead of deleting (keeps doc in history)
+    const { error } = await supabase.from('documents').update({ vehicle_id: null }).eq('id', deleteDocId);
     if (error) { toast.error(error.message); return; }
-    toast.success('Document șters!');
+    toast.success('Document eliminat!');
     setDeleteDocId(null);
     if (selectedVehicle) openVehicleDocs(selectedVehicle);
   };
