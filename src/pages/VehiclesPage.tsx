@@ -137,6 +137,12 @@ export default function VehiclesPage() {
     if (!selectedVehicle || !userId || !uploadCategory) return;
     setUploading(true);
     try {
+      // Unlink old docs of same category from this vehicle (keep in documents history)
+      await supabase.from('documents')
+        .update({ vehicle_id: null })
+        .eq('vehicle_id', selectedVehicle.id)
+        .eq('doc_category', uploadCategory);
+
       const ext = file.name.split('.').pop() || 'pdf';
       const filePath = `vehicles/${selectedVehicle.id}/${uploadCategory}_${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('documents').upload(filePath, file);
