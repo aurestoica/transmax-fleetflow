@@ -126,6 +126,12 @@ export default function TrailersPage() {
     if (!selectedTrailer || !userId || !uploadCategory) return;
     setUploading(true);
     try {
+      // Unlink old docs of same category from this trailer (keep in documents history)
+      await supabase.from('documents')
+        .update({ trailer_id: null })
+        .eq('trailer_id', selectedTrailer.id)
+        .eq('doc_category', uploadCategory);
+
       const ext = file.name.split('.').pop() || 'pdf';
       const filePath = `trailers/${selectedTrailer.id}/${uploadCategory}_${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('documents').upload(filePath, file);
