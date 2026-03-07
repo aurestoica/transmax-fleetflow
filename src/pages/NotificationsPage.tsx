@@ -197,6 +197,7 @@ export default function NotificationsPage() {
               <SelectItem value="chat">💬 Mesaje</SelectItem>
               <SelectItem value="location">📍 Locații</SelectItem>
               <SelectItem value="driver">👤 Șoferi</SelectItem>
+              <SelectItem value="vehicle">🚚 Vehicule / Remorci</SelectItem>
             </SelectContent>
           </Select>
           <Select value={filterRead} onValueChange={setFilterRead}>
