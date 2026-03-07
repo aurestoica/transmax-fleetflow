@@ -28,7 +28,23 @@ const typeIcons: Record<string, typeof Bell> = {
   document: FileText,
   location: MapPin,
   driver: Users,
+  vehicle: Truck,
+  trailer: Truck,
 };
+
+// Map entity_types to filter categories
+const typeToFilter: Record<string, string> = {
+  trip: 'trip',
+  chat: 'chat',
+  document: 'document',
+  location: 'location',
+  driver: 'driver',
+  vehicle: 'vehicle',
+  trailer: 'vehicle',
+};
+
+// Strip leading emojis from notification titles
+const stripEmoji = (text: string) => text.replace(/^[\p{Emoji}\p{Emoji_Presentation}\p{Extended_Pictographic}\s]+/u, '').trim();
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
