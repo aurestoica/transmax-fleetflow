@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function AdminLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
