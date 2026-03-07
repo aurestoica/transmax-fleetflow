@@ -22,6 +22,13 @@ export default function AdminLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
+          <button
+            onClick={() => navigate('/settings')}
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+            aria-label="Setări"
+          >
+            <Settings className="h-5 w-5" />
+          </button>
           <NotificationBell />
         </header>
         <main className="flex-1 overflow-y-auto">
