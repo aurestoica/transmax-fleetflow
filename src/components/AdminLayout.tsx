@@ -1,8 +1,9 @@
 import { Outlet } from 'react-router-dom';
 import AdminSidebar from '@/components/AdminSidebar';
 import NotificationBell from '@/components/NotificationBell';
-import { Menu } from 'lucide-react';
+import { Menu, Settings } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
