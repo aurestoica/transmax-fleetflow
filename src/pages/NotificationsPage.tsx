@@ -115,14 +115,17 @@ export default function NotificationsPage() {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
-  const getEntityTypeFromContent = (n: Notification): string => {
-    if (n.entity_type) return n.entity_type;
+  const getFilterCategory = (n: Notification): string => {
+    if (n.entity_type) {
+      return typeToFilter[n.entity_type] || 'other';
+    }
     const text = `${n.title} ${n.message || ''}`.toLowerCase();
-    if (text.includes('cursă') || text.includes('cursa') || text.includes('trip') || text.includes('status')) return 'trip';
-    if (text.includes('document')) return 'document';
+    if (text.includes('cursă') || text.includes('cursa') || text.includes('trip')) return 'trip';
+    if (text.includes('document') || text.includes('încărcat')) return 'document';
     if (text.includes('locație') || text.includes('locatie') || text.includes('gps')) return 'location';
     if (text.includes('mesaj') || text.includes('chat')) return 'chat';
-    if (text.includes('șofer') || text.includes('sofer') || text.includes('driver')) return 'driver';
+    if (text.includes('șofer') || text.includes('sofer') || text.includes('driver') || text.includes('permis') || text.includes('tahograf')) return 'driver';
+    if (text.includes('rca') || text.includes('itp') || text.includes('asigurare') || text.includes('camion') || text.includes('remorcă')) return 'vehicle';
     return 'other';
   };
 
@@ -132,7 +135,7 @@ export default function NotificationsPage() {
       if (!n.title.toLowerCase().includes(q) && !(n.message || '').toLowerCase().includes(q)) return false;
     }
     if (filterType !== 'all') {
-      if (getEntityTypeFromContent(n) !== filterType) return false;
+      if (getFilterCategory(n) !== filterType) return false;
     }
     if (filterRead === 'unread' && n.read) return false;
     if (filterRead === 'read' && !n.read) return false;
