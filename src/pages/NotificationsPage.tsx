@@ -28,7 +28,23 @@ const typeIcons: Record<string, typeof Bell> = {
   document: FileText,
   location: MapPin,
   driver: Users,
+  vehicle: Truck,
+  trailer: Truck,
 };
+
+// Map entity_types to filter categories
+const typeToFilter: Record<string, string> = {
+  trip: 'trip',
+  chat: 'chat',
+  document: 'document',
+  location: 'location',
+  driver: 'driver',
+  vehicle: 'vehicle',
+  trailer: 'vehicle',
+};
+
+// Strip leading emojis from notification titles
+const stripEmoji = (text: string) => text.replace(/^[\p{Emoji}\p{Emoji_Presentation}\p{Extended_Pictographic}\s]+/u, '').trim();
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
@@ -99,14 +115,17 @@ export default function NotificationsPage() {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
-  const getEntityTypeFromContent = (n: Notification): string => {
-    if (n.entity_type) return n.entity_type;
+  const getFilterCategory = (n: Notification): string => {
+    if (n.entity_type) {
+      return typeToFilter[n.entity_type] || 'other';
+    }
     const text = `${n.title} ${n.message || ''}`.toLowerCase();
-    if (text.includes('cursă') || text.includes('cursa') || text.includes('trip') || text.includes('status')) return 'trip';
-    if (text.includes('document')) return 'document';
+    if (text.includes('cursă') || text.includes('cursa') || text.includes('trip')) return 'trip';
+    if (text.includes('document') || text.includes('încărcat')) return 'document';
     if (text.includes('locație') || text.includes('locatie') || text.includes('gps')) return 'location';
     if (text.includes('mesaj') || text.includes('chat')) return 'chat';
-    if (text.includes('șofer') || text.includes('sofer') || text.includes('driver')) return 'driver';
+    if (text.includes('șofer') || text.includes('sofer') || text.includes('driver') || text.includes('permis') || text.includes('tahograf')) return 'driver';
+    if (text.includes('rca') || text.includes('itp') || text.includes('asigurare') || text.includes('camion') || text.includes('remorcă')) return 'vehicle';
     return 'other';
   };
 
@@ -116,7 +135,7 @@ export default function NotificationsPage() {
       if (!n.title.toLowerCase().includes(q) && !(n.message || '').toLowerCase().includes(q)) return false;
     }
     if (filterType !== 'all') {
-      if (getEntityTypeFromContent(n) !== filterType) return false;
+      if (getFilterCategory(n) !== filterType) return false;
     }
     if (filterRead === 'unread' && n.read) return false;
     if (filterRead === 'read' && !n.read) return false;
@@ -178,6 +197,7 @@ export default function NotificationsPage() {
               <SelectItem value="chat">💬 Mesaje</SelectItem>
               <SelectItem value="location">📍 Locații</SelectItem>
               <SelectItem value="driver">👤 Șoferi</SelectItem>
+              <SelectItem value="vehicle">🚚 Vehicule / Remorci</SelectItem>
             </SelectContent>
           </Select>
           <Select value={filterRead} onValueChange={setFilterRead}>
@@ -209,7 +229,7 @@ export default function NotificationsPage() {
         ) : (
           <div className="divide-y divide-border">
             {filtered.map(n => {
-              const type = getEntityTypeFromContent(n);
+              const type = n.entity_type || 'other';
               const Icon = typeIcons[type] || Bell;
               return (
                 <button
@@ -230,7 +250,7 @@ export default function NotificationsPage() {
                     <div className="flex items-center gap-2">
                       {!n.read && <span className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />}
                       <span className={cn("text-sm font-medium", !n.read ? "text-foreground" : "text-muted-foreground")}>
-                        {n.title}
+                        {stripEmoji(n.title)}
                       </span>
                     </div>
                     {n.message && (
