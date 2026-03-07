@@ -175,9 +175,10 @@ export default function VehiclesPage() {
 
   const handleDeleteDoc = async () => {
     if (!deleteDocId) return;
-    const { error } = await supabase.from('documents').delete().eq('id', deleteDocId);
+    // Unlink from vehicle instead of deleting (keeps doc in history)
+    const { error } = await supabase.from('documents').update({ vehicle_id: null }).eq('id', deleteDocId);
     if (error) { toast.error(error.message); return; }
-    toast.success('Document șters!');
+    toast.success('Document eliminat!');
     setDeleteDocId(null);
     if (selectedVehicle) openVehicleDocs(selectedVehicle);
   };

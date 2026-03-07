@@ -164,9 +164,10 @@ export default function TrailersPage() {
 
   const handleDeleteDoc = async () => {
     if (!deleteDocId) return;
-    const { error } = await supabase.from('documents').delete().eq('id', deleteDocId);
+    // Unlink from trailer instead of deleting (keeps doc in history)
+    const { error } = await supabase.from('documents').update({ trailer_id: null }).eq('id', deleteDocId);
     if (error) { toast.error(error.message); return; }
-    toast.success('Document șters!');
+    toast.success('Document eliminat!');
     setDeleteDocId(null);
     if (selectedTrailer) openTrailerDocs(selectedTrailer);
   };
