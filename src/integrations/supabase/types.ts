@@ -335,6 +335,51 @@ export type Database = {
           },
         ]
       }
+      notification_settings: {
+        Row: {
+          created_at: string
+          email_document_uploaded: boolean
+          email_driver_status: boolean
+          email_enabled: boolean
+          email_expiry_alert: boolean
+          email_location_update: boolean
+          email_new_message: boolean
+          email_trip_assigned: boolean
+          email_trip_status: boolean
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_document_uploaded?: boolean
+          email_driver_status?: boolean
+          email_enabled?: boolean
+          email_expiry_alert?: boolean
+          email_location_update?: boolean
+          email_new_message?: boolean
+          email_trip_assigned?: boolean
+          email_trip_status?: boolean
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_document_uploaded?: boolean
+          email_driver_status?: boolean
+          email_enabled?: boolean
+          email_expiry_alert?: boolean
+          email_location_update?: boolean
+          email_new_message?: boolean
+          email_trip_assigned?: boolean
+          email_trip_status?: boolean
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string | null

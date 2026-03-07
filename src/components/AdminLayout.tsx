@@ -1,11 +1,13 @@
 import { Outlet } from 'react-router-dom';
 import AdminSidebar from '@/components/AdminSidebar';
 import NotificationBell from '@/components/NotificationBell';
-import { Menu } from 'lucide-react';
+import { Menu, Settings } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
@@ -20,6 +22,13 @@ export default function AdminLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
+          <button
+            onClick={() => navigate('/settings')}
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+            aria-label="Setări"
+          >
+            <Settings className="h-5 w-5" />
+          </button>
           <NotificationBell />
         </header>
         <main className="flex-1 overflow-y-auto">

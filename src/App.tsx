@@ -20,6 +20,7 @@ import UsersPage from "@/pages/UsersPage";
 import DocumentsPage from "@/pages/DocumentsPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import MapPage from "@/pages/MapPage";
+import SettingsPage from "@/pages/SettingsPage";
 import DriverTripsPage from "@/pages/driver/DriverTripsPage";
 import DriverDocumentsPage from "@/pages/driver/DriverDocumentsPage";
 import DriverLocationPage from "@/pages/driver/DriverLocationPage";
@@ -62,6 +63,7 @@ function AppRoutes() {
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
