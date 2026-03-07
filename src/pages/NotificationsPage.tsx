@@ -229,7 +229,7 @@ export default function NotificationsPage() {
         ) : (
           <div className="divide-y divide-border">
             {filtered.map(n => {
-              const type = getEntityTypeFromContent(n);
+              const type = n.entity_type || 'other';
               const Icon = typeIcons[type] || Bell;
               return (
                 <button
@@ -250,7 +250,7 @@ export default function NotificationsPage() {
                     <div className="flex items-center gap-2">
                       {!n.read && <span className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />}
                       <span className={cn("text-sm font-medium", !n.read ? "text-foreground" : "text-muted-foreground")}>
-                        {n.title}
+                        {stripEmoji(n.title)}
                       </span>
                     </div>
                     {n.message && (
