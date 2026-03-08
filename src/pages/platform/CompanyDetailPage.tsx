@@ -163,6 +163,11 @@ export default function CompanyDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {company.pending_approval && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+              <Clock className="h-3 w-3" />Așteaptă aprobare
+            </span>
+          )}
           <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${company.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
             {company.is_active ? <><Check className="h-3 w-3" />Activă</> : <><X className="h-3 w-3" />Inactivă</>}
           </span>
