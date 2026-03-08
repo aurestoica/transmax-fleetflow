@@ -164,6 +164,21 @@ export default function LoginPage() {
                 </Button>
               </form>
 
+              {showForgot && !forgotSent && (
+                <button
+                  onClick={handleForgotPassword}
+                  disabled={forgotLoading}
+                  className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {forgotLoading ? t('auth.sending') : t('auth.forgotPassword')}
+                </button>
+              )}
+              {forgotSent && (
+                <p className="mt-3 text-xs text-muted-foreground text-center">
+                  {t('auth.forgotSent')}
+                </p>
+              )}
+
               <div className="mt-6">
                 <button
                   onClick={() => setView('register')}
