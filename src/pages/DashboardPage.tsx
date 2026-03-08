@@ -74,8 +74,32 @@ export default function DashboardPage() {
     setEditLayout(prev => prev.map(w => w.id === widgetId ? { ...w, visible: !w.visible } : w));
   };
 
-  // Group widgets into rows: 'full' = own row, 'half' = pair them
+  const toggleSize = (widgetId: string) => {
+    setEditLayout(prev => prev.map(w => w.id === widgetId ? { ...w, size: w.size === 'full' ? 'half' : 'full' } : w));
+  };
+
   const visibleWidgets = currentLayout.filter(w => w.visible || isEditing);
+
+  // Group into rows: consecutive 'half' widgets pair up, 'full' gets own row
+  const rows: WidgetLayout[][] = [];
+  let i = 0;
+  while (i < visibleWidgets.length) {
+    const w = visibleWidgets[i];
+    if (w.size === 'full') {
+      rows.push([w]);
+      i++;
+    } else {
+      // try to pair with next half
+      const next = visibleWidgets[i + 1];
+      if (next && next.size === 'half') {
+        rows.push([w, next]);
+        i += 2;
+      } else {
+        rows.push([w]);
+        i++;
+      }
+    }
+  }
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
 
@@ -118,22 +142,23 @@ export default function DashboardPage() {
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={visibleWidgets.map(w => w.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-4 md:space-y-6">
-            {visibleWidgets.map(widget => {
-              const def = WIDGET_REGISTRY.find(w => w.id === widget.id);
-              if (!def) return null;
-
-              return (
-                <SortableWidget
-                  key={widget.id}
-                  id={widget.id}
-                  isEditing={isEditing}
-                  visible={widget.visible}
-                  onToggleVisibility={() => toggleVisibility(widget.id)}
-                >
-                  <WidgetRenderer id={widget.id} />
-                </SortableWidget>
-              );
-            })}
+            {rows.map((row, ri) => (
+              <div key={ri} className={cn('grid gap-4 md:gap-6', row.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1')}>
+                {row.map(widget => (
+                  <SortableWidget
+                    key={widget.id}
+                    id={widget.id}
+                    isEditing={isEditing}
+                    visible={widget.visible}
+                    size={widget.size}
+                    onToggleVisibility={() => toggleVisibility(widget.id)}
+                    onToggleSize={() => toggleSize(widget.id)}
+                  >
+                    <WidgetRenderer id={widget.id} />
+                  </SortableWidget>
+                ))}
+              </div>
+            ))}
           </div>
         </SortableContext>
       </DndContext>

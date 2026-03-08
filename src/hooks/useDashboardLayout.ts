@@ -67,7 +67,7 @@ export function useDashboardLayout() {
       }
       for (const w of WIDGET_REGISTRY) {
         if (!ordered.find(o => o.id === w.id)) {
-          ordered.push({ id: w.id, visible: w.defaultVisible });
+          ordered.push({ id: w.id, visible: w.defaultVisible, size: w.size });
         }
       }
       setLayout(ordered);
