@@ -63,7 +63,7 @@ export default function RevenueSummaryWidget() {
             </div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-muted-foreground">Cheltuieli</div>
+            <div className="text-xs text-muted-foreground">{t('widget.revenue.expenses')}</div>
             <div className="text-xl font-bold text-foreground flex items-center gap-1 justify-end">
               <TrendingDown className="h-4 w-4 text-destructive" />
               €{totalExpenses.toLocaleString()}
