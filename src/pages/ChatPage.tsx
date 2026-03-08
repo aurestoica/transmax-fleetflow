@@ -31,7 +31,10 @@ export default function ChatPage() {
       .then(({ data }) => setTrips(data ?? []));
   }, []);
 
-  const handleSend = async () => { await sendMessage(newMsg); setNewMsg(''); };
+  const handleSend = async () => {
+    const sent = await sendMessage(newMsg);
+    if (sent) setNewMsg('');
+  };
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) uploadFile(file); };
 
   return (

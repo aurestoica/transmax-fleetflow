@@ -34,8 +34,17 @@ export function useChatMessages(tripId: string, userId: string | null) {
   }, [tripId, loadMessages]);
 
   const sendMessage = async (content: string) => {
-    if (!content.trim() || !tripId || !userId) return;
-    await supabase.from('messages').insert({ trip_id: tripId, sender_id: userId, content: content.trim() });
+    if (!content.trim() || !tripId || !userId) return false;
+    const { error } = await supabase
+      .from('messages')
+      .insert({ trip_id: tripId, sender_id: userId, content: content.trim() });
+
+    if (error) {
+      toast.error('Mesajul nu a putut fi trimis: ' + error.message);
+      return false;
+    }
+
+    return true;
   };
 
   const editMessage = async (msgId: string, newContent: string) => {
