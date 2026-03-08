@@ -72,18 +72,18 @@ export default function RevenueSummaryWidget() {
         </div>
         <div className="border-t pt-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Profit net</span>
+            <span className="text-sm text-muted-foreground">{t('widget.revenue.netProfit')}</span>
             <span className={`text-lg font-bold ${profit >= 0 ? 'text-green-600' : 'text-destructive'}`}>
               €{profit.toLocaleString()}
             </span>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">{data.tripsCount} curse în această lună</div>
+          <div className="text-xs text-muted-foreground mt-1">{data.tripsCount} {t('widget.revenue.tripsThisMonth')}</div>
         </div>
         <div className="space-y-1.5 text-xs">
-          <div className="flex justify-between"><span className="text-muted-foreground">Combustibil</span><span className="text-foreground">€{data.fuelCost.toLocaleString()}</span></div>
-          <div className="flex justify-between"><span className="text-muted-foreground">Taxe drum</span><span className="text-foreground">€{data.roadTaxes.toLocaleString()}</span></div>
-          <div className="flex justify-between"><span className="text-muted-foreground">Avans șoferi</span><span className="text-foreground">€{data.driverAdvances.toLocaleString()}</span></div>
-          <div className="flex justify-between"><span className="text-muted-foreground">Alte cheltuieli</span><span className="text-foreground">€{data.otherExpenses.toLocaleString()}</span></div>
+          <div className="flex justify-between"><span className="text-muted-foreground">{t('widget.revenue.fuel')}</span><span className="text-foreground">€{data.fuelCost.toLocaleString()}</span></div>
+          <div className="flex justify-between"><span className="text-muted-foreground">{t('widget.revenue.roadTaxes')}</span><span className="text-foreground">€{data.roadTaxes.toLocaleString()}</span></div>
+          <div className="flex justify-between"><span className="text-muted-foreground">{t('widget.revenue.driverAdvances')}</span><span className="text-foreground">€{data.driverAdvances.toLocaleString()}</span></div>
+          <div className="flex justify-between"><span className="text-muted-foreground">{t('widget.revenue.otherExpenses')}</span><span className="text-foreground">€{data.otherExpenses.toLocaleString()}</span></div>
         </div>
       </div>
     </div>
