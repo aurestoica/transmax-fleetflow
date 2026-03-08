@@ -35,19 +35,12 @@ export default function DriverStatusWidget() {
     );
   }
 
-  const statusGroups: DriverStat[] = [
-    { status: 'available', count: drivers.filter(d => d.status === 'available').length, color: 'bg-green-500' },
-    { status: 'on_trip', count: drivers.filter(d => d.status === 'on_trip').length, color: 'bg-blue-500' },
-    { status: 'off_duty', count: drivers.filter(d => d.status === 'off_duty').length, color: 'bg-muted-foreground' },
-    { status: 'unavailable', count: drivers.filter(d => !['available', 'on_trip', 'off_duty'].includes(d.status ?? '')).length, color: 'bg-destructive' },
+  const statusGroups = [
+    { status: 'available', count: drivers.filter(d => d.status === 'available').length, color: 'bg-green-500', label: t('driverStatus.available') },
+    { status: 'on_trip', count: drivers.filter(d => d.status === 'on_trip').length, color: 'bg-blue-500', label: t('driverStatus.onTrip') },
+    { status: 'off_duty', count: drivers.filter(d => d.status === 'off_duty').length, color: 'bg-muted-foreground', label: t('driverStatus.offDuty') },
+    { status: 'unavailable', count: drivers.filter(d => !['available', 'on_trip', 'off_duty'].includes(d.status ?? '')).length, color: 'bg-destructive', label: t('driverStatus.unavailable') },
   ];
-
-  const statusLabels: Record<string, string> = {
-    available: 'Disponibili',
-    on_trip: 'În cursă',
-    off_duty: 'Liber',
-    unavailable: 'Indisponibili',
-  };
 
   const total = drivers.length;
 
