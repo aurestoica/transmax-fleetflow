@@ -69,6 +69,8 @@ export default function DriverChatPage() {
           />
         ))}
         <div ref={bottomRef} />
+        </div>
+      </div>
       </div>
 
       <div className="flex gap-2">
