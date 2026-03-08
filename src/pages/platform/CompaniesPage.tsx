@@ -253,6 +253,11 @@ export default function CompaniesPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {c.pending_approval && !c.is_active && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 animate-pulse">
+                    <Clock className="h-3 w-3" />Cerere nouă
+                  </span>
+                )}
                 <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${c.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                   {c.is_active ? <><Check className="h-3 w-3" />Activă</> : <><X className="h-3 w-3" />Inactivă</>}
                 </span>
