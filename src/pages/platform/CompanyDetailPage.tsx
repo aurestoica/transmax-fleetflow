@@ -130,8 +130,12 @@ export default function CompanyDetailPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Building2 className="h-6 w-6 text-primary" />
+          <div className="h-12 w-12 rounded-full border-2 border-border bg-muted flex items-center justify-center overflow-hidden">
+            {company.logo_url ? (
+              <img src={company.logo_url} alt={company.name} className="h-full w-full object-cover" />
+            ) : (
+              <Building2 className="h-6 w-6 text-muted-foreground" />
+            )}
           </div>
           <div>
             <h1 className="text-2xl font-display font-bold text-foreground">{company.name}</h1>
