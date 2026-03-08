@@ -11,9 +11,13 @@ import DashboardPage from "@/pages/DashboardPage";
 import TripsPage from "@/pages/TripsPage";
 import TripDetailPage from "@/pages/TripDetailPage";
 import DriversPage from "@/pages/DriversPage";
+import DriverDetailPage from "@/pages/DriverDetailPage";
 import VehiclesPage from "@/pages/VehiclesPage";
+import VehicleDetailPage from "@/pages/VehicleDetailPage";
 import TrailersPage from "@/pages/TrailersPage";
+import TrailerDetailPage from "@/pages/TrailerDetailPage";
 import ClientsPage from "@/pages/ClientsPage";
+import ClientDetailPage from "@/pages/ClientDetailPage";
 import FinancialPage from "@/pages/FinancialPage";
 import ChatPage from "@/pages/ChatPage";
 import UsersPage from "@/pages/UsersPage";
@@ -55,9 +59,13 @@ function AppRoutes() {
         <Route path="/trips" element={<TripsPage />} />
         <Route path="/trips/:id" element={<TripDetailPage />} />
         <Route path="/drivers" element={<DriversPage />} />
+        <Route path="/drivers/:id" element={<DriverDetailPage />} />
         <Route path="/vehicles" element={<VehiclesPage />} />
+        <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
         <Route path="/trailers" element={<TrailersPage />} />
+        <Route path="/trailers/:id" element={<TrailerDetailPage />} />
         <Route path="/clients" element={<ClientsPage />} />
+        <Route path="/clients/:id" element={<ClientDetailPage />} />
         <Route path="/documents" element={<DocumentsPage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/financial" element={<FinancialPage />} />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
@@ -122,7 +123,7 @@ export default function ClientsPage() {
           <div key={c.id} className="bg-card rounded-xl border p-4" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div className="flex items-center gap-2 mb-2">
               <Building2 className="h-4 w-4 text-primary" />
-              <div className="font-semibold text-foreground flex-1 truncate">{c.company_name}</div>
+              <Link to={`/clients/${c.id}`} className="font-semibold text-foreground flex-1 truncate hover:text-primary transition-colors">{c.company_name}</Link>
             </div>
             {c.cif && <div className="text-xs text-muted-foreground mb-2">CIF: {c.cif}</div>}
             <div className="space-y-1 text-sm text-muted-foreground">

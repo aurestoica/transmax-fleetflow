@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/auth-store';
@@ -244,7 +244,7 @@ export default function VehiclesPage() {
           <div key={v.id} className="bg-card rounded-xl border p-4" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div className="flex items-start justify-between mb-2">
               <div>
-                <div className="font-display font-semibold text-foreground">{v.plate_number}</div>
+                <Link to={`/vehicles/${v.id}`} className="font-display font-semibold text-foreground hover:text-primary transition-colors">{v.plate_number}</Link>
                 <div className="text-sm text-muted-foreground">{v.model} {v.year ? `(${v.year})` : ''}</div>
               </div>
               <StatusBadge status={v.status} />
