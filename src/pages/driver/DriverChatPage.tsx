@@ -8,6 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Send, Paperclip, Loader2 } from 'lucide-react';
 import ChatMessageBubble from '@/components/chat/ChatMessageBubble';
 import { useChatMessages } from '@/components/chat/useChatMessages';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Send, Paperclip, Loader2 } from 'lucide-react';
+import ChatMessageBubble from '@/components/chat/ChatMessageBubble';
+import { useChatMessages } from '@/components/chat/useChatMessages';
 
 export default function DriverChatPage() {
   const { t } = useI18n();
