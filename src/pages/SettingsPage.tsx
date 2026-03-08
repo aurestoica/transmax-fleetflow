@@ -86,6 +86,7 @@ interface CompanyProfile {
   address: string;
   contact_email: string;
   contact_phone: string;
+  logo_url: string;
 }
 
 interface UserProfile {
