@@ -305,6 +305,10 @@ export type Database = {
           attachment_url: string | null
           content: string | null
           created_at: string | null
+          deleted_at: string | null
+          deleted_content: string | null
+          edit_history: Json | null
+          edited_at: string | null
           id: string
           sender_id: string
           trip_id: string
@@ -313,6 +317,10 @@ export type Database = {
           attachment_url?: string | null
           content?: string | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_content?: string | null
+          edit_history?: Json | null
+          edited_at?: string | null
           id?: string
           sender_id: string
           trip_id: string
@@ -321,6 +329,10 @@ export type Database = {
           attachment_url?: string | null
           content?: string | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_content?: string | null
+          edit_history?: Json | null
+          edited_at?: string | null
           id?: string
           sender_id?: string
           trip_id?: string
