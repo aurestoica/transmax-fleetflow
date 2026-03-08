@@ -1,0 +1,119 @@
+import { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useI18n } from '@/lib/i18n';
+import StatusBadge from '@/components/StatusBadge';
+import { ArrowLeft, Truck, Calendar, Gauge, Weight, Route, FileText } from 'lucide-react';
+import { format } from 'date-fns';
+
+export default function VehicleDetailPage() {
+  const { id } = useParams();
+  const { t } = useI18n();
+  const [vehicle, setVehicle] = useState<any>(null);
+  const [trips, setTrips] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { loadData(); }, [id]);
+
+  const loadData = async () => {
+    const [vRes, tripsRes, docsRes] = await Promise.all([
+      supabase.from('vehicles').select('*').eq('id', id!).single(),
+      supabase.from('trips').select('id, trip_number, pickup_address, delivery_address, status, revenue, pickup_date, drivers(full_name)').eq('vehicle_id', id!).order('created_at', { ascending: false }),
+      supabase.from('documents').select('*').eq('vehicle_id', id!).order('created_at', { ascending: false }),
+    ]);
+    setVehicle(vRes.data);
+    setTrips(tripsRes.data ?? []);
+    setDocuments(docsRes.data ?? []);
+    setLoading(false);
+  };
+
+  if (loading || !vehicle) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
+
+  const isExpiringSoon = (date: string | null) => {
+    if (!date) return false;
+    const diff = (new Date(date).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+    return diff >= 0 && diff <= 30;
+  };
+  const isExpired = (date: string | null) => date ? new Date(date) < new Date() : false;
+  const expiryClass = (date: string | null) => isExpired(date) ? 'text-destructive font-semibold' : isExpiringSoon(date) ? 'text-amber-500 font-semibold' : 'text-muted-foreground';
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-6">
+        <Link to="/vehicles" className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></Link>
+        <h1 className="page-title">{vehicle.plate_number}</h1>
+        {vehicle.model && <span className="text-muted-foreground text-sm">— {vehicle.model} {vehicle.year ? `(${vehicle.year})` : ''}</span>}
+        <StatusBadge status={vehicle.status} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        {/* Info */}
+        <div className="bg-card rounded-xl border p-5 space-y-4" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <h3 className="font-display font-semibold">{t('common.details')}</h3>
+          <div className="space-y-3 text-sm">
+            {vehicle.vin && <div className="flex items-center gap-3"><Truck className="h-4 w-4 text-muted-foreground" /><span>VIN: {vehicle.vin}</span></div>}
+            {vehicle.capacity_tons && <div className="flex items-center gap-3"><Weight className="h-4 w-4 text-muted-foreground" /><span>Capacitate: {vehicle.capacity_tons}t</span></div>}
+            {vehicle.avg_consumption && <div className="flex items-center gap-3"><Gauge className="h-4 w-4 text-muted-foreground" /><span>Consum: {vehicle.avg_consumption} L/100km</span></div>}
+            {vehicle.itp_expiry && <div className="flex items-center gap-3"><Calendar className="h-4 w-4 text-muted-foreground" /><span>ITP: <span className={expiryClass(vehicle.itp_expiry)}>{vehicle.itp_expiry}</span></span></div>}
+            {vehicle.rca_expiry && <div className="flex items-center gap-3"><Calendar className="h-4 w-4 text-muted-foreground" /><span>RCA: <span className={expiryClass(vehicle.rca_expiry)}>{vehicle.rca_expiry}</span></span></div>}
+            {vehicle.insurance_expiry && <div className="flex items-center gap-3"><Calendar className="h-4 w-4 text-muted-foreground" /><span>Asigurare: <span className={expiryClass(vehicle.insurance_expiry)}>{vehicle.insurance_expiry}</span></span></div>}
+            {vehicle.notes && <div className="text-muted-foreground mt-2">📝 {vehicle.notes}</div>}
+          </div>
+        </div>
+
+        {/* Documents */}
+        <div className="bg-card rounded-xl border p-5 space-y-4" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="flex items-center justify-between">
+            <h3 className="font-display font-semibold flex items-center gap-2"><FileText className="h-4 w-4" />Documente</h3>
+            <span className="text-xs text-muted-foreground">{documents.length} documente</span>
+          </div>
+          {documents.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground text-sm">{t('common.noData')}</div>
+          ) : (
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {documents.map(doc => (
+                <a key={doc.id} href={doc.file_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors text-sm">
+                  <FileText className="h-4 w-4 text-primary flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="truncate font-medium">{doc.name}</div>
+                    {doc.created_at && <div className="text-xs text-muted-foreground">{format(new Date(doc.created_at), 'dd.MM.yyyy')}</div>}
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Trips */}
+      <div className="mt-6 bg-card rounded-xl border overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+        <div className="px-5 py-4 border-b">
+          <h3 className="font-display font-semibold flex items-center gap-2"><Route className="h-4 w-4" />Curse ({trips.length})</h3>
+        </div>
+        {trips.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground text-sm">{t('common.noData')}</div>
+        ) : (
+          <div className="divide-y">
+            {trips.map((trip: any) => (
+              <Link key={trip.id} to={`/trips/${trip.id}`} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold text-sm">{trip.trip_number}</span>
+                    <StatusBadge status={trip.status} />
+                  </div>
+                  <div className="text-xs text-muted-foreground truncate">{trip.pickup_address} → {trip.delivery_address}</div>
+                  {trip.drivers?.full_name && <div className="text-xs text-muted-foreground mt-0.5">👤 {trip.drivers.full_name}</div>}
+                </div>
+                <div className="text-right flex-shrink-0 ml-4">
+                  <div className="text-sm font-semibold">€{Number(trip.revenue || 0).toLocaleString()}</div>
+                  {trip.pickup_date && <div className="text-xs text-muted-foreground">{format(new Date(trip.pickup_date), 'dd.MM.yyyy')}</div>}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
