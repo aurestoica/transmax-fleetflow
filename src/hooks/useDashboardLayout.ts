@@ -52,7 +52,7 @@ export function useDashboardLayout() {
 
     if (data?.layout && Array.isArray(data.layout) && data.layout.length > 0) {
       // Merge with registry to handle new widgets added after user saved
-      const saved = data.layout as WidgetLayout[];
+      const saved = data.layout as unknown as WidgetLayout[];
       const merged = WIDGET_REGISTRY.map(w => {
         const found = saved.find(s => s.id === w.id);
         return found ?? { id: w.id, visible: w.defaultVisible };
