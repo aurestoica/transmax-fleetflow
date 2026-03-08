@@ -63,9 +63,9 @@ export default function NotificationBell() {
         case 'trip': return `/trips/${n.entity_id}`;
         case 'chat': return `/chat?trip=${n.entity_id}`;
         case 'document': return `/documents`;
-        case 'vehicle': return `/vehicles?highlight=${n.entity_id}`;
-        case 'trailer': return `/trailers?highlight=${n.entity_id}`;
-        case 'driver': return `/drivers?highlight=${n.entity_id}`;
+        case 'vehicle': return `/vehicles/${n.entity_id}`;
+        case 'trailer': return `/trailers/${n.entity_id}`;
+        case 'driver': return `/drivers/${n.entity_id}`;
         default: break;
       }
     }
