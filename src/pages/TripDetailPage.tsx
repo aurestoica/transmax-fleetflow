@@ -46,6 +46,19 @@ export default function TripDetailPage() {
     cargo_type: '', weight_tons: '', observations: ''
   });
 
+  const loadDropdowns = async () => {
+    const [c, d, v, tr] = await Promise.all([
+      supabase.from('clients').select('id, company_name'),
+      supabase.from('drivers').select('id, full_name, status'),
+      supabase.from('vehicles').select('id, plate_number, model, status'),
+      supabase.from('trailers').select('id, plate_number, status'),
+    ]);
+    setClients(c.data ?? []);
+    setDriversList(d.data ?? []);
+    setVehiclesList(v.data ?? []);
+    setTrailersList(tr.data ?? []);
+  };
+
   useEffect(() => { loadTrip(); loadDropdowns(); }, [id]);
 
   // Realtime location updates for this trip
