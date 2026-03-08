@@ -23,6 +23,9 @@ export default function ChatPage() {
   const [selectedTrip, setSelectedTrip] = useState('');
   const [newMsg, setNewMsg] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { markAsRead } = useUnreadMessages();
+
+  useEffect(() => { markAsRead(); }, []);
 
   const { messages, uploading, bottomRef, fileInputRef, sendMessage, editMessage, deleteMessage, uploadFile } = useChatMessages(selectedTrip, userId);
 
