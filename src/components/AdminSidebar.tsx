@@ -21,7 +21,8 @@ const adminLinks = [
   { key: 'nav.map', to: '/map', icon: MapPin },
   { key: 'nav.financial', to: '/financial', icon: DollarSign },
   { key: 'nav.chat', to: '/chat', icon: MessageSquare },
-  { key: 'nav.users', to: '/users', icon: Settings },
+  { key: 'nav.users', to: '/users', icon: Users },
+  { key: 'nav.settings', to: '/settings', icon: Settings },
 ];
 
 const langLabels: Record<Language, string> = { ro: '🇷🇴', en: '🇬🇧', es: '🇪🇸' };
