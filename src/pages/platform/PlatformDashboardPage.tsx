@@ -75,7 +75,7 @@ export default function PlatformDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-display font-bold mb-6">Platform Dashboard</h1>
+      <h1 className="text-2xl font-display font-bold mb-6">{t('platform.dashboard')}</h1>
 
       {/* Pending company requests banner */}
       {pendingCompanies.length > 0 && (
