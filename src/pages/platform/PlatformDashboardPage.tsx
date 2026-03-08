@@ -63,12 +63,12 @@ export default function PlatformDashboardPage() {
   };
 
   const cards = [
-    { label: 'Companii', value: stats.companies, icon: Building2, color: 'text-primary', to: '/companies' },
-    { label: 'Utilizatori', value: stats.users, icon: Users, color: 'text-accent-foreground', to: '/platform-users' },
-    { label: 'Șoferi', value: stats.drivers, icon: Users, color: 'text-accent-foreground' },
-    { label: 'Vehicule', value: stats.vehicles, icon: Truck, color: 'text-accent-foreground' },
-    { label: 'Curse totale', value: stats.trips, icon: Route, color: 'text-accent-foreground' },
-    { label: 'Venit total', value: `€${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'text-primary' },
+    { label: t('platform.totalCompanies'), value: stats.companies, icon: Building2, color: 'text-primary', to: '/companies' },
+    { label: t('platform.totalUsers'), value: stats.users, icon: Users, color: 'text-accent-foreground', to: '/platform-users' },
+    { label: t('platform.totalDrivers'), value: stats.drivers, icon: Users, color: 'text-accent-foreground' },
+    { label: t('platform.totalVehicles'), value: stats.vehicles, icon: Truck, color: 'text-accent-foreground' },
+    { label: t('platform.totalTrips'), value: stats.trips, icon: Route, color: 'text-accent-foreground' },
+    { label: t('platform.totalRevenue'), value: `€${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'text-primary' },
   ];
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">Se încarcă...</div>;
