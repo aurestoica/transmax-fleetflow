@@ -189,6 +189,7 @@ export type Database = {
       }
       drivers: {
         Row: {
+          avatar_url: string | null
           created_at: string | null
           email: string | null
           full_name: string
@@ -205,6 +206,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string | null
           email?: string | null
           full_name: string
@@ -221,6 +223,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string
@@ -424,6 +427,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      profile_change_requests: {
+        Row: {
+          changes: Json
+          created_at: string
+          driver_id: string
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          changes: Json
+          created_at?: string
+          driver_id: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          changes?: Json
+          created_at?: string
+          driver_id?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_change_requests_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
