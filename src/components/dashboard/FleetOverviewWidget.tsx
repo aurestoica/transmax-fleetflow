@@ -42,13 +42,13 @@ export default function FleetOverviewWidget() {
       <div className="px-4 md:px-5 py-4 border-b flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Truck className="h-4 w-4 text-primary" />
-          <h2 className="font-display font-semibold text-foreground">Flotă Vehicule</h2>
+          <h2 className="font-display font-semibold text-foreground">{t('widget.fleet')}</h2>
         </div>
-        <Link to="/vehicles" className="text-sm text-primary hover:underline">Toate →</Link>
+        <Link to="/vehicles" className="text-sm text-primary hover:underline">{t('widget.allVehicles')}</Link>
       </div>
       <div className="p-4 md:p-5">
         <div className="text-3xl font-bold text-foreground mb-1">{total}</div>
-        <div className="text-xs text-muted-foreground mb-4">vehicule în flotă</div>
+        <div className="text-xs text-muted-foreground mb-4">{t('widget.vehiclesInFleet')}</div>
         {total > 0 && (
           <div className="flex rounded-full h-2.5 overflow-hidden mb-4">
             {groups.map(g => g.count > 0 && (
