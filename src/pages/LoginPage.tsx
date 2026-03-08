@@ -159,6 +159,25 @@ export default function LoginPage() {
                   </div>
                 )}
 
+                <div className="space-y-2">
+                  <Label htmlFor="email">{t('auth.email')}</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@company.com" required className="h-11" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">{t('auth.password')}</Label>
+                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-11" />
+                </div>
+
+                <Button type="submit" className="w-full h-11" disabled={loading}>
+                  {loading ? (
+                    <div className="h-4 w-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
+                  ) : (
+                    <><LogIn className="h-4 w-4 mr-2" />{t('auth.loginBtn')}</>
+                  )}
+                </Button>
+              </form>
+
               <div className="mt-6">
                 <button
                   onClick={() => setView('register')}
