@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Route, FileText, MapPin, MessageSquare, LogOut, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import NotificationBell from '@/components/NotificationBell';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 
 const driverLinks = [
   { key: 'nav.myTrip', to: '/driver', icon: Route },

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 
 const adminLinks = [
   { key: 'nav.dashboard', to: '/', icon: LayoutDashboard },
