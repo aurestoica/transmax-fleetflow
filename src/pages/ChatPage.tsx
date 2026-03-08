@@ -77,7 +77,7 @@ export default function ChatPage() {
               return (
                 <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[70%] rounded-xl px-4 py-2 ${isMe ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                    {!isMe && <div className="text-xs font-medium mb-1 opacity-70">{msg.profiles?.full_name ?? 'User'}</div>}
+                    {!isMe && <div className="text-xs font-medium mb-1 opacity-70">{msg.sender_name ?? 'User'}</div>}
                     <div className="text-sm">{msg.content}</div>
                     <div className={`text-[10px] mt-1 ${isMe ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>
                       {format(new Date(msg.created_at), 'HH:mm')}
