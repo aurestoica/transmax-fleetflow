@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
+import { DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 
 export default function RevenueSummaryWidget() {
   const { t } = useI18n();
