@@ -72,6 +72,7 @@ export default function ChatPage() {
               />
             ))}
             <div ref={bottomRef} />
+            </div>
           </div>
 
           <div className="flex gap-2">
