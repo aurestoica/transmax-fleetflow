@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Building2, Check, X, ChevronRight, Pencil, Trash2, Search, UserPlus } from 'lucide-react';
+import { Plus, Building2, Check, X, ChevronRight, Pencil, Trash2, Search, UserPlus, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -21,6 +21,7 @@ export default function CompaniesPage() {
   const [form, setForm] = useState(emptyForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'active' | 'inactive'>('all');
 
   // Admin creation alongside company
   const [createAdmin, setCreateAdmin] = useState(true);
@@ -123,7 +124,15 @@ export default function CompaniesPage() {
     loadData();
   };
 
-  const filtered = companies.filter(c => !search || c.name?.toLowerCase().includes(search.toLowerCase()) || c.cif?.toLowerCase().includes(search.toLowerCase()));
+  const pendingCount = companies.filter(c => c.pending_approval && !c.is_active).length;
+  const filtered = companies
+    .filter(c => !search || c.name?.toLowerCase().includes(search.toLowerCase()) || c.cif?.toLowerCase().includes(search.toLowerCase()))
+    .filter(c => {
+      if (filter === 'pending') return c.pending_approval && !c.is_active;
+      if (filter === 'active') return c.is_active;
+      if (filter === 'inactive') return !c.is_active && !c.pending_approval;
+      return true;
+    });
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">Se încarcă...</div>;
 
@@ -195,6 +204,35 @@ export default function CompaniesPage() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Filter tabs */}
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        {([
+          { key: 'all' as const, label: 'Toate' },
+          { key: 'pending' as const, label: 'Cereri noi', count: pendingCount },
+          { key: 'active' as const, label: 'Active' },
+          { key: 'inactive' as const, label: 'Inactive' },
+        ]).map(f => (
+          <button
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              filter === f.key
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {f.label}
+            {f.count ? (
+              <span className={`ml-1.5 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] font-bold ${
+                filter === f.key ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-destructive text-destructive-foreground'
+              }`}>
+                {f.count}
+              </span>
+            ) : null}
+          </button>
+        ))}
+      </div>
+
       {/* Search */}
       <div className="relative max-w-sm mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -215,6 +253,11 @@ export default function CompaniesPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {c.pending_approval && !c.is_active && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 animate-pulse">
+                    <Clock className="h-3 w-3" />Cerere nouă
+                  </span>
+                )}
                 <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${c.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                   {c.is_active ? <><Check className="h-3 w-3" />Activă</> : <><X className="h-3 w-3" />Inactivă</>}
                 </span>
