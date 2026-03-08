@@ -121,6 +121,10 @@ const translations: Record<string, Record<Language, string>> = {
   'auth.subtitle': { ro: 'Platforma de Management Transport', en: 'Transport Management Platform', es: 'Plataforma de Gestión de Transporte' },
   'auth.registerCompany': { ro: 'Înregistrează o companie nouă', en: 'Register a new company', es: 'Registrar una empresa nueva' },
   'auth.copyright': { ro: '© 2026 Transport Management Platform', en: '© 2026 Transport Management Platform', es: '© 2026 Transport Management Platform' },
+  'auth.forgotPassword': { ro: 'Ai uitat parola? Trimite link de resetare', en: 'Forgot password? Send reset link', es: '¿Olvidaste tu contraseña? Enviar enlace' },
+  'auth.forgotSent': { ro: 'Link-ul de resetare a fost trimis pe email.', en: 'Reset link sent to your email.', es: 'Enlace de restablecimiento enviado.' },
+  'auth.sending': { ro: 'Se trimite...', en: 'Sending...', es: 'Enviando...' },
+  'auth.enterEmailFirst': { ro: 'Introdu adresa de email mai întâi', en: 'Enter your email first', es: 'Ingresa tu email primero' },
 
   // Register
   'register.title': { ro: 'Companie nouă', en: 'New Company', es: 'Nueva Empresa' },
