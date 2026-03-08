@@ -53,20 +53,23 @@ export default function DriverChatPage() {
 
       <input ref={fileInputRef} type="file" accept="image/*,video/*,.pdf,.doc,.docx" className="hidden" onChange={handleFileUpload} />
 
-      <div className="flex-1 overflow-y-auto space-y-3 bg-card rounded-xl border p-4 mb-4" style={{ boxShadow: 'var(--shadow-card)' }}>
-        {messages.length === 0 && <div className="text-center text-muted-foreground py-8">{t('common.noData')}</div>}
-        {messages.map(msg => (
-          <ChatMessageBubble
-            key={msg.id}
-            msg={msg}
-            isMe={msg.sender_id === userId}
-            isAdmin={isAdmin()}
-            onEdit={editMessage}
-            onDelete={deleteMessage}
-            onPreviewImage={setPreviewUrl}
-          />
-        ))}
-        <div ref={bottomRef} />
+      <div className="flex-1 overflow-y-auto flex flex-col bg-card rounded-xl border p-4 mb-4" style={{ boxShadow: 'var(--shadow-card)' }}>
+        <div className="flex-1" />
+        <div className="space-y-3">
+          {messages.length === 0 && <div className="text-center text-muted-foreground py-8">{t('common.noData')}</div>}
+          {messages.map(msg => (
+            <ChatMessageBubble
+              key={msg.id}
+              msg={msg}
+              isMe={msg.sender_id === userId}
+              isAdmin={isAdmin()}
+              onEdit={editMessage}
+              onDelete={deleteMessage}
+              onPreviewImage={setPreviewUrl}
+            />
+          ))}
+          <div ref={bottomRef} />
+        </div>
       </div>
 
       <div className="flex gap-2">

@@ -11,7 +11,7 @@ export function useChatMessages(tripId: string, userId: string | null) {
   const loadMessages = useCallback(async () => {
     if (!tripId) return;
     const { data: msgs } = await supabase.from('messages').select('*')
-      .eq('trip_id', tripId).order('created_at');
+      .eq('trip_id', tripId).order('created_at', { ascending: true });
     if (!msgs || msgs.length === 0) { setMessages([]); return; }
 
     const senderIds = [...new Set(msgs.map(m => m.sender_id))];
