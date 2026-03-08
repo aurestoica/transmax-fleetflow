@@ -21,6 +21,7 @@ export default function CompaniesPage() {
   const [form, setForm] = useState(emptyForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'active' | 'inactive'>('all');
 
   // Admin creation alongside company
   const [createAdmin, setCreateAdmin] = useState(true);
