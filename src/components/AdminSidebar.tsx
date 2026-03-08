@@ -36,6 +36,7 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebar
   const { fullName, email, isOwner } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { unreadCount } = useUnreadMessages();
 
   const filteredLinks = adminLinks.filter(link => {
     if (link.to === '/users' && !isOwner()) return false;
