@@ -146,7 +146,7 @@ export default function PlatformDashboardPage() {
                   <div>
                     <div className="font-semibold text-foreground">{c.name}</div>
                     <span className={`text-xs ${c.is_active ? 'text-green-600' : 'text-red-500'}`}>
-                      {c.is_active ? 'Activă' : 'Inactivă'}
+                      {c.is_active ? t('platform.activeLabel') : t('platform.inactiveLabel')}
                     </span>
                   </div>
                 </div>
