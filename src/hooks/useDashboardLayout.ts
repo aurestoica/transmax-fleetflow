@@ -31,6 +31,7 @@ export interface WidgetLayout {
 export const DEFAULT_LAYOUT: WidgetLayout[] = WIDGET_REGISTRY.map(w => ({
   id: w.id,
   visible: w.defaultVisible,
+  size: w.size,
 }));
 
 export function useDashboardLayout() {
