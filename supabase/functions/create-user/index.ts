@@ -11,7 +11,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Verify caller is owner
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No auth");
 
@@ -29,18 +28,26 @@ Deno.serve(async (req) => {
     const { data: { user: caller } } = await supabaseUser.auth.getUser();
     if (!caller) throw new Error("Not authenticated");
 
-    // Check if caller is owner
+    // Check caller roles
     const { data: callerRoles } = await supabaseAdmin.from("user_roles").select("role").eq("user_id", caller.id);
-    if (!callerRoles?.some(r => r.role === "owner" || r.role === "platform_owner")) throw new Error("Not authorized");
+    const isPlatformOwner = callerRoles?.some(r => r.role === "platform_owner");
+    const isOwner = callerRoles?.some(r => r.role === "owner" || r.role === "platform_owner");
+    if (!isOwner) throw new Error("Not authorized");
 
     const { email, password, full_name, role, company_id } = await req.json();
     if (!email || !password || !full_name || !role) throw new Error("Missing fields");
 
-    // Determine company_id: platform owners must specify; company owners use their own
+    // Determine company_id
     let targetCompanyId = company_id;
-    if (!targetCompanyId) {
+    if (!targetCompanyId && !isPlatformOwner) {
+      // Company owners use their own company
       const { data: callerProfile } = await supabaseAdmin.from("profiles").select("company_id").eq("user_id", caller.id).single();
       targetCompanyId = callerProfile?.company_id;
+    }
+
+    // Non-platform-owners can't create platform_owner
+    if (role === "platform_owner" && !isPlatformOwner) {
+      throw new Error("Not authorized to create platform owners");
     }
 
     // Create user
