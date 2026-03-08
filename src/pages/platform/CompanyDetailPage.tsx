@@ -60,8 +60,28 @@ export default function CompanyDetailPage() {
 
   const toggleActive = async () => {
     if (!company) return;
-    await supabase.from('companies').update({ is_active: !company.is_active } as any).eq('id', company.id);
-    toast.success(company.is_active ? 'Companie dezactivată' : 'Companie activată');
+    const newActive = !company.is_active;
+    // When activating, also clear pending_approval
+    const updateData: any = { is_active: newActive };
+    if (newActive) updateData.pending_approval = false;
+    await supabase.from('companies').update(updateData).eq('id', company.id);
+    
+    // Notify the company owner when activated
+    if (newActive) {
+      const { data: companyUsers } = await supabase.from('profiles').select('user_id').eq('company_id', company.id);
+      if (companyUsers) {
+        const notifications = companyUsers.map(u => ({
+          user_id: u.user_id,
+          title: 'Companie activată',
+          message: `Compania ${company.name} a fost activată. Acum poți utiliza toate funcționalitățile platformei.`,
+          entity_type: 'company',
+          entity_id: company.id,
+        }));
+        await supabase.from('notifications').insert(notifications);
+      }
+    }
+    
+    toast.success(newActive ? 'Companie activată' : 'Companie dezactivată');
     loadData();
   };
 
