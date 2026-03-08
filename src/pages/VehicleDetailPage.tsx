@@ -230,6 +230,7 @@ export default function VehicleDetailPage() {
         <div className="bg-card rounded-xl border p-5 space-y-4" style={{ boxShadow: 'var(--shadow-card)' }}>
           <h3 className="font-display font-semibold">{t('common.details')}</h3>
           <div className="space-y-3 text-sm">
+            {vehicle.model && <div className="flex items-center gap-3"><Truck className="h-4 w-4 text-muted-foreground" /><span>Model: {vehicle.model}{vehicle.year ? ` (${vehicle.year})` : ''}</span></div>}
             {vehicle.vin && <div className="flex items-center gap-3"><Truck className="h-4 w-4 text-muted-foreground" /><span>VIN: {vehicle.vin}</span></div>}
             {vehicle.capacity_tons && <div className="flex items-center gap-3"><Weight className="h-4 w-4 text-muted-foreground" /><span>Capacitate: {vehicle.capacity_tons}t</span></div>}
             {vehicle.avg_consumption && <div className="flex items-center gap-3"><Gauge className="h-4 w-4 text-muted-foreground" /><span>Consum: {vehicle.avg_consumption} L/100km</span></div>}

@@ -144,17 +144,19 @@ export default function TrailerDetailPage() {
 
   return (
     <div>
-      <div className="mb-6 space-y-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link to="/trailers" className="text-muted-foreground hover:text-foreground flex-shrink-0"><ArrowLeft className="h-5 w-5" /></Link>
-          <h1 className="page-title flex-1 truncate">{trailer.plate_number}</h1>
-          <StatusBadge status={trailer.status} />
-        </div>
-        <div className="flex items-center gap-2 pl-8 flex-wrap">
-          {trailer.type && <span className="text-muted-foreground text-sm mr-auto">{trailer.type}</span>}
-          <Button variant="outline" size="sm" onClick={openEdit}><Pencil className="h-3.5 w-3.5 mr-1" />Editează</Button>
-          <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteOpen(true)}><Trash2 className="h-3.5 w-3.5" /></Button>
-        </div>
+      <div className="flex items-center gap-3 mb-6 min-w-0">
+        <Link to="/trailers" className="text-muted-foreground hover:text-foreground flex-shrink-0"><ArrowLeft className="h-5 w-5" /></Link>
+        <h1 className="page-title flex-1 truncate">{trailer.plate_number}</h1>
+        <StatusBadge status={trailer.status} />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0"><MoreVertical className="h-4 w-4" /></Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={openEdit}><Pencil className="h-3.5 w-3.5 mr-2" />Editează</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive focus:text-destructive"><Trash2 className="h-3.5 w-3.5 mr-2" />Șterge</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Edit dialog */}
