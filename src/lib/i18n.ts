@@ -278,6 +278,81 @@ const translations: Record<string, Record<Language, string>> = {
 
   // Common error
   'common.error': { ro: 'Eroare', en: 'Error', es: 'Error' },
+
+  // About / Features page
+  'about.backToLogin': { ro: 'Înapoi la autentificare', en: 'Back to login', es: 'Volver al inicio de sesión' },
+  'about.heroTitle': { ro: 'Gestionează-ți flota\ncu încredere', en: 'Manage your fleet\nwith confidence', es: 'Gestiona tu flota\ncon confianza' },
+  'about.heroSubtitle': { ro: 'TMS Pro este platforma completă de management al transporturilor care simplifică operațiunile, reduce costurile și îmbunătățește comunicarea între echipele tale.', en: 'TMS Pro is the complete transport management platform that simplifies operations, reduces costs, and improves communication between your teams.', es: 'TMS Pro es la plataforma completa de gestión de transporte que simplifica operaciones, reduce costos y mejora la comunicación entre tus equipos.' },
+  'about.startFree': { ro: 'Începe gratuit', en: 'Start for free', es: 'Empieza gratis' },
+  'about.seePricing': { ro: 'Vezi planurile', en: 'See pricing', es: 'Ver planes' },
+  'about.trustedBy': { ro: 'Folosit de companii de transport din toată Europa', en: 'Trusted by transport companies across Europe', es: 'Usado por empresas de transporte en toda Europa' },
+
+  'about.whyTitle': { ro: 'De ce TMS Pro?', en: 'Why TMS Pro?', es: '¿Por qué TMS Pro?' },
+  'about.whySubtitle': { ro: 'Totul într-un singur loc pentru gestionarea completă a afacerii tale de transport', en: 'Everything in one place to fully manage your transport business', es: 'Todo en un solo lugar para gestionar tu negocio de transporte' },
+
+  'about.benefit1Title': { ro: 'Economisești timp', en: 'Save time', es: 'Ahorra tiempo' },
+  'about.benefit1Desc': { ro: 'Automatizează sarcinile repetitive: notificări de expirare documente, rapoarte financiare, actualizări de status în timp real.', en: 'Automate repetitive tasks: document expiry notifications, financial reports, real-time status updates.', es: 'Automatiza tareas repetitivas: notificaciones de vencimiento, informes financieros, actualizaciones en tiempo real.' },
+  'about.benefit2Title': { ro: 'Control total', en: 'Full control', es: 'Control total' },
+  'about.benefit2Desc': { ro: 'Vizualizează flota pe hartă live, monitorizează costurile per cursă și urmărește performanța fiecărui șofer.', en: 'View your fleet on a live map, monitor costs per trip, and track each driver\'s performance.', es: 'Visualiza tu flota en mapa en vivo, monitorea costos por viaje y rastrea el rendimiento de cada conductor.' },
+  'about.benefit3Title': { ro: 'Comunicare eficientă', en: 'Efficient communication', es: 'Comunicación eficiente' },
+  'about.benefit3Desc': { ro: 'Chat integrat pe fiecare cursă, notificări push și alertări automate pentru întreaga echipă.', en: 'Built-in chat per trip, push notifications, and automatic alerts for your entire team.', es: 'Chat integrado por viaje, notificaciones push y alertas automáticas para todo tu equipo.' },
+  'about.benefit4Title': { ro: 'Securitate', en: 'Security', es: 'Seguridad' },
+  'about.benefit4Desc': { ro: 'Roluri și permisiuni granulare, audit log complet și date protejate pentru fiecare companie.', en: 'Granular roles and permissions, complete audit log, and protected data per company.', es: 'Roles y permisos granulares, registro de auditoría completo y datos protegidos por empresa.' },
+
+  'about.rolesTitle': { ro: 'Un cont pentru fiecare rol', en: 'An account for every role', es: 'Una cuenta para cada rol' },
+  'about.rolesSubtitle': { ro: 'Fiecare membru al echipei tale vede exact ce are nevoie', en: 'Every team member sees exactly what they need', es: 'Cada miembro de tu equipo ve exactamente lo que necesita' },
+
+  // Admin role
+  'about.adminTitle': { ro: 'Administrator Companie', en: 'Company Administrator', es: 'Administrador de Empresa' },
+  'about.adminDesc': { ro: 'Control complet asupra operațiunilor companiei, de la gestionarea flotei până la rapoarte financiare detaliate.', en: 'Full control over company operations, from fleet management to detailed financial reports.', es: 'Control total sobre las operaciones de la empresa, desde la gestión de flota hasta informes financieros detallados.' },
+  'about.adminF1': { ro: 'Dashboard personalizabil', en: 'Customizable dashboard', es: 'Panel personalizable' },
+  'about.adminF1Desc': { ro: 'Widget-uri drag & drop: statistici rapide, expirări documente, status șoferi, sumar financiar', en: 'Drag & drop widgets: quick stats, document expirations, driver status, financial summary', es: 'Widgets arrastrables: estadísticas rápidas, vencimientos, estado de conductores, resumen financiero' },
+  'about.adminF2': { ro: 'Gestiune curse complete', en: 'Complete trip management', es: 'Gestión completa de viajes' },
+  'about.adminF2Desc': { ro: 'Creare, asignare șofer/vehicul/remorcă, tracking status, chat pe cursă, documente atașate', en: 'Create, assign driver/vehicle/trailer, status tracking, trip chat, attached documents', es: 'Crear, asignar conductor/vehículo/remolque, seguimiento de estado, chat por viaje, documentos adjuntos' },
+  'about.adminF3': { ro: 'Flotă & documente', en: 'Fleet & documents', es: 'Flota y documentos' },
+  'about.adminF3Desc': { ro: 'CRUD camioane, remorci, șoferi. Upload documente cu alerte automate la expirare (ITP, RCA, permis, tahograf)', en: 'CRUD trucks, trailers, drivers. Upload documents with automatic expiry alerts (inspection, insurance, license, tachograph)', es: 'CRUD camiones, remolques, conductores. Subir documentos con alertas automáticas de vencimiento' },
+  'about.adminF4': { ro: 'Rapoarte financiare', en: 'Financial reports', es: 'Informes financieros' },
+  'about.adminF4Desc': { ro: 'Venituri, cheltuieli, avans șofer, taxe drum, combustibil — totul centralizat și filtrat pe perioadă', en: 'Revenue, expenses, driver advances, road taxes, fuel — all centralized and filtered by period', es: 'Ingresos, gastos, anticipos, peajes, combustible — todo centralizado y filtrado por período' },
+  'about.adminF5': { ro: 'Hartă live & locație', en: 'Live map & location', es: 'Mapa en vivo y ubicación' },
+  'about.adminF5Desc': { ro: 'Vizualizează în timp real unde se află fiecare vehicul pe hartă', en: 'View in real-time where each vehicle is on the map', es: 'Visualiza en tiempo real dónde se encuentra cada vehículo' },
+  'about.adminF6': { ro: 'Clienți & CRM', en: 'Clients & CRM', es: 'Clientes y CRM' },
+  'about.adminF6Desc': { ro: 'Baza de date clienți cu tarife per km, istoric curse, date de contact', en: 'Client database with per-km rates, trip history, contact details', es: 'Base de datos de clientes con tarifas por km, historial de viajes, datos de contacto' },
+  'about.adminF7': { ro: 'Utilizatori & roluri', en: 'Users & roles', es: 'Usuarios y roles' },
+  'about.adminF7Desc': { ro: 'Creează conturi pentru dispeceri și șoferi cu permisiuni diferite', en: 'Create accounts for dispatchers and drivers with different permissions', es: 'Crear cuentas para despachadores y conductores con permisos diferentes' },
+
+  // Dispatcher role
+  'about.dispatcherTitle': { ro: 'Dispecer', en: 'Dispatcher', es: 'Despachador' },
+  'about.dispatcherDesc': { ro: 'Aceleași funcții ca administratorul, pentru coordonarea zilnică a operațiunilor fără acces la setări critice.', en: 'Same features as the administrator, for daily operations coordination without access to critical settings.', es: 'Mismas funciones que el administrador, para la coordinación diaria sin acceso a configuraciones críticas.' },
+  'about.dispatcherF1': { ro: 'Acces la toate cursele', en: 'Access all trips', es: 'Acceso a todos los viajes' },
+  'about.dispatcherF1Desc': { ro: 'Vizualizare, creare și editare curse, asignare resurse', en: 'View, create and edit trips, assign resources', es: 'Ver, crear y editar viajes, asignar recursos' },
+  'about.dispatcherF2': { ro: 'Comunicare directă', en: 'Direct communication', es: 'Comunicación directa' },
+  'about.dispatcherF2Desc': { ro: 'Chat pe fiecare cursă cu șoferul și restul echipei', en: 'Chat on each trip with the driver and the rest of the team', es: 'Chat en cada viaje con el conductor y el equipo' },
+  'about.dispatcherF3': { ro: 'Monitorizare live', en: 'Live monitoring', es: 'Monitoreo en vivo' },
+  'about.dispatcherF3Desc': { ro: 'Hartă în timp real, status curse, notificări instant', en: 'Real-time map, trip status, instant notifications', es: 'Mapa en tiempo real, estado de viajes, notificaciones instantáneas' },
+
+  // Driver role
+  'about.driverTitle': { ro: 'Șofer', en: 'Driver', es: 'Conductor' },
+  'about.driverDesc': { ro: 'Interfață simplificată, optimizată pentru mobil, cu tot ce are nevoie un șofer pe drum.', en: 'Simplified, mobile-optimized interface with everything a driver needs on the road.', es: 'Interfaz simplificada y optimizada para móvil con todo lo que un conductor necesita en la carretera.' },
+  'about.driverF1': { ro: 'Cursele mele', en: 'My trips', es: 'Mis viajes' },
+  'about.driverF1Desc': { ro: 'Vizualizare cursă activă și istoric complet, cu detalii pickup/livrare, marfă, vehicul', en: 'View active trip and complete history, with pickup/delivery details, cargo, vehicle', es: 'Ver viaje activo e historial completo, con detalles de recogida/entrega, carga, vehículo' },
+  'about.driverF2': { ro: 'Chat live', en: 'Live chat', es: 'Chat en vivo' },
+  'about.driverF2Desc': { ro: 'Comunicare instant cu dispecerul și echipa pe fiecare cursă', en: 'Instant communication with the dispatcher and team on each trip', es: 'Comunicación instantánea con el despachador y equipo en cada viaje' },
+  'about.driverF3': { ro: 'Documente personale', en: 'Personal documents', es: 'Documentos personales' },
+  'about.driverF3Desc': { ro: 'Vizualizare permis, card tahograf, documente încărcate — cu alerte la expirare', en: 'View license, tachograph card, uploaded documents — with expiry alerts', es: 'Ver licencia, tarjeta de tacógrafo, documentos subidos — con alertas de vencimiento' },
+  'about.driverF4': { ro: 'Locație live', en: 'Live location', es: 'Ubicación en vivo' },
+  'about.driverF4Desc': { ro: 'Partajare automată a poziției GPS cu administrația', en: 'Automatic GPS position sharing with the management', es: 'Compartir automáticamente la posición GPS con la administración' },
+  'about.driverF5': { ro: 'Profil editabil', en: 'Editable profile', es: 'Perfil editable' },
+  'about.driverF5Desc': { ro: 'Propunere modificări profil care necesită aprobare de la administrator', en: 'Propose profile changes that require admin approval', es: 'Proponer cambios de perfil que requieren aprobación del administrador' },
+
+  // CTA
+  'about.ctaTitle': { ro: 'Gata să îți optimizezi transporturile?', en: 'Ready to optimize your transport?', es: '¿Listo para optimizar tu transporte?' },
+  'about.ctaSubtitle': { ro: 'Înregistrează-ți compania în câteva minute și începe să gestionezi totul dintr-un singur loc.', en: 'Register your company in minutes and start managing everything from one place.', es: 'Registra tu empresa en minutos y comienza a gestionar todo desde un solo lugar.' },
+  'about.ctaBtn': { ro: 'Înregistrează compania', en: 'Register your company', es: 'Registra tu empresa' },
+  'about.loginLink': { ro: 'Ai deja un cont?', en: 'Already have an account?', es: '¿Ya tienes una cuenta?' },
+  'about.loginBtn': { ro: 'Autentifică-te', en: 'Sign in', es: 'Iniciar sesión' },
+  'about.learnMore': { ro: 'Descoperă platforma', en: 'Discover the platform', es: 'Descubre la plataforma' },
+  'about.features': { ro: 'Funcționalități', en: 'Features', es: 'Funcionalidades' },
+  'about.included': { ro: 'Inclus', en: 'Included', es: 'Incluido' },
 };
 
 interface I18nStore {

@@ -188,8 +188,14 @@ export default function LoginPage() {
                 </button>
               </div>
 
-              <div className="mt-8 text-center text-xs text-muted-foreground">
-                {t('auth.copyright')}
+              <div className="mt-8 text-center text-xs text-muted-foreground space-y-2">
+                <p>{t('auth.copyright')}</p>
+                <button
+                  onClick={() => navigate('/about')}
+                  className="text-muted-foreground/70 hover:text-foreground transition-colors underline underline-offset-2"
+                >
+                  {t('about.learnMore')}
+                </button>
               </div>
             </>
           )}

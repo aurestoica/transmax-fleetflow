@@ -37,6 +37,7 @@ import CompaniesPage from "@/pages/platform/CompaniesPage";
 import CompanyDetailPage from "@/pages/platform/CompanyDetailPage";
 import PlatformUsersPage from "@/pages/platform/PlatformUsersPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
+import AboutPage from "@/pages/AboutPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -114,6 +115,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="*" element={
             <AuthProvider>
               <AppRoutes />
