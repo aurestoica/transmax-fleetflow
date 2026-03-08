@@ -89,7 +89,7 @@ export default function PlatformDashboardPage() {
             </div>
             <Link to="/companies">
               <Button variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/50">
-                Vezi toate <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                {t('common.viewAll')} <ArrowRight className="h-3.5 w-3.5 ml-1" />
               </Button>
             </Link>
           </div>
