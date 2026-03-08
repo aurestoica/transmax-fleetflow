@@ -25,13 +25,15 @@ export default function DriverChatPage() {
 
   useEffect(() => {
     const findTrip = async () => {
+      setTripLoading(true);
       const { data: driver } = await supabase.from('drivers').select('id').eq('user_id', userId!).single();
-      if (!driver) return;
+      if (!driver) { setTripLoading(false); return; }
       const { data: trip } = await supabase.from('trips')
         .select('id').eq('driver_id', driver.id)
         .in('status', ['planned', 'loading', 'in_transit', 'unloading'])
         .limit(1).single();
       if (trip) setTripId(trip.id);
+      setTripLoading(false);
     };
     findTrip();
   }, [userId]);
