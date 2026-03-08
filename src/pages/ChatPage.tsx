@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/auth-store';
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Send, Paperclip, Loader2 } from 'lucide-react';
 import ChatMessageBubble from '@/components/chat/ChatMessageBubble';
 import { useChatMessages } from '@/components/chat/useChatMessages';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 
 export default function ChatPage() {
   const { t } = useI18n();
@@ -17,6 +18,9 @@ export default function ChatPage() {
   const [selectedTrip, setSelectedTrip] = useState('');
   const [newMsg, setNewMsg] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { markAsRead } = useUnreadMessages();
+
+  useEffect(() => { markAsRead(); }, []);
 
   const { messages, uploading, bottomRef, fileInputRef, sendMessage, editMessage, deleteMessage, uploadFile } = useChatMessages(selectedTrip, userId);
 

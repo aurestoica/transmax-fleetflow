@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Send, Paperclip, Loader2 } from 'lucide-react';
 import ChatMessageBubble from '@/components/chat/ChatMessageBubble';
 import { useChatMessages } from '@/components/chat/useChatMessages';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 
 export default function DriverChatPage() {
   const { t } = useI18n();
@@ -15,6 +16,9 @@ export default function DriverChatPage() {
   const [tripId, setTripId] = useState('');
   const [newMsg, setNewMsg] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { markAsRead } = useUnreadMessages();
+
+  useEffect(() => { markAsRead(); }, []);
 
   const { messages, uploading, bottomRef, fileInputRef, sendMessage, editMessage, deleteMessage, uploadFile } = useChatMessages(tripId, userId);
 

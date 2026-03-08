@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Route, FileText, MapPin, MessageSquare, LogOut, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import NotificationBell from '@/components/NotificationBell';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 
 const driverLinks = [
   { key: 'nav.myTrip', to: '/driver', icon: Route },
@@ -17,6 +18,7 @@ export default function DriverLayout() {
   const { t } = useI18n();
   const { fullName } = useAuthStore();
   const location = useLocation();
+  const { unreadCount } = useUnreadMessages();
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -55,7 +57,14 @@ export default function DriverLayout() {
                 isActive ? "text-primary" : "text-muted-foreground"
               )}
             >
-              <Icon className="h-5 w-5" />
+              <div className="relative">
+                <Icon className="h-5 w-5" />
+                {key === 'nav.chat' && unreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </div>
               <span>{t(key)}</span>
             </NavLink>
           );
