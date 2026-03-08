@@ -50,14 +50,14 @@ export default function DashboardPage() {
   const saveEditing = async () => {
     await saveLayout(editLayout);
     setIsEditing(false);
-    toast.success('Dashboard salvat!');
+    toast.success(t('dash.saved'));
   };
 
   const handleReset = async () => {
     await resetLayout();
     setEditLayout([...DEFAULT_LAYOUT]);
     setIsEditing(false);
-    toast.success('Dashboard resetat la configurația implicită');
+    toast.success(t('dash.resetDone'));
   };
 
   const currentLayout = isEditing ? editLayout : layout;
@@ -88,21 +88,21 @@ export default function DashboardPage() {
             <>
               <Button variant="outline" size="sm" onClick={handleReset} className="text-muted-foreground">
                 <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-                Resetare
+                {t('dash.reset')}
               </Button>
               <Button variant="outline" size="sm" onClick={cancelEditing}>
                 <X className="h-3.5 w-3.5 mr-1.5" />
-                Anulează
+                {t('common.cancel')}
               </Button>
               <Button size="sm" onClick={saveEditing} disabled={saving}>
                 <Check className="h-3.5 w-3.5 mr-1.5" />
-                {saving ? 'Se salvează...' : 'Salvează'}
+                {saving ? t('dash.saving') : t('common.save')}
               </Button>
             </>
           ) : (
             <Button variant="outline" size="sm" onClick={startEditing}>
               <Settings2 className="h-3.5 w-3.5 mr-1.5" />
-              Personalizează
+              {t('dash.customize')}
             </Button>
           )}
         </div>
@@ -111,7 +111,7 @@ export default function DashboardPage() {
       {isEditing && (
         <div className="mb-4 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-sm text-primary flex items-center gap-2">
           <Settings2 className="h-4 w-4 flex-shrink-0" />
-          <span>Trage widget-urile pentru a le reordona. Folosește iconița de ochi pentru a ascunde/afișa.</span>
+          <span>{t('dash.editHint')}</span>
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useI18n } from '@/lib/i18n';
 import { Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -11,6 +12,7 @@ interface DriverStat {
 }
 
 export default function DriverStatusWidget() {
+  const { t } = useI18n();
   const [drivers, setDrivers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,19 +35,12 @@ export default function DriverStatusWidget() {
     );
   }
 
-  const statusGroups: DriverStat[] = [
-    { status: 'available', count: drivers.filter(d => d.status === 'available').length, color: 'bg-green-500' },
-    { status: 'on_trip', count: drivers.filter(d => d.status === 'on_trip').length, color: 'bg-blue-500' },
-    { status: 'off_duty', count: drivers.filter(d => d.status === 'off_duty').length, color: 'bg-muted-foreground' },
-    { status: 'unavailable', count: drivers.filter(d => !['available', 'on_trip', 'off_duty'].includes(d.status ?? '')).length, color: 'bg-destructive' },
+  const statusGroups = [
+    { status: 'available', count: drivers.filter(d => d.status === 'available').length, color: 'bg-green-500', label: t('driverStatus.available') },
+    { status: 'on_trip', count: drivers.filter(d => d.status === 'on_trip').length, color: 'bg-blue-500', label: t('driverStatus.onTrip') },
+    { status: 'off_duty', count: drivers.filter(d => d.status === 'off_duty').length, color: 'bg-muted-foreground', label: t('driverStatus.offDuty') },
+    { status: 'unavailable', count: drivers.filter(d => !['available', 'on_trip', 'off_duty'].includes(d.status ?? '')).length, color: 'bg-destructive', label: t('driverStatus.unavailable') },
   ];
-
-  const statusLabels: Record<string, string> = {
-    available: 'Disponibili',
-    on_trip: 'În cursă',
-    off_duty: 'Liber',
-    unavailable: 'Indisponibili',
-  };
 
   const total = drivers.length;
 
@@ -54,9 +49,9 @@ export default function DriverStatusWidget() {
       <div className="px-4 md:px-5 py-4 border-b flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-primary" />
-          <h2 className="font-display font-semibold text-foreground">Status Șoferi</h2>
+          <h2 className="font-display font-semibold text-foreground">{t('widget.driverStatus')}</h2>
         </div>
-        <Link to="/drivers" className="text-sm text-primary hover:underline">Toți →</Link>
+        <Link to="/drivers" className="text-sm text-primary hover:underline">{t('widget.allDrivers')}</Link>
       </div>
       <div className="p-4 md:p-5">
         {/* Progress bar */}
@@ -71,7 +66,7 @@ export default function DriverStatusWidget() {
           {statusGroups.map(g => (
             <div key={g.status} className="flex items-center gap-2">
               <div className={cn('w-2.5 h-2.5 rounded-full', g.color)} />
-              <span className="text-sm text-muted-foreground">{statusLabels[g.status]}</span>
+              <span className="text-sm text-muted-foreground">{g.label}</span>
               <span className="text-sm font-semibold text-foreground ml-auto">{g.count}</span>
             </div>
           ))}
