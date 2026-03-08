@@ -31,8 +31,9 @@ export default function PlatformLayout() {
       </div>
 
       <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
-        {platformLinks.map(({ label, to, icon: Icon }) => {
+        {platformLinks.map(({ label, to, icon: Icon, badgeKey }) => {
           const isActive = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to);
+          const badge = badgeKey === 'companies' ? pendingCount : 0;
           return (
             <RouterNavLink
               key={to} to={to} onClick={() => setMobileOpen(false)}
@@ -43,6 +44,11 @@ export default function PlatformLayout() {
             >
               <Icon className="h-[18px] w-[18px] flex-shrink-0" />
               <span className="truncate">{label}</span>
+              {badge > 0 && (
+                <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1.5 animate-pulse">
+                  {badge}
+                </span>
+              )}
             </RouterNavLink>
           );
         })}

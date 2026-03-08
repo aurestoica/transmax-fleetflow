@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Building2, Users, Truck, Route, DollarSign, TrendingUp } from 'lucide-react';
+import { Building2, Users, Truck, Route, DollarSign, TrendingUp, Clock, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { usePendingCompanies } from '@/hooks/usePendingCompanies';
 
 export default function PlatformDashboardPage() {
   const [stats, setStats] = useState({ companies: 0, users: 0, vehicles: 0, trips: 0, drivers: 0, totalRevenue: 0 });
   const [companyStats, setCompanyStats] = useState<any[]>([]);
+  const [pendingCompanies, setPendingCompanies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { count: pendingCount } = usePendingCompanies();
 
   useEffect(() => {
     loadData();
