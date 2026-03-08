@@ -36,6 +36,7 @@ import PlatformDashboardPage from "@/pages/platform/PlatformDashboardPage";
 import CompaniesPage from "@/pages/platform/CompaniesPage";
 import CompanyDetailPage from "@/pages/platform/CompanyDetailPage";
 import PlatformUsersPage from "@/pages/platform/PlatformUsersPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
