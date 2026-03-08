@@ -12,6 +12,7 @@ interface DriverStat {
 }
 
 export default function DriverStatusWidget() {
+  const { t } = useI18n();
   const [drivers, setDrivers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
