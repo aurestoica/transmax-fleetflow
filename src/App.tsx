@@ -59,9 +59,13 @@ function AppRoutes() {
         <Route path="/trips" element={<TripsPage />} />
         <Route path="/trips/:id" element={<TripDetailPage />} />
         <Route path="/drivers" element={<DriversPage />} />
+        <Route path="/drivers/:id" element={<DriverDetailPage />} />
         <Route path="/vehicles" element={<VehiclesPage />} />
+        <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
         <Route path="/trailers" element={<TrailersPage />} />
+        <Route path="/trailers/:id" element={<TrailerDetailPage />} />
         <Route path="/clients" element={<ClientsPage />} />
+        <Route path="/clients/:id" element={<ClientDetailPage />} />
         <Route path="/documents" element={<DocumentsPage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/financial" element={<FinancialPage />} />
