@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2, Users, Truck, Route, Container, ArrowLeft, Plus, Check, X, Shield, DollarSign } from 'lucide-react';
+import { Building2, Users, Truck, Route, ArrowLeft, Plus, Check, X, Shield, DollarSign, Pencil, Trash2, Container } from 'lucide-react';
 import StatusBadge from '@/components/StatusBadge';
 import { toast } from 'sonner';
 
@@ -20,8 +21,17 @@ export default function CompanyDetailPage() {
   const [trips, setTrips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'overview' | 'users' | 'drivers' | 'vehicles' | 'trips'>('overview');
+
+  // Edit company
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [companyForm, setCompanyForm] = useState({ name: '', cif: '', address: '', contact_email: '', contact_phone: '' });
+
+  // Create user
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [userForm, setUserForm] = useState({ email: '', password: '', full_name: '', role: 'owner' });
+
+  // Delete user
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
 
   useEffect(() => { if (id) loadData(); }, [id]);
 
@@ -50,6 +60,26 @@ export default function CompanyDetailPage() {
   const toggleActive = async () => {
     if (!company) return;
     await supabase.from('companies').update({ is_active: !company.is_active } as any).eq('id', company.id);
+    toast.success(company.is_active ? 'Companie dezactivată' : 'Companie activată');
+    loadData();
+  };
+
+  const openEditCompany = () => {
+    setCompanyForm({
+      name: company.name || '',
+      cif: company.cif || '',
+      address: company.address || '',
+      contact_email: company.contact_email || '',
+      contact_phone: company.contact_phone || '',
+    });
+    setEditDialogOpen(true);
+  };
+
+  const saveCompany = async () => {
+    const { error } = await supabase.from('companies').update(companyForm as any).eq('id', id!);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Companie actualizată!');
+    setEditDialogOpen(false);
     loadData();
   };
 
@@ -58,9 +88,20 @@ export default function CompanyDetailPage() {
       body: { email: userForm.email, password: userForm.password, full_name: userForm.full_name, role: userForm.role, company_id: id }
     });
     if (error || data?.error) { toast.error(data?.error || error?.message); return; }
-    toast.success('Utilizator creat!');
+    toast.success(`Utilizator creat! Se poate loga cu ${userForm.email} și parola setată.`);
     setUserDialogOpen(false);
     setUserForm({ email: '', password: '', full_name: '', role: 'owner' });
+    loadData();
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deleteUserId) return;
+    const { data, error } = await supabase.functions.invoke('manage-user', {
+      body: { action: 'delete', user_id: deleteUserId }
+    });
+    if (error || data?.error) { toast.error(data?.error || error?.message); return; }
+    toast.success('Utilizator șters!');
+    setDeleteUserId(null);
     loadData();
   };
 
@@ -78,7 +119,7 @@ export default function CompanyDetailPage() {
     { key: 'trips' as const, label: `Curse (${trips.length})`, icon: Route },
   ];
 
-  const roleLabels: Record<string, string> = { owner: 'Administrator', dispatcher: 'Dispecer', driver: 'Șofer' };
+  const roleLabels: Record<string, string> = { owner: 'Administrator', dispatcher: 'Dispecer', driver: 'Șofer', platform_owner: 'Platform Owner' };
 
   return (
     <div>
@@ -100,11 +141,42 @@ export default function CompanyDetailPage() {
           <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${company.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
             {company.is_active ? <><Check className="h-3 w-3" />Activă</> : <><X className="h-3 w-3" />Inactivă</>}
           </span>
+          <Button variant="outline" size="sm" onClick={openEditCompany}>
+            <Pencil className="h-3.5 w-3.5 mr-1" />Editează
+          </Button>
           <Button variant="outline" size="sm" onClick={toggleActive}>
             {company.is_active ? 'Dezactivează' : 'Activează'}
           </Button>
         </div>
       </div>
+
+      {/* Company info card */}
+      <div className="bg-card rounded-xl border p-4 mb-6 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm" style={{ boxShadow: 'var(--shadow-card)' }}>
+        <div><span className="text-xs text-muted-foreground block">CIF</span><span className="font-medium">{company.cif || '—'}</span></div>
+        <div><span className="text-xs text-muted-foreground block">Adresă</span><span className="font-medium">{company.address || '—'}</span></div>
+        <div><span className="text-xs text-muted-foreground block">Email</span><span className="font-medium">{company.contact_email || '—'}</span></div>
+        <div><span className="text-xs text-muted-foreground block">Telefon</span><span className="font-medium">{company.contact_phone || '—'}</span></div>
+      </div>
+
+      {/* Edit company dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Editare companie</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2"><Label>Nume companie *</Label><Input value={companyForm.name} onChange={e => setCompanyForm({ ...companyForm, name: e.target.value })} /></div>
+            <div className="space-y-2"><Label>CIF</Label><Input value={companyForm.cif} onChange={e => setCompanyForm({ ...companyForm, cif: e.target.value })} /></div>
+            <div className="space-y-2"><Label>Adresă</Label><Input value={companyForm.address} onChange={e => setCompanyForm({ ...companyForm, address: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2"><Label>Email contact</Label><Input type="email" value={companyForm.contact_email} onChange={e => setCompanyForm({ ...companyForm, contact_email: e.target.value })} /></div>
+              <div className="space-y-2"><Label>Telefon</Label><Input value={companyForm.contact_phone} onChange={e => setCompanyForm({ ...companyForm, contact_phone: e.target.value })} /></div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Anulează</Button>
+            <Button onClick={saveCompany} disabled={!companyForm.name.trim()}>Salvează</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 overflow-x-auto border-b">
@@ -145,15 +217,16 @@ export default function CompanyDetailPage() {
       {/* Users tab */}
       {tab === 'users' && (
         <div>
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-between items-center mb-4">
+            <p className="text-sm text-muted-foreground">Utilizatorii companiei se pot loga cu emailul și parola setate la creare.</p>
             <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}>
               <DialogTrigger asChild><Button size="sm"><Plus className="h-4 w-4 mr-2" />Utilizator nou</Button></DialogTrigger>
               <DialogContent>
                 <DialogHeader><DialogTitle>Utilizator nou pentru {company.name}</DialogTitle></DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2"><Label>Nume complet *</Label><Input value={userForm.full_name} onChange={e => setUserForm({ ...userForm, full_name: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>Email *</Label><Input type="email" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>Parolă *</Label><Input type="password" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} /></div>
+                  <div className="space-y-2"><Label>Email * <span className="text-xs text-muted-foreground">(va fi folosit pentru logare)</span></Label><Input type="email" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} /></div>
+                  <div className="space-y-2"><Label>Parolă * <span className="text-xs text-muted-foreground">(minim 6 caractere)</span></Label><Input type="password" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} /></div>
                   <div className="space-y-2">
                     <Label>Rol</Label>
                     <Select value={userForm.role} onValueChange={v => setUserForm({ ...userForm, role: v })}>
@@ -186,13 +259,36 @@ export default function CompanyDetailPage() {
                       <Shield className="h-3 w-3" />{roleLabels[r] || r}
                     </span>
                   ))}
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteUserId(u.user_id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             ))}
-            {users.length === 0 && <div className="text-center text-muted-foreground py-8">Niciun utilizator</div>}
+            {users.length === 0 && (
+              <div className="text-center py-8">
+                <div className="text-3xl mb-2">👤</div>
+                <div className="text-muted-foreground font-medium">Niciun utilizator</div>
+                <p className="text-sm text-muted-foreground mt-1">Creează un administrator pentru ca această companie să poată fi gestionată.</p>
+              </div>
+            )}
           </div>
         </div>
       )}
+
+      {/* Delete user confirmation */}
+      <AlertDialog open={!!deleteUserId} onOpenChange={(open) => !open && setDeleteUserId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Șterge utilizator</AlertDialogTitle>
+            <AlertDialogDescription>Ești sigur? Această acțiune este ireversibilă.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Anulează</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteUser} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Șterge</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Drivers tab */}
       {tab === 'drivers' && (
