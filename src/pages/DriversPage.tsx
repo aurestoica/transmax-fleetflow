@@ -42,8 +42,8 @@ export default function DriversPage() {
 
     // Auto-open edit dialog if highlight param is present
     const highlightId = searchParams.get('highlight');
-    if (highlightId && data) {
-      const driver = data.find((d: any) => d.id === highlightId);
+    if (highlightId && driversRes.data) {
+      const driver = driversRes.data.find((d: any) => d.id === highlightId);
       if (driver) {
         setEditingId(driver.id);
         setForm({
