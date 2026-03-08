@@ -34,6 +34,8 @@ import DriverChatPage from "@/pages/driver/DriverChatPage";
 import DriverProfilePage from "@/pages/driver/DriverProfilePage";
 import PlatformDashboardPage from "@/pages/platform/PlatformDashboardPage";
 import CompaniesPage from "@/pages/platform/CompaniesPage";
+import CompanyDetailPage from "@/pages/platform/CompanyDetailPage";
+import PlatformUsersPage from "@/pages/platform/PlatformUsersPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
