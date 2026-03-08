@@ -62,11 +62,11 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebar
   const navContent = (
     <>
       {/* Logo */}
-      <div className="h-14 flex items-center px-4 border-b border-sidebar-border gap-2 min-w-0">
+      <div className="h-14 flex items-center px-4 border-b border-sidebar-border gap-2 min-w-0 text-sidebar-foreground">
         <CompanyLogo
           logoUrl={branding.logoUrl ?? null}
           name={branding.name || 'TMS Pro'}
-          size="sm"
+          size="md"
           showName={showLabels}
         />
         <button
