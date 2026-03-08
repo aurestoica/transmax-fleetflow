@@ -250,9 +250,9 @@ export default function TripsPage() {
                       <span className="truncate">{trip.delivery_address}</span>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
-                      {trip.clients?.company_name && <span>📦 {trip.clients.company_name}</span>}
-                      {trip.drivers?.full_name && <span>👤 {trip.drivers.full_name}</span>}
-                      {trip.vehicles?.plate_number && <span>🚛 {trip.vehicles.plate_number}</span>}
+                      {trip.clients?.company_name && <Link to="/clients" className="text-primary hover:underline" onClick={e => e.stopPropagation()}>📦 {trip.clients.company_name}</Link>}
+                      {trip.drivers?.full_name && <Link to="/drivers" className="text-primary hover:underline" onClick={e => e.stopPropagation()}>👤 {trip.drivers.full_name}</Link>}
+                      {trip.vehicles?.plate_number && <Link to="/vehicles" className="text-primary hover:underline" onClick={e => e.stopPropagation()}>🚛 {trip.vehicles.plate_number}</Link>}
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0 flex items-center gap-3">
