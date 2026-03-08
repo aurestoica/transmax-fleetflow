@@ -37,9 +37,8 @@ export default function CompanyLogo({ logoUrl, name, size = 'sm', showName = tru
       </div>
       {showName && name && (
         <span className={cn(
-          'font-display font-bold truncate',
+          'font-display font-bold truncate text-foreground',
           size === 'sm' ? 'text-xs' : size === 'md' ? 'text-sm' : 'text-base',
-          'text-sidebar-foreground'
         )}>
           {name}
         </span>
