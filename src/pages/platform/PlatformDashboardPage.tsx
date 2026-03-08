@@ -161,7 +161,7 @@ export default function PlatformDashboardPage() {
             </div>
           </Link>
         ))}
-        {companyStats.length === 0 && <div className="text-center text-muted-foreground py-8">Nicio companie încă</div>}
+        {companyStats.length === 0 && <div className="text-center text-muted-foreground py-8">{t('platform.noCompanies')}</div>}
       </div>
     </div>
   );

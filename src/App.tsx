@@ -53,6 +53,7 @@ function AppRoutes() {
           <Route path="/companies" element={<CompaniesPage />} />
           <Route path="/companies/:id" element={<CompanyDetailPage />} />
           <Route path="/platform-users" element={<PlatformUsersPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
