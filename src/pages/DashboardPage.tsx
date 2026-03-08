@@ -111,7 +111,7 @@ export default function DashboardPage() {
       {isEditing && (
         <div className="mb-4 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-sm text-primary flex items-center gap-2">
           <Settings2 className="h-4 w-4 flex-shrink-0" />
-          <span>Trage widget-urile pentru a le reordona. Folosește iconița de ochi pentru a ascunde/afișa.</span>
+          <span>{t('dash.editHint')}</span>
         </div>
       )}
 
