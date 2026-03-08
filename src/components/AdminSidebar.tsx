@@ -40,6 +40,7 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebar
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const { unreadCount } = useUnreadMessages();
+  const branding = useCompanyBranding();
 
   const filteredLinks = adminLinks.filter(link => {
     if (link.to === '/users' && !isOwner()) return false;
