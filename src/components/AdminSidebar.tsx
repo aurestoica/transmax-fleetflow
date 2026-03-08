@@ -63,11 +63,17 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebar
     <>
       {/* Logo */}
       <div className="h-14 flex items-center px-4 border-b border-sidebar-border gap-2">
-        <Truck className="h-7 w-7 text-sidebar-primary flex-shrink-0" strokeWidth={1.5} />
-        {showLabels && (
-          <span className="font-display font-bold text-sidebar-foreground text-sm truncate">
-            TRANS MAX SIB
-          </span>
+        {branding.name ? (
+          <CompanyLogo logoUrl={branding.logoUrl} name={branding.name} size="sm" showName={showLabels} />
+        ) : (
+          <>
+            <Truck className="h-7 w-7 text-sidebar-primary flex-shrink-0" strokeWidth={1.5} />
+            {showLabels && (
+              <span className="font-display font-bold text-sidebar-foreground text-sm truncate">
+                TRANS MAX SIB
+              </span>
+            )}
+          </>
         )}
         <button
           onClick={onMobileClose}
