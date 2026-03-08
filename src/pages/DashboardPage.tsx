@@ -1,141 +1,142 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useCallback } from 'react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useI18n } from '@/lib/i18n';
-import StatusBadge from '@/components/StatusBadge';
+import { useDashboardLayout, WIDGET_REGISTRY, DEFAULT_LAYOUT, type WidgetLayout } from '@/hooks/useDashboardLayout';
+import SortableWidget from '@/components/dashboard/SortableWidget';
+import StatsWidget from '@/components/dashboard/StatsWidget';
 import ExpiryWidget from '@/components/ExpiryWidget';
-import { Route, Users, Truck, AlertTriangle, DollarSign, Clock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import RecentTripsWidget from '@/components/dashboard/RecentTripsWidget';
+import DriverStatusWidget from '@/components/dashboard/DriverStatusWidget';
+import FleetOverviewWidget from '@/components/dashboard/FleetOverviewWidget';
+import RevenueSummaryWidget from '@/components/dashboard/RevenueSummaryWidget';
+import { Settings2, RotateCcw, Check, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
-interface Stats {
-  activeTrips: number;
-  plannedTrips: number;
-  availableDrivers: number;
-  availableTrucks: number;
-  delays: number;
-  totalRevenue: number;
+function WidgetRenderer({ id }: { id: string }) {
+  switch (id) {
+    case 'stats': return <StatsWidget />;
+    case 'expiry': return <ExpiryWidget />;
+    case 'recent-trips': return <RecentTripsWidget />;
+    case 'driver-status': return <DriverStatusWidget />;
+    case 'fleet-overview': return <FleetOverviewWidget />;
+    case 'revenue-summary': return <RevenueSummaryWidget />;
+    default: return null;
+  }
 }
 
 export default function DashboardPage() {
   const { t } = useI18n();
-  const [stats, setStats] = useState<Stats>({ activeTrips: 0, plannedTrips: 0, availableDrivers: 0, availableTrucks: 0, delays: 0, totalRevenue: 0 });
-  const [recentTrips, setRecentTrips] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { layout, loading, saving, saveLayout, resetLayout } = useDashboardLayout();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editLayout, setEditLayout] = useState<WidgetLayout[]>([]);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor)
+  );
 
-  const loadData = async () => {
-    const [tripsRes, driversRes, vehiclesRes] = await Promise.all([
-      supabase.from('trips').select('*').order('created_at', { ascending: false }),
-      supabase.from('drivers').select('*'),
-      supabase.from('vehicles').select('*'),
-    ]);
-
-    const trips = tripsRes.data ?? [];
-    const drivers = driversRes.data ?? [];
-    const vehicles = vehiclesRes.data ?? [];
-
-    setStats({
-      activeTrips: trips.filter(t => ['in_transit', 'loading', 'unloading'].includes(t.status!)).length,
-      plannedTrips: trips.filter(t => t.status === 'planned').length,
-      availableDrivers: drivers.filter(d => d.status === 'available').length,
-      availableTrucks: vehicles.filter(v => v.status === 'available').length,
-      delays: trips.filter(t => t.status === 'delayed').length,
-      totalRevenue: trips.reduce((sum, t) => sum + (Number(t.revenue) || 0), 0),
-    });
-
-    setRecentTrips(trips.slice(0, 5));
-    setLoading(false);
+  const startEditing = () => {
+    setEditLayout([...layout]);
+    setIsEditing(true);
   };
 
-  const statCards = [
-    { label: t('dash.activeTrips'), value: stats.activeTrips, icon: Route, color: 'text-info' },
-    { label: t('dash.plannedTrips'), value: stats.plannedTrips, icon: Clock, color: 'text-muted-foreground' },
-    { label: t('dash.availableDrivers'), value: stats.availableDrivers, icon: Users, color: 'text-success' },
-    { label: t('dash.availableTrucks'), value: stats.availableTrucks, icon: Truck, color: 'text-success' },
-    { label: t('dash.delays'), value: stats.delays, icon: AlertTriangle, color: 'text-destructive' },
-    { label: t('dash.revenue'), value: `€${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'text-primary' },
-  ];
+  const cancelEditing = () => {
+    setEditLayout([]);
+    setIsEditing(false);
+  };
+
+  const saveEditing = async () => {
+    await saveLayout(editLayout);
+    setIsEditing(false);
+    toast.success('Dashboard salvat!');
+  };
+
+  const handleReset = async () => {
+    await resetLayout();
+    setEditLayout([...DEFAULT_LAYOUT]);
+    setIsEditing(false);
+    toast.success('Dashboard resetat la configurația implicită');
+  };
+
+  const currentLayout = isEditing ? editLayout : layout;
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = editLayout.findIndex(w => w.id === active.id);
+    const newIndex = editLayout.findIndex(w => w.id === over.id);
+    setEditLayout(arrayMove(editLayout, oldIndex, newIndex));
+  };
+
+  const toggleVisibility = (widgetId: string) => {
+    setEditLayout(prev => prev.map(w => w.id === widgetId ? { ...w, visible: !w.visible } : w));
+  };
+
+  // Group widgets into rows: 'full' = own row, 'half' = pair them
+  const visibleWidgets = currentLayout.filter(w => w.visible || isEditing);
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
 
   return (
     <div>
-      <div className="page-header">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h1 className="page-title">{t('nav.dashboard')}</h1>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
-        {statCards.map((card, i) => (
-          <div key={i} className="stat-card" style={{ animationDelay: `${i * 50}ms` }}>
-            <div className="flex items-center justify-between mb-2">
-              <card.icon className={`h-5 w-5 ${card.color}`} />
-            </div>
-            <div className="text-xl md:text-2xl font-display font-bold text-foreground">{card.value}</div>
-            <div className="text-xs text-muted-foreground mt-1">{card.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Expiry widget + Recent trips */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <ExpiryWidget />
-
-      {/* Recent trips */}
-      <div className="bg-card rounded-xl border overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
-        <div className="px-4 md:px-5 py-4 border-b flex items-center justify-between">
-          <h2 className="font-display font-semibold text-foreground">{t('dash.recentTrips')}</h2>
-          <Link to="/trips" className="text-sm text-primary hover:underline">{t('common.details')} →</Link>
-        </div>
-
-        {/* Desktop table */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="text-left px-5 py-3 font-medium text-muted-foreground">ID</th>
-                <th className="text-left px-5 py-3 font-medium text-muted-foreground">{t('common.from')}</th>
-                <th className="text-left px-5 py-3 font-medium text-muted-foreground">{t('common.to')}</th>
-                <th className="text-left px-5 py-3 font-medium text-muted-foreground">{t('common.status')}</th>
-                <th className="text-right px-5 py-3 font-medium text-muted-foreground">€</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentTrips.map(trip => (
-                <tr key={trip.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                  <td className="px-5 py-3 font-medium">{trip.trip_number}</td>
-                  <td className="px-5 py-3 text-muted-foreground">{trip.pickup_address}</td>
-                  <td className="px-5 py-3 text-muted-foreground">{trip.delivery_address}</td>
-                  <td className="px-5 py-3"><StatusBadge status={trip.status} /></td>
-                  <td className="px-5 py-3 text-right font-medium">€{Number(trip.revenue || 0).toLocaleString()}</td>
-                </tr>
-              ))}
-              {recentTrips.length === 0 && (
-                <tr><td colSpan={5} className="px-5 py-8 text-center text-muted-foreground">{t('common.noData')}</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile list */}
-        <div className="md:hidden divide-y">
-          {recentTrips.map(trip => (
-            <Link key={trip.id} to={`/trips/${trip.id}`} className="block p-3 hover:bg-muted/30 transition-colors">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-medium text-sm">{trip.trip_number}</span>
-                <StatusBadge status={trip.status} />
-              </div>
-              <div className="text-xs text-muted-foreground truncate">{trip.pickup_address} → {trip.delivery_address}</div>
-              <div className="text-xs font-medium mt-1">€{Number(trip.revenue || 0).toLocaleString()}</div>
-            </Link>
-          ))}
-          {recentTrips.length === 0 && (
-            <div className="px-4 py-8 text-center text-muted-foreground">{t('common.noData')}</div>
+        <div className="flex items-center gap-2">
+          {isEditing ? (
+            <>
+              <Button variant="outline" size="sm" onClick={handleReset} className="text-muted-foreground">
+                <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+                Resetare
+              </Button>
+              <Button variant="outline" size="sm" onClick={cancelEditing}>
+                <X className="h-3.5 w-3.5 mr-1.5" />
+                Anulează
+              </Button>
+              <Button size="sm" onClick={saveEditing} disabled={saving}>
+                <Check className="h-3.5 w-3.5 mr-1.5" />
+                {saving ? 'Se salvează...' : 'Salvează'}
+              </Button>
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={startEditing}>
+              <Settings2 className="h-3.5 w-3.5 mr-1.5" />
+              Personalizează
+            </Button>
           )}
         </div>
       </div>
-      </div>
+
+      {isEditing && (
+        <div className="mb-4 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-sm text-primary flex items-center gap-2">
+          <Settings2 className="h-4 w-4 flex-shrink-0" />
+          <span>Trage widget-urile pentru a le reordona. Folosește iconița de ochi pentru a ascunde/afișa.</span>
+        </div>
+      )}
+
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={visibleWidgets.map(w => w.id)} strategy={verticalListSortingStrategy}>
+          <div className="space-y-4 md:space-y-6">
+            {visibleWidgets.map(widget => {
+              const def = WIDGET_REGISTRY.find(w => w.id === widget.id);
+              if (!def) return null;
+
+              return (
+                <SortableWidget
+                  key={widget.id}
+                  id={widget.id}
+                  isEditing={isEditing}
+                  visible={widget.visible}
+                  onToggleVisibility={() => toggleVisibility(widget.id)}
+                >
+                  <WidgetRenderer id={widget.id} />
+                </SortableWidget>
+              );
+            })}
+          </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 }
