@@ -21,6 +21,7 @@ import DocumentsPage from "@/pages/DocumentsPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import MapPage from "@/pages/MapPage";
 import SettingsPage from "@/pages/SettingsPage";
+import ActivityLogPage from "@/pages/ActivityLogPage";
 import DriverTripsPage from "@/pages/driver/DriverTripsPage";
 import DriverDocumentsPage from "@/pages/driver/DriverDocumentsPage";
 import DriverLocationPage from "@/pages/driver/DriverLocationPage";
