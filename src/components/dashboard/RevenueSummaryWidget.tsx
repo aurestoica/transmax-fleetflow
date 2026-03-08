@@ -47,14 +47,16 @@ export default function RevenueSummaryWidget() {
       <div className="px-4 md:px-5 py-4 border-b flex items-center justify-between">
         <div className="flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-primary" />
-          <h2 className="font-display font-semibold text-foreground">Sumar Financiar</h2>
+          <h2 className="font-display font-semibold text-foreground">{t('widget.revenue')}</h2>
         </div>
-        <span className="text-xs text-muted-foreground capitalize">{monthName}</span>
+        <span className="text-xs text-muted-foreground capitalize">
+          {new Date().toLocaleDateString(language === 'ro' ? 'ro-RO' : language === 'es' ? 'es-ES' : 'en-US', { month: 'long', year: 'numeric' })}
+        </span>
       </div>
       <div className="p-4 md:p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-xs text-muted-foreground">Venituri</div>
+            <div className="text-xs text-muted-foreground">{t('widget.revenue.income')}</div>
             <div className="text-xl font-bold text-foreground flex items-center gap-1">
               <TrendingUp className="h-4 w-4 text-green-500" />
               €{data.revenue.toLocaleString()}
