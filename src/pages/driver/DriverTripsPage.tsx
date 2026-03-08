@@ -39,7 +39,7 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
         <div className="flex items-start gap-2">
           <MapPin className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
           <div>
-            <div className="text-xs text-muted-foreground">Încărcare</div>
+            <div className="text-xs text-muted-foreground">{t('driver.loading')}</div>
             <div>{trip.pickup_address}</div>
             {trip.pickup_date && <div className="text-xs text-muted-foreground">{format(new Date(trip.pickup_date), 'dd.MM.yyyy HH:mm')}</div>}
           </div>
@@ -47,7 +47,7 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
         <div className="flex items-start gap-2">
           <MapPin className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
           <div>
-            <div className="text-xs text-muted-foreground">Descărcare</div>
+            <div className="text-xs text-muted-foreground">{t('driver.unloading')}</div>
             <div>{trip.delivery_address}</div>
             {trip.delivery_date && <div className="text-xs text-muted-foreground">{format(new Date(trip.delivery_date), 'dd.MM.yyyy HH:mm')}</div>}
           </div>
@@ -61,7 +61,7 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
         onClick={() => setExpanded(!expanded)}
         className="flex items-center gap-1 text-xs text-primary font-medium w-full justify-center py-1"
       >
-        {expanded ? 'Mai puține detalii' : 'Mai multe detalii'}
+        {expanded ? t('driver.lessDetails') : t('driver.moreDetails')}
         {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
       </button>
 
@@ -70,25 +70,25 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
           {trip.cargo_type && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <FileBox className="h-3.5 w-3.5" />
-              <span>Marfă: <span className="text-foreground">{trip.cargo_type}</span></span>
+              <span>{t('driver.cargo')}: <span className="text-foreground">{trip.cargo_type}</span></span>
             </div>
           )}
           {trip.weight_tons && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Weight className="h-3.5 w-3.5" />
-              <span>Greutate: <span className="text-foreground">{trip.weight_tons} tone</span></span>
+              <span>{t('driver.weight')}: <span className="text-foreground">{trip.weight_tons} t</span></span>
             </div>
           )}
           {trip.distance_km && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <MapPin className="h-3.5 w-3.5" />
-              <span>Distanță: <span className="text-foreground">{trip.distance_km} km</span></span>
+              <span>{t('driver.distance')}: <span className="text-foreground">{trip.distance_km} km</span></span>
             </div>
           )}
           {trip.observations && (
             <div className="flex items-start gap-2 text-muted-foreground">
               <MessageSquare className="h-3.5 w-3.5 mt-0.5" />
-              <span>Observații: <span className="text-foreground">{trip.observations}</span></span>
+              <span>{t('driver.observations')}: <span className="text-foreground">{trip.observations}</span></span>
             </div>
           )}
           {trip.clients?.contact_phone && (

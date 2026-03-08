@@ -29,14 +29,11 @@ export default function DriverLayout() {
       {/* Top bar */}
       <header className="h-14 border-b bg-card flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          {branding.name ? (
-            <CompanyLogo logoUrl={branding.logoUrl} name={branding.name} size="sm" />
-          ) : (
-            <>
-              <Truck className="h-6 w-6 text-primary" strokeWidth={1.5} />
-              <span className="font-display font-bold text-sm">TMS Pro</span>
-            </>
-          )}
+          <CompanyLogo
+            logoUrl={branding.logoUrl ?? null}
+            name={branding.name || 'TMS Pro'}
+            size="sm"
+          />
         </div>
         <div className="flex items-center gap-3">
           <NotificationBell />

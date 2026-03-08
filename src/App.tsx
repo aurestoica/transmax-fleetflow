@@ -36,6 +36,7 @@ import PlatformDashboardPage from "@/pages/platform/PlatformDashboardPage";
 import CompaniesPage from "@/pages/platform/CompaniesPage";
 import CompanyDetailPage from "@/pages/platform/CompanyDetailPage";
 import PlatformUsersPage from "@/pages/platform/PlatformUsersPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ function AppRoutes() {
           <Route path="/companies" element={<CompaniesPage />} />
           <Route path="/companies/:id" element={<CompanyDetailPage />} />
           <Route path="/platform-users" element={<PlatformUsersPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -110,9 +112,14 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthProvider>
-          <AppRoutes />
-        </AuthProvider>
+        <Routes>
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="*" element={
+            <AuthProvider>
+              <AppRoutes />
+            </AuthProvider>
+          } />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

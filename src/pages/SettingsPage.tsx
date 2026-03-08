@@ -97,7 +97,7 @@ interface UserProfile {
 
 export default function SettingsPage() {
   const { userId, companyId, isOwner } = useAuthStore();
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const [settings, setSettings] = useState<NotificationSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -295,8 +295,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-foreground font-display">Setări</h1>
-        <p className="text-muted-foreground text-sm mt-1">Gestionează profilul, compania și preferințele</p>
+        <h1 className="text-2xl font-bold text-foreground font-display">{t('settings.title')}</h1>
+        <p className="text-muted-foreground text-sm mt-1">{t('settings.subtitle')}</p>
       </div>
 
       {/* User Profile */}
@@ -552,7 +552,9 @@ export default function SettingsPage() {
             onClick={async () => {
               const { email } = useAuthStore.getState();
               if (!email) return;
-              const { error } = await supabase.auth.resetPasswordForEmail(email);
+              const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/reset-password`,
+              });
               if (error) toast({ title: 'Eroare', description: error.message, variant: 'destructive' });
               else toast({ title: 'Email trimis', description: 'Verifică inbox-ul pentru link-ul de resetare.' });
             }}
