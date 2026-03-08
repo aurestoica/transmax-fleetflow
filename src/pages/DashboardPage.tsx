@@ -50,14 +50,14 @@ export default function DashboardPage() {
   const saveEditing = async () => {
     await saveLayout(editLayout);
     setIsEditing(false);
-    toast.success('Dashboard salvat!');
+    toast.success(t('dash.saved'));
   };
 
   const handleReset = async () => {
     await resetLayout();
     setEditLayout([...DEFAULT_LAYOUT]);
     setIsEditing(false);
-    toast.success('Dashboard resetat la configurația implicită');
+    toast.success(t('dash.resetDone'));
   };
 
   const currentLayout = isEditing ? editLayout : layout;
