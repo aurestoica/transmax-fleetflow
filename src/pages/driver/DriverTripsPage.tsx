@@ -70,7 +70,7 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
           {trip.cargo_type && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <FileBox className="h-3.5 w-3.5" />
-              <span>Marfă: <span className="text-foreground">{trip.cargo_type}</span></span>
+              <span>{t('driver.cargo')}: <span className="text-foreground">{trip.cargo_type}</span></span>
             </div>
           )}
           {trip.weight_tons && (
