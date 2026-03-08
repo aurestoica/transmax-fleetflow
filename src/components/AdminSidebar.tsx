@@ -9,6 +9,8 @@ import {
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { useCompanyBranding } from '@/hooks/useCompanyBranding';
+import CompanyLogo from '@/components/CompanyLogo';
 
 const adminLinks = [
   { key: 'nav.dashboard', to: '/', icon: LayoutDashboard },
