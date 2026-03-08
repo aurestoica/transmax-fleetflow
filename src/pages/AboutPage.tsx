@@ -7,6 +7,9 @@ import {
   DollarSign, MessageSquare, Users, Shield, Clock, Eye, Globe,
   ChevronRight, Check, Smartphone, Bell, UserCog, Star
 } from 'lucide-react';
+import mockAdminDashboard from '@/assets/mock-admin-dashboard.jpg';
+import mockDispatcherView from '@/assets/mock-dispatcher-view.jpg';
+import mockDriverMobile from '@/assets/mock-driver-mobile.jpg';
 
 const languages: { code: Language; label: string; flag: string }[] = [
   { code: 'ro', label: 'Română', flag: '🇷🇴' },
