@@ -34,7 +34,7 @@ export default function DriverLayout() {
           ) : (
             <>
               <Truck className="h-6 w-6 text-primary" strokeWidth={1.5} />
-              <span className="font-display font-bold text-sm">TRANS MAX SIB</span>
+              <span className="font-display font-bold text-sm">TMS Pro</span>
             </>
           )}
         </div>

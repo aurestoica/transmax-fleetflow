@@ -70,7 +70,7 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebar
             <Truck className="h-7 w-7 text-sidebar-primary flex-shrink-0" strokeWidth={1.5} />
             {showLabels && (
               <span className="font-display font-bold text-sidebar-foreground text-sm truncate">
-                TRANS MAX SIB
+                TMS Pro
               </span>
             )}
           </>
