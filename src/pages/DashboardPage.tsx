@@ -88,21 +88,21 @@ export default function DashboardPage() {
             <>
               <Button variant="outline" size="sm" onClick={handleReset} className="text-muted-foreground">
                 <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-                Resetare
+                {t('dash.reset')}
               </Button>
               <Button variant="outline" size="sm" onClick={cancelEditing}>
                 <X className="h-3.5 w-3.5 mr-1.5" />
-                Anulează
+                {t('common.cancel')}
               </Button>
               <Button size="sm" onClick={saveEditing} disabled={saving}>
                 <Check className="h-3.5 w-3.5 mr-1.5" />
-                {saving ? 'Se salvează...' : 'Salvează'}
+                {saving ? t('dash.saving') : t('common.save')}
               </Button>
             </>
           ) : (
             <Button variant="outline" size="sm" onClick={startEditing}>
               <Settings2 className="h-3.5 w-3.5 mr-1.5" />
-              Personalizează
+              {t('dash.customize')}
             </Button>
           )}
         </div>
