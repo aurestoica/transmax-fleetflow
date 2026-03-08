@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Truck, Calendar, Gauge, Weight, Route, FileText, Pencil, Trash2, Upload, Eye, Loader2 } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ArrowLeft, Truck, Calendar, Gauge, Weight, Route, FileText, Pencil, Trash2, Upload, Eye, Loader2, MoreVertical } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
