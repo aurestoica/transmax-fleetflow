@@ -42,16 +42,18 @@ function BenefitCard({ icon: Icon, title, desc }: { icon: any; title: string; de
 }
 
 function RoleSection({
-  title, desc, features, color, icon: Icon,
+  title, desc, features, color, icon: Icon, mockupImg, mockupAlt,
 }: {
   title: string;
   desc: string;
   features: { icon: any; title: string; desc: string }[];
   color: string;
   icon: any;
+  mockupImg?: string;
+  mockupAlt?: string;
 }) {
   return (
-    <div className="mb-20">
+    <div className="mb-24">
       <div className="flex items-center gap-3 mb-3">
         <div className={cn('h-11 w-11 rounded-xl flex items-center justify-center', color)}>
           <Icon className="h-6 w-6 text-primary-foreground" />
@@ -60,7 +62,18 @@ function RoleSection({
           <h3 className="text-xl font-bold text-foreground">{title}</h3>
         </div>
       </div>
-      <p className="text-muted-foreground mb-6 max-w-2xl">{desc}</p>
+      <p className="text-muted-foreground mb-8 max-w-2xl">{desc}</p>
+
+      {mockupImg && (
+        <div className="mb-8 rounded-xl overflow-hidden border border-border shadow-lg bg-muted/30">
+          <img
+            src={mockupImg}
+            alt={mockupAlt || title}
+            className="w-full h-auto"
+            loading="lazy"
+          />
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {features.map((f, i) => (
