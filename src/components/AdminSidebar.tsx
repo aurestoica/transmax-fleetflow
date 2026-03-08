@@ -62,19 +62,13 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebar
   const navContent = (
     <>
       {/* Logo */}
-      <div className="h-14 flex items-center px-4 border-b border-sidebar-border gap-2">
-        {branding.name ? (
-          <CompanyLogo logoUrl={branding.logoUrl} name={branding.name} size="sm" showName={showLabels} />
-        ) : (
-          <>
-            <Truck className="h-7 w-7 text-sidebar-primary flex-shrink-0" strokeWidth={1.5} />
-            {showLabels && (
-              <span className="font-display font-bold text-sidebar-foreground text-sm truncate">
-                TMS Pro
-              </span>
-            )}
-          </>
-        )}
+      <div className="h-14 flex items-center px-4 border-b border-sidebar-border gap-2 min-w-0">
+        <CompanyLogo
+          logoUrl={branding.logoUrl ?? null}
+          name={branding.name || 'TMS Pro'}
+          size="sm"
+          showName={showLabels}
+        />
         <button
           onClick={onMobileClose}
           className="ml-auto md:hidden p-1 text-sidebar-foreground/70 hover:text-sidebar-foreground"
