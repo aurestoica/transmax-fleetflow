@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
-import { Bell, Mail, Shield, Palette, Save, Loader2 } from 'lucide-react';
+import { Bell, Mail, Shield, Palette, Save, Loader2, ScrollText, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface NotificationSettings {
   email_enabled: boolean;
@@ -284,6 +285,26 @@ export default function SettingsPage() {
             {l.changePassword}
           </Button>
         </CardContent>
+      </Card>
+
+      {/* Activity Log */}
+      <Card className="group hover:border-primary/30 transition-colors">
+        <Link to="/activity-log">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-accent/10">
+                  <ScrollText className="h-5 w-5 text-accent-foreground" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Jurnal de activitate</CardTitle>
+                  <CardDescription>Istoricul complet al acțiunilor din platformă</CardDescription>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+            </div>
+          </CardHeader>
+        </Link>
       </Card>
 
       {/* Appearance - placeholder */}
