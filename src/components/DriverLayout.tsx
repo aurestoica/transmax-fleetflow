@@ -12,6 +12,7 @@ const driverLinks = [
   { key: 'nav.documents', to: '/driver/documents', icon: FileText },
   { key: 'nav.location', to: '/driver/location', icon: MapPin },
   { key: 'nav.chat', to: '/driver/chat', icon: MessageSquare },
+  { key: 'nav.profile', to: '/driver/profile', icon: User },
 ];
 
 export default function DriverLayout() {
