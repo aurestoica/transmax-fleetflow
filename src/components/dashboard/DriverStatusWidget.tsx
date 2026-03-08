@@ -49,9 +49,9 @@ export default function DriverStatusWidget() {
       <div className="px-4 md:px-5 py-4 border-b flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-primary" />
-          <h2 className="font-display font-semibold text-foreground">Status Șoferi</h2>
+          <h2 className="font-display font-semibold text-foreground">{t('widget.driverStatus')}</h2>
         </div>
-        <Link to="/drivers" className="text-sm text-primary hover:underline">Toți →</Link>
+        <Link to="/drivers" className="text-sm text-primary hover:underline">{t('widget.allDrivers')}</Link>
       </div>
       <div className="p-4 md:p-5">
         {/* Progress bar */}
