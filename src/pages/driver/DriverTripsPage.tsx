@@ -61,7 +61,7 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
         onClick={() => setExpanded(!expanded)}
         className="flex items-center gap-1 text-xs text-primary font-medium w-full justify-center py-1"
       >
-        {expanded ? 'Mai puține detalii' : 'Mai multe detalii'}
+        {expanded ? t('driver.lessDetails') : t('driver.moreDetails')}
         {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
       </button>
 
