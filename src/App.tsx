@@ -30,6 +30,7 @@ import DriverTripsPage from "@/pages/driver/DriverTripsPage";
 import DriverDocumentsPage from "@/pages/driver/DriverDocumentsPage";
 import DriverLocationPage from "@/pages/driver/DriverLocationPage";
 import DriverChatPage from "@/pages/driver/DriverChatPage";
+import DriverProfilePage from "@/pages/driver/DriverProfilePage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ function AppRoutes() {
           <Route path="/driver/documents" element={<DriverDocumentsPage />} />
           <Route path="/driver/location" element={<DriverLocationPage />} />
           <Route path="/driver/chat" element={<DriverChatPage />} />
+          <Route path="/driver/profile" element={<DriverProfilePage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

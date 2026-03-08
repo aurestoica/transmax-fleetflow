@@ -2,7 +2,7 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useI18n } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/auth-store';
 import { supabase } from '@/integrations/supabase/client';
-import { Route, FileText, MapPin, MessageSquare, LogOut, Truck } from 'lucide-react';
+import { Route, FileText, MapPin, MessageSquare, LogOut, Truck, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import NotificationBell from '@/components/NotificationBell';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
@@ -12,6 +12,7 @@ const driverLinks = [
   { key: 'nav.documents', to: '/driver/documents', icon: FileText },
   { key: 'nav.location', to: '/driver/location', icon: MapPin },
   { key: 'nav.chat', to: '/driver/chat', icon: MessageSquare },
+  { key: 'nav.profile', to: '/driver/profile', icon: User },
 ];
 
 export default function DriverLayout() {

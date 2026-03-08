@@ -14,6 +14,7 @@ export default function DriverChatPage() {
   const { t } = useI18n();
   const { userId, isAdmin } = useAuthStore();
   const [tripId, setTripId] = useState('');
+  const [tripLoading, setTripLoading] = useState(true);
   const [newMsg, setNewMsg] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { markAsRead } = useUnreadMessages();
@@ -24,13 +25,15 @@ export default function DriverChatPage() {
 
   useEffect(() => {
     const findTrip = async () => {
+      setTripLoading(true);
       const { data: driver } = await supabase.from('drivers').select('id').eq('user_id', userId!).single();
-      if (!driver) return;
+      if (!driver) { setTripLoading(false); return; }
       const { data: trip } = await supabase.from('trips')
         .select('id').eq('driver_id', driver.id)
         .in('status', ['planned', 'loading', 'in_transit', 'unloading'])
         .limit(1).single();
       if (trip) setTripId(trip.id);
+      setTripLoading(false);
     };
     findTrip();
   }, [userId]);
@@ -38,6 +41,7 @@ export default function DriverChatPage() {
   const handleSend = async () => { await sendMessage(newMsg); setNewMsg(''); };
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) uploadFile(file); };
 
+  if (tripLoading) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
   if (!tripId) return <div className="flex items-center justify-center h-64 text-muted-foreground">Nu ai o cursă activă pentru chat</div>;
 
   return (
