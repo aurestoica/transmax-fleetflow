@@ -91,6 +91,11 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebar
             >
               <Icon className="h-[18px] w-[18px] flex-shrink-0" />
               {showLabels && <span className="truncate">{t(key)}</span>}
+              {key === 'nav.chat' && unreadCount > 0 && (
+                <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </RouterNavLink>
           );
         })}
