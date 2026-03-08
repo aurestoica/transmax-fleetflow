@@ -1,9 +1,15 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/auth-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Send, Paperclip, Loader2 } from 'lucide-react';
+import ChatMessageBubble from '@/components/chat/ChatMessageBubble';
+import { useChatMessages } from '@/components/chat/useChatMessages';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Send, Paperclip, Loader2 } from 'lucide-react';
