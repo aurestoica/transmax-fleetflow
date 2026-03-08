@@ -20,7 +20,8 @@ export default function ChatPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { markAsRead } = useUnreadMessages();
 
-  useEffect(() => { markAsRead(); }, []);
+  // Mark as read when entering chat and when switching trips
+  useEffect(() => { markAsRead(); }, [selectedTrip]);
 
   const { messages, uploading, bottomRef, fileInputRef, sendMessage, editMessage, deleteMessage, uploadFile } = useChatMessages(selectedTrip, userId);
 

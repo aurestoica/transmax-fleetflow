@@ -19,7 +19,8 @@ export default function DriverChatPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { markAsRead } = useUnreadMessages();
 
-  useEffect(() => { markAsRead(); }, []);
+  // Mark as read when entering chat and when trip loads
+  useEffect(() => { if (tripId) markAsRead(); }, [tripId]);
 
   const { messages, uploading, bottomRef, fileInputRef, sendMessage, editMessage, deleteMessage, uploadFile } = useChatMessages(tripId, userId);
 
