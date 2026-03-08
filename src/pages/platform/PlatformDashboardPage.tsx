@@ -31,6 +31,8 @@ export default function PlatformDashboardPage() {
     const trips = tripsRes.data ?? [];
     const drivers = driversRes.data ?? [];
 
+    setPendingCompanies(companies.filter(c => c.pending_approval && !c.is_active));
+
     const totalRevenue = trips.reduce((sum, t) => sum + (Number(t.revenue) || 0), 0);
 
     setStats({
