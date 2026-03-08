@@ -29,10 +29,10 @@ export default function FleetOverviewWidget() {
   }
 
   const groups = [
-    { status: 'available', label: 'Disponibile', count: vehicles.filter(v => v.status === 'available').length, color: 'bg-green-500' },
-    { status: 'on_trip', label: 'În cursă', count: vehicles.filter(v => v.status === 'on_trip').length, color: 'bg-blue-500' },
-    { status: 'maintenance', label: 'Service', count: vehicles.filter(v => v.status === 'maintenance').length, color: 'bg-amber-500' },
-    { status: 'other', label: 'Altele', count: vehicles.filter(v => !['available', 'on_trip', 'maintenance'].includes(v.status ?? '')).length, color: 'bg-muted-foreground' },
+    { status: 'available', label: t('vehicleStatus.available'), count: vehicles.filter(v => v.status === 'available').length, color: 'bg-green-500' },
+    { status: 'on_trip', label: t('vehicleStatus.onTrip'), count: vehicles.filter(v => v.status === 'on_trip').length, color: 'bg-blue-500' },
+    { status: 'maintenance', label: t('vehicleStatus.maintenance'), count: vehicles.filter(v => v.status === 'maintenance').length, color: 'bg-amber-500' },
+    { status: 'other', label: t('vehicleStatus.other'), count: vehicles.filter(v => !['available', 'on_trip', 'maintenance'].includes(v.status ?? '')).length, color: 'bg-muted-foreground' },
   ];
 
   const total = vehicles.length;
