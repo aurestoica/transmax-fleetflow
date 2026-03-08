@@ -16,6 +16,7 @@ export default function PlatformLayout() {
   const { fullName, email } = useAuthStore();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { count: pendingCount } = usePendingCompanies();
 
   const navContent = (
     <>
