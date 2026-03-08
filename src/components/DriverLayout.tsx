@@ -6,6 +6,8 @@ import { Route, FileText, MapPin, MessageSquare, LogOut, Truck, User } from 'luc
 import { cn } from '@/lib/utils';
 import NotificationBell from '@/components/NotificationBell';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { useCompanyBranding } from '@/hooks/useCompanyBranding';
+import CompanyLogo from '@/components/CompanyLogo';
 
 const driverLinks = [
   { key: 'nav.myTrip', to: '/driver', icon: Route },
@@ -20,14 +22,21 @@ export default function DriverLayout() {
   const { fullName } = useAuthStore();
   const location = useLocation();
   const { unreadCount } = useUnreadMessages();
+  const branding = useCompanyBranding();
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {/* Top bar */}
       <header className="h-14 border-b bg-card flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <Truck className="h-6 w-6 text-primary" strokeWidth={1.5} />
-          <span className="font-display font-bold text-sm">TRANS MAX SIB</span>
+          {branding.name ? (
+            <CompanyLogo logoUrl={branding.logoUrl} name={branding.name} size="sm" />
+          ) : (
+            <>
+              <Truck className="h-6 w-6 text-primary" strokeWidth={1.5} />
+              <span className="font-display font-bold text-sm">TRANS MAX SIB</span>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <NotificationBell />

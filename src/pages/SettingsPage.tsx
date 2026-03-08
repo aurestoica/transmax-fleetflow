@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
+import { useRef } from 'react';
 import { Bell, Mail, Shield, Building2, Save, Loader2, ScrollText, ChevronRight, User, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -85,6 +86,7 @@ interface CompanyProfile {
   address: string;
   contact_email: string;
   contact_phone: string;
+  logo_url: string;
 }
 
 interface UserProfile {
@@ -103,10 +105,12 @@ export default function SettingsPage() {
   const [originalSettings, setOriginalSettings] = useState<NotificationSettings>(defaultSettings);
 
   // Company profile state
-  const [company, setCompany] = useState<CompanyProfile>({ name: '', cif: '', address: '', contact_email: '', contact_phone: '' });
-  const [originalCompany, setOriginalCompany] = useState<CompanyProfile>({ name: '', cif: '', address: '', contact_email: '', contact_phone: '' });
+  const [company, setCompany] = useState<CompanyProfile>({ name: '', cif: '', address: '', contact_email: '', contact_phone: '', logo_url: '' });
+  const [originalCompany, setOriginalCompany] = useState<CompanyProfile>({ name: '', cif: '', address: '', contact_email: '', contact_phone: '', logo_url: '' });
   const [companyEditing, setCompanyEditing] = useState(false);
   const [companySaving, setCompanySaving] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   // User profile state
   const [profile, setProfile] = useState<UserProfile>({ full_name: '', phone: '', email: '' });
@@ -158,7 +162,7 @@ export default function SettingsPage() {
       if (companyId) {
         const { data: companyData } = await supabase
           .from('companies')
-          .select('name, cif, address, contact_email, contact_phone')
+          .select('name, cif, address, contact_email, contact_phone, logo_url')
           .eq('id', companyId)
           .single();
         if (companyData) {
@@ -168,6 +172,7 @@ export default function SettingsPage() {
             address: companyData.address || '',
             contact_email: companyData.contact_email || '',
             contact_phone: companyData.contact_phone || '',
+            logo_url: (companyData as any).logo_url || '',
           };
           setCompany(c);
           setOriginalCompany(c);
@@ -211,7 +216,8 @@ export default function SettingsPage() {
         address: company.address || null,
         contact_email: company.contact_email || null,
         contact_phone: company.contact_phone || null,
-      })
+        logo_url: company.logo_url || null,
+      } as any)
       .eq('id', companyId);
     setCompanySaving(false);
     if (error) {
@@ -220,6 +226,29 @@ export default function SettingsPage() {
       setOriginalCompany(company);
       setCompanyEditing(false);
       toast({ title: 'Profil companie actualizat' });
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !companyId) return;
+    setLogoUploading(true);
+    try {
+      const ext = file.name.split('.').pop() || 'png';
+      const filePath = `logos/${companyId}.${ext}`;
+      const { error: uploadErr } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      const logoUrl = urlData.publicUrl + '?t=' + Date.now();
+      await supabase.from('companies').update({ logo_url: logoUrl } as any).eq('id', companyId);
+      setCompany(prev => ({ ...prev, logo_url: logoUrl }));
+      setOriginalCompany(prev => ({ ...prev, logo_url: logoUrl }));
+      toast({ title: 'Logo actualizat' });
+    } catch (err: any) {
+      toast({ title: 'Eroare', description: err.message, variant: 'destructive' });
+    } finally {
+      setLogoUploading(false);
+      if (logoInputRef.current) logoInputRef.current.value = '';
     }
   };
 
@@ -356,6 +385,28 @@ export default function SettingsPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Logo upload */}
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 rounded-full border-2 border-border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                {company.logo_url ? (
+                  <img src={company.logo_url} alt="Logo" className="h-full w-full object-cover" />
+                ) : (
+                  <Building2 className="h-7 w-7 text-muted-foreground" />
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-medium">Logo companie</p>
+                <p className="text-xs text-muted-foreground mb-2">Imaginea va apărea în sidebar-ul tuturor utilizatorilor companiei</p>
+                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} disabled={logoUploading}>
+                  {logoUploading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Pencil className="h-3 w-3 mr-1" />}
+                  {company.logo_url ? 'Schimbă logo' : 'Încarcă logo'}
+                </Button>
+              </div>
+            </div>
+
+            <Separator />
+
             {companyEditing ? (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -390,6 +441,7 @@ export default function SettingsPage() {
                   </Button>
                 </div>
               </>
+
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

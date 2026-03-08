@@ -106,6 +106,7 @@ export type Database = {
           created_at: string | null
           id: string
           is_active: boolean
+          logo_url: string | null
           name: string
           updated_at: string | null
         }
@@ -117,6 +118,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean
+          logo_url?: string | null
           name: string
           updated_at?: string | null
         }
@@ -128,6 +130,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean
+          logo_url?: string | null
           name?: string
           updated_at?: string | null
         }

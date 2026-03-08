@@ -7,9 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2, Users, Truck, Route, ArrowLeft, Plus, Check, X, Shield, DollarSign, Pencil, Trash2, Container } from 'lucide-react';
+import { Building2, Users, Truck, Route, ArrowLeft, Plus, Check, X, Shield, DollarSign, Pencil, Trash2, Container, Loader2, Camera } from 'lucide-react';
 import StatusBadge from '@/components/StatusBadge';
 import { toast } from 'sonner';
+import { useRef, useState as useStateExtra } from 'react';
 
 export default function CompanyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -129,8 +130,12 @@ export default function CompanyDetailPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Building2 className="h-6 w-6 text-primary" />
+          <div className="h-12 w-12 rounded-full border-2 border-border bg-muted flex items-center justify-center overflow-hidden">
+            {company.logo_url ? (
+              <img src={company.logo_url} alt={company.name} className="h-full w-full object-cover" />
+            ) : (
+              <Building2 className="h-6 w-6 text-muted-foreground" />
+            )}
           </div>
           <div>
             <h1 className="text-2xl font-display font-bold text-foreground">{company.name}</h1>
@@ -163,6 +168,35 @@ export default function CompanyDetailPage() {
         <DialogContent>
           <DialogHeader><DialogTitle>Editare companie</DialogTitle></DialogHeader>
           <div className="space-y-4">
+            {/* Logo upload */}
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 rounded-full border-2 border-border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                {company?.logo_url ? (
+                  <img src={company.logo_url} alt="Logo" className="h-full w-full object-cover" />
+                ) : (
+                  <Building2 className="h-6 w-6 text-muted-foreground" />
+                )}
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Logo companie</p>
+                <input id="platform-logo-input" type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file || !id) return;
+                  const ext = file.name.split('.').pop() || 'png';
+                  const filePath = `logos/${id}.${ext}`;
+                  const { error: uploadErr } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+                  if (uploadErr) { toast.error(uploadErr.message); return; }
+                  const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
+                  const logoUrl = urlData.publicUrl + '?t=' + Date.now();
+                  await supabase.from('companies').update({ logo_url: logoUrl } as any).eq('id', id);
+                  toast.success('Logo actualizat!');
+                  loadData();
+                }} />
+                <Button variant="outline" size="sm" onClick={() => document.getElementById('platform-logo-input')?.click()}>
+                  <Camera className="h-3 w-3 mr-1" />{company?.logo_url ? 'Schimbă' : 'Încarcă'}
+                </Button>
+              </div>
+            </div>
             <div className="space-y-2"><Label>Nume companie *</Label><Input value={companyForm.name} onChange={e => setCompanyForm({ ...companyForm, name: e.target.value })} /></div>
             <div className="space-y-2"><Label>CIF</Label><Input value={companyForm.cif} onChange={e => setCompanyForm({ ...companyForm, cif: e.target.value })} /></div>
             <div className="space-y-2"><Label>Adresă</Label><Input value={companyForm.address} onChange={e => setCompanyForm({ ...companyForm, address: e.target.value })} /></div>
