@@ -1,18 +1,32 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import StatusBadge from '@/components/StatusBadge';
-import { ArrowLeft, Phone, Mail, CreditCard, Calendar, Star, Route, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { ArrowLeft, Phone, Mail, CreditCard, Star, Route, FileText, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 export default function DriverDetailPage() {
   const { id } = useParams();
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [driver, setDriver] = useState<any>(null);
   const [trips, setTrips] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Edit
+  const [editOpen, setEditOpen] = useState(false);
+  const [form, setForm] = useState({ full_name: '', phone: '', email: '', license_number: '', license_expiry: '', tachograph_card: '', tachograph_expiry: '', notes: '' });
+
+  // Delete
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => { loadData(); }, [id]);
 
@@ -28,6 +42,35 @@ export default function DriverDetailPage() {
     setLoading(false);
   };
 
+  const openEdit = () => {
+    setForm({
+      full_name: driver.full_name || '',
+      phone: driver.phone || '',
+      email: driver.email || '',
+      license_number: driver.license_number || '',
+      license_expiry: driver.license_expiry || '',
+      tachograph_card: driver.tachograph_card || '',
+      tachograph_expiry: driver.tachograph_expiry || '',
+      notes: driver.notes || '',
+    });
+    setEditOpen(true);
+  };
+
+  const handleSave = async () => {
+    const { error } = await supabase.from('drivers').update(form).eq('id', id!);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Șofer actualizat!');
+    setEditOpen(false);
+    loadData();
+  };
+
+  const handleDelete = async () => {
+    const { error } = await supabase.from('drivers').delete().eq('id', id!);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Șofer șters!');
+    navigate('/drivers');
+  };
+
   if (loading || !driver) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
 
   const isExpiringSoon = (date: string | null) => {
@@ -35,18 +78,52 @@ export default function DriverDetailPage() {
     const diff = (new Date(date).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
     return diff >= 0 && diff <= 30;
   };
-  const isExpired = (date: string | null) => {
-    if (!date) return false;
-    return new Date(date) < new Date();
-  };
+  const isExpired = (date: string | null) => date ? new Date(date) < new Date() : false;
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
         <Link to="/drivers" className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></Link>
-        <h1 className="page-title">{driver.full_name}</h1>
+        <h1 className="page-title flex-1">{driver.full_name}</h1>
         <StatusBadge status={driver.status} />
+        <Button variant="outline" size="sm" onClick={openEdit}><Pencil className="h-3.5 w-3.5 mr-1" />Editează</Button>
+        <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteOpen(true)}><Trash2 className="h-3.5 w-3.5" /></Button>
       </div>
+
+      {/* Edit dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Editare șofer</DialogTitle></DialogHeader>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2 space-y-2"><Label>Nume complet *</Label><Input value={form.full_name} onChange={e => setForm({...form, full_name: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Telefon</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Email</Label><Input value={form.email} onChange={e => setForm({...form, email: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Nr. permis</Label><Input value={form.license_number} onChange={e => setForm({...form, license_number: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Expirare permis</Label><Input type="date" value={form.license_expiry} onChange={e => setForm({...form, license_expiry: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Card tahograf</Label><Input value={form.tachograph_card} onChange={e => setForm({...form, tachograph_card: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Expirare tahograf</Label><Input type="date" value={form.tachograph_expiry} onChange={e => setForm({...form, tachograph_expiry: e.target.value})} /></div>
+            <div className="col-span-2 space-y-2"><Label>Notițe</Label><Input value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} /></div>
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setEditOpen(false)}>{t('common.cancel')}</Button>
+            <Button onClick={handleSave} disabled={!form.full_name}>{t('common.save')}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ștergi șoferul?</AlertDialogTitle>
+            <AlertDialogDescription>Această acțiune nu poate fi anulată. Șoferul va fi șters permanent.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Anulează</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Șterge</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Info */}
