@@ -25,11 +25,20 @@ export default function DriversPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [pendingRequests, setPendingRequests] = useState<Record<string, number>>({});
 
   useEffect(() => { loadData(); }, []);
   const loadData = async () => {
-    const { data } = await supabase.from('drivers').select('*').order('full_name');
-    setDrivers(data ?? []); setLoading(false);
+    const [driversRes, requestsRes] = await Promise.all([
+      supabase.from('drivers').select('*').order('full_name'),
+      supabase.from('profile_change_requests').select('driver_id').eq('status', 'pending'),
+    ]);
+    setDrivers(driversRes.data ?? []);
+    // Count pending requests per driver
+    const counts: Record<string, number> = {};
+    (requestsRes.data ?? []).forEach((r: any) => { counts[r.driver_id] = (counts[r.driver_id] || 0) + 1; });
+    setPendingRequests(counts);
+    setLoading(false);
 
     // Auto-open edit dialog if highlight param is present
     const highlightId = searchParams.get('highlight');
