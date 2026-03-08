@@ -30,6 +30,7 @@ import DriverTripsPage from "@/pages/driver/DriverTripsPage";
 import DriverDocumentsPage from "@/pages/driver/DriverDocumentsPage";
 import DriverLocationPage from "@/pages/driver/DriverLocationPage";
 import DriverChatPage from "@/pages/driver/DriverChatPage";
+import DriverProfilePage from "@/pages/driver/DriverProfilePage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
