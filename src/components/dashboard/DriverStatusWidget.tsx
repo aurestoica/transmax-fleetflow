@@ -66,7 +66,7 @@ export default function DriverStatusWidget() {
           {statusGroups.map(g => (
             <div key={g.status} className="flex items-center gap-2">
               <div className={cn('w-2.5 h-2.5 rounded-full', g.color)} />
-              <span className="text-sm text-muted-foreground">{statusLabels[g.status]}</span>
+              <span className="text-sm text-muted-foreground">{g.label}</span>
               <span className="text-sm font-semibold text-foreground ml-auto">{g.count}</span>
             </div>
           ))}
