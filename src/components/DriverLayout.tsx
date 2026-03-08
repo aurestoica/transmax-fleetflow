@@ -6,6 +6,8 @@ import { Route, FileText, MapPin, MessageSquare, LogOut, Truck, User } from 'luc
 import { cn } from '@/lib/utils';
 import NotificationBell from '@/components/NotificationBell';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { useCompanyBranding } from '@/hooks/useCompanyBranding';
+import CompanyLogo from '@/components/CompanyLogo';
 
 const driverLinks = [
   { key: 'nav.myTrip', to: '/driver', icon: Route },
