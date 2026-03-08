@@ -158,15 +158,21 @@ export default function DriversPage() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map(driver => (
-          <div key={driver.id} className="bg-card rounded-xl border p-4" style={{ boxShadow: 'var(--shadow-card)' }}>
-            <div className="flex items-start justify-between mb-3">
-              <div>
+          <div key={driver.id} className="bg-card rounded-xl border p-4 relative" style={{ boxShadow: 'var(--shadow-card)' }}>
+            {pendingRequests[driver.id] && (
+              <div className="absolute -top-1.5 -right-1.5">
+                <Badge variant="destructive" className="h-5 min-w-5 px-1 text-[10px] font-bold flex items-center gap-0.5">
+                  <Clock className="h-2.5 w-2.5" />{pendingRequests[driver.id]}
+                </Badge>
+              </div>
+            )}
+            <div className="flex items-start gap-3 mb-3">
+              <DriverAvatarDisplay avatarUrl={driver.avatar_url} driverName={driver.full_name} size="sm" />
+              <div className="flex-1 min-w-0">
                 <Link to={`/drivers/${driver.id}`} className="font-semibold text-foreground hover:text-primary transition-colors">{driver.full_name}</Link>
                 <div className="text-xs text-muted-foreground">⭐ {driver.rating}</div>
               </div>
-              <div className="flex items-center gap-1">
-                <StatusBadge status={driver.status} />
-              </div>
+              <StatusBadge status={driver.status} />
             </div>
             <div className="space-y-1 text-sm text-muted-foreground">
               {driver.phone && <div className="flex items-center gap-2"><Phone className="h-3.5 w-3.5" />{driver.phone}</div>}
