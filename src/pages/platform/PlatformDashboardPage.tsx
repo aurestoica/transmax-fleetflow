@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { usePendingCompanies } from '@/hooks/usePendingCompanies';
 
 export default function PlatformDashboardPage() {
+  const { t } = useI18n();
   const [stats, setStats] = useState({ companies: 0, users: 0, vehicles: 0, trips: 0, drivers: 0, totalRevenue: 0 });
   const [companyStats, setCompanyStats] = useState<any[]>([]);
   const [pendingCompanies, setPendingCompanies] = useState<any[]>([]);
