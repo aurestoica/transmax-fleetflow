@@ -97,7 +97,7 @@ interface UserProfile {
 
 export default function SettingsPage() {
   const { userId, companyId, isOwner } = useAuthStore();
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const [settings, setSettings] = useState<NotificationSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

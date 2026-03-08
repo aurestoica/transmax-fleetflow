@@ -88,7 +88,7 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
           {trip.observations && (
             <div className="flex items-start gap-2 text-muted-foreground">
               <MessageSquare className="h-3.5 w-3.5 mt-0.5" />
-              <span>Observații: <span className="text-foreground">{trip.observations}</span></span>
+              <span>{t('driver.observations')}: <span className="text-foreground">{trip.observations}</span></span>
             </div>
           )}
           {trip.clients?.contact_phone && (
