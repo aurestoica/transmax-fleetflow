@@ -82,7 +82,7 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
           {trip.distance_km && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <MapPin className="h-3.5 w-3.5" />
-              <span>Distanță: <span className="text-foreground">{trip.distance_km} km</span></span>
+              <span>{t('driver.distance')}: <span className="text-foreground">{trip.distance_km} km</span></span>
             </div>
           )}
           {trip.observations && (
