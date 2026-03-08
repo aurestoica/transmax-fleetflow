@@ -126,9 +126,15 @@ export default function DriverDocumentsPage() {
       <h1 className="text-xl font-display font-bold mb-4">{t('nav.documents')}</h1>
       <p className="text-sm text-muted-foreground mb-6">{t('driver.uploadDoc')}</p>
 
-      {activeTrip && (
+      {activeTrip ? (
         <div className="text-xs text-muted-foreground mb-4 bg-muted/50 rounded-lg px-3 py-2">
           Cursă activă: <span className="font-semibold text-foreground">{activeTrip.trip_number}</span>
+        </div>
+      ) : (
+        <div className="mb-6 bg-muted/50 rounded-xl p-6 text-center">
+          <div className="text-3xl mb-2">📋</div>
+          <div className="font-medium text-foreground mb-1">Nu ai o cursă activă</div>
+          <div className="text-sm text-muted-foreground">Documentele pot fi încărcate doar când ai o cursă activă (planificată, la încărcare, în tranzit sau la descărcare). Contactează dispeceratul pentru atribuirea unei curse.</div>
         </div>
       )}
 
