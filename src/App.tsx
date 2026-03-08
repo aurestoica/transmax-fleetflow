@@ -115,6 +115,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="*" element={
             <AuthProvider>
               <AppRoutes />
