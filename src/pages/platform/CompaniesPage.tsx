@@ -124,7 +124,15 @@ export default function CompaniesPage() {
     loadData();
   };
 
-  const filtered = companies.filter(c => !search || c.name?.toLowerCase().includes(search.toLowerCase()) || c.cif?.toLowerCase().includes(search.toLowerCase()));
+  const pendingCount = companies.filter(c => c.pending_approval && !c.is_active).length;
+  const filtered = companies
+    .filter(c => !search || c.name?.toLowerCase().includes(search.toLowerCase()) || c.cif?.toLowerCase().includes(search.toLowerCase()))
+    .filter(c => {
+      if (filter === 'pending') return c.pending_approval && !c.is_active;
+      if (filter === 'active') return c.is_active;
+      if (filter === 'inactive') return !c.is_active && !c.pending_approval;
+      return true;
+    });
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">Se încarcă...</div>;
 
