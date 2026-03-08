@@ -1,17 +1,31 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import StatusBadge from '@/components/StatusBadge';
-import { ArrowLeft, Building2, Phone, Mail, MapPin, Route, DollarSign } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { ArrowLeft, Building2, Phone, Mail, MapPin, Route, DollarSign, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 export default function ClientDetailPage() {
   const { id } = useParams();
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [client, setClient] = useState<any>(null);
   const [trips, setTrips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Edit
+  const [editOpen, setEditOpen] = useState(false);
+  const [form, setForm] = useState({ company_name: '', cif: '', address: '', contact_name: '', contact_email: '', contact_phone: '', rate_per_km: '' });
+
+  // Delete
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => { loadData(); }, [id]);
 
@@ -23,6 +37,35 @@ export default function ClientDetailPage() {
     setClient(cRes.data);
     setTrips(tripsRes.data ?? []);
     setLoading(false);
+  };
+
+  const openEdit = () => {
+    setForm({
+      company_name: client.company_name || '',
+      cif: client.cif || '',
+      address: client.address || '',
+      contact_name: client.contact_name || '',
+      contact_email: client.contact_email || '',
+      contact_phone: client.contact_phone || '',
+      rate_per_km: client.rate_per_km?.toString() || '',
+    });
+    setEditOpen(true);
+  };
+
+  const handleSave = async () => {
+    const payload = { ...form, rate_per_km: form.rate_per_km ? parseFloat(form.rate_per_km) : null };
+    const { error } = await supabase.from('clients').update(payload).eq('id', id!);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Client actualizat!');
+    setEditOpen(false);
+    loadData();
+  };
+
+  const handleDelete = async () => {
+    const { error } = await supabase.from('clients').delete().eq('id', id!);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Client șters!');
+    navigate('/clients');
   };
 
   if (loading || !client) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
@@ -39,8 +82,44 @@ export default function ClientDetailPage() {
       <div className="flex items-center gap-3 mb-6">
         <Link to="/clients" className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></Link>
         <Building2 className="h-5 w-5 text-primary" />
-        <h1 className="page-title">{client.company_name}</h1>
+        <h1 className="page-title flex-1">{client.company_name}</h1>
+        <Button variant="outline" size="sm" onClick={openEdit}><Pencil className="h-3.5 w-3.5 mr-1" />Editează</Button>
+        <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteOpen(true)}><Trash2 className="h-3.5 w-3.5" /></Button>
       </div>
+
+      {/* Edit dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Editare client</DialogTitle></DialogHeader>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2 space-y-2"><Label>Numele firmei *</Label><Input value={form.company_name} onChange={e => setForm({...form, company_name: e.target.value})} /></div>
+            <div className="space-y-2"><Label>CIF</Label><Input value={form.cif} onChange={e => setForm({...form, cif: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Persoana contact</Label><Input value={form.contact_name} onChange={e => setForm({...form, contact_name: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Email</Label><Input value={form.contact_email} onChange={e => setForm({...form, contact_email: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Telefon</Label><Input value={form.contact_phone} onChange={e => setForm({...form, contact_phone: e.target.value})} /></div>
+            <div className="col-span-2 space-y-2"><Label>Adresă</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} /></div>
+            <div className="space-y-2"><Label>Tarif €/km</Label><Input type="number" step="0.01" value={form.rate_per_km} onChange={e => setForm({...form, rate_per_km: e.target.value})} /></div>
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setEditOpen(false)}>{t('common.cancel')}</Button>
+            <Button onClick={handleSave} disabled={!form.company_name}>{t('common.save')}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ștergi clientul?</AlertDialogTitle>
+            <AlertDialogDescription>Această acțiune nu poate fi anulată. Clientul va fi șters permanent.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Anulează</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Șterge</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Info */}
