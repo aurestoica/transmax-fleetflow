@@ -139,9 +139,23 @@ export default function LoginPage() {
 
               <form onSubmit={handleLogin} className="space-y-4">
                 {error && (
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                    {error}
+                  <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                      {error}
+                    </div>
+                    {showForgot && !forgotSent && (
+                      <button
+                        onClick={handleForgotPassword}
+                        disabled={forgotLoading}
+                        className="mt-2 text-xs underline underline-offset-2 opacity-80 hover:opacity-100 transition-opacity"
+                      >
+                        {forgotLoading ? t('auth.sending') : t('auth.forgotPassword')}
+                      </button>
+                    )}
+                    {forgotSent && (
+                      <p className="mt-2 text-xs opacity-80">{t('auth.forgotSent')}</p>
+                    )}
                   </div>
                 )}
 
@@ -163,21 +177,6 @@ export default function LoginPage() {
                   )}
                 </Button>
               </form>
-
-              {showForgot && !forgotSent && (
-                <button
-                  onClick={handleForgotPassword}
-                  disabled={forgotLoading}
-                  className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {forgotLoading ? t('auth.sending') : t('auth.forgotPassword')}
-                </button>
-              )}
-              {forgotSent && (
-                <p className="mt-3 text-xs text-muted-foreground text-center">
-                  {t('auth.forgotSent')}
-                </p>
-              )}
 
               <div className="mt-6">
                 <button
