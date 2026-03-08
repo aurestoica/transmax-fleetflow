@@ -217,6 +217,8 @@ export default function AboutPage() {
             features={adminFeatures}
             color="bg-primary"
             icon={Shield}
+            mockupImg={mockAdminDashboard}
+            mockupAlt="Admin Dashboard Preview"
           />
 
           <RoleSection
@@ -225,6 +227,8 @@ export default function AboutPage() {
             features={dispatcherFeatures}
             color="bg-[hsl(var(--info))]"
             icon={Users}
+            mockupImg={mockDispatcherView}
+            mockupAlt="Dispatcher View Preview"
           />
 
           <RoleSection
@@ -233,6 +237,8 @@ export default function AboutPage() {
             features={driverFeatures}
             color="bg-[hsl(var(--success))]"
             icon={Truck}
+            mockupImg={mockDriverMobile}
+            mockupAlt="Driver Mobile App Preview"
           />
         </div>
       </section>
