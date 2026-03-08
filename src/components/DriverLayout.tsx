@@ -22,6 +22,7 @@ export default function DriverLayout() {
   const { fullName } = useAuthStore();
   const location = useLocation();
   const { unreadCount } = useUnreadMessages();
+  const branding = useCompanyBranding();
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
