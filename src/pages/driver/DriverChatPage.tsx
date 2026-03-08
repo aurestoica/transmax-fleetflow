@@ -39,7 +39,10 @@ export default function DriverChatPage() {
     findTrip();
   }, [userId]);
 
-  const handleSend = async () => { await sendMessage(newMsg); setNewMsg(''); };
+  const handleSend = async () => {
+    const sent = await sendMessage(newMsg);
+    if (sent) setNewMsg('');
+  };
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) uploadFile(file); };
 
   if (tripLoading) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
