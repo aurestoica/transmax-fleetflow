@@ -150,7 +150,7 @@ export default function DriversPage() {
           <div key={driver.id} className="bg-card rounded-xl border p-4" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div className="flex items-start justify-between mb-3">
               <div>
-                <div className="font-semibold text-foreground">{driver.full_name}</div>
+                <Link to={`/drivers/${driver.id}`} className="font-semibold text-foreground hover:text-primary transition-colors">{driver.full_name}</Link>
                 <div className="text-xs text-muted-foreground">⭐ {driver.rating}</div>
               </div>
               <div className="flex items-center gap-1">

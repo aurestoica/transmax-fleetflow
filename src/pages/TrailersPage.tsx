@@ -223,7 +223,7 @@ export default function TrailersPage() {
         {filtered.map(tr => (
           <div key={tr.id} className="bg-card rounded-xl border p-4" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div className="flex items-start justify-between mb-2">
-              <div className="font-display font-semibold">{tr.plate_number}</div>
+              <Link to={`/trailers/${tr.id}`} className="font-display font-semibold hover:text-primary transition-colors">{tr.plate_number}</Link>
               <StatusBadge status={tr.status} />
             </div>
             <div className="text-xs text-muted-foreground space-y-1">
