@@ -142,6 +142,54 @@ export default function TripDetailPage() {
     loadTrip();
   };
 
+  const startEditTrip = () => {
+    const toLocal = (d: string | null) => {
+      if (!d) return '';
+      try { return format(new Date(d), "yyyy-MM-dd'T'HH:mm"); } catch { return ''; }
+    };
+    setTripForm({
+      client_id: trip.client_id || '',
+      driver_id: trip.driver_id || '',
+      vehicle_id: trip.vehicle_id || '',
+      trailer_id: trip.trailer_id || '',
+      pickup_address: trip.pickup_address || '',
+      pickup_date: toLocal(trip.pickup_date),
+      delivery_address: trip.delivery_address || '',
+      delivery_date: toLocal(trip.delivery_date),
+      cargo_type: trip.cargo_type || '',
+      weight_tons: trip.weight_tons?.toString() || '',
+      observations: trip.observations || '',
+    });
+    setEditingTrip(true);
+  };
+
+  const saveTrip = async () => {
+    setSavingTrip(true);
+    const { error } = await supabase.from('trips').update({
+      client_id: tripForm.client_id || null,
+      driver_id: tripForm.driver_id || null,
+      vehicle_id: tripForm.vehicle_id || null,
+      trailer_id: tripForm.trailer_id || null,
+      pickup_address: tripForm.pickup_address,
+      delivery_address: tripForm.delivery_address,
+      pickup_date: tripForm.pickup_date || null,
+      delivery_date: tripForm.delivery_date || null,
+      cargo_type: tripForm.cargo_type || null,
+      weight_tons: tripForm.weight_tons ? parseFloat(tripForm.weight_tons) : null,
+      observations: tripForm.observations || null,
+    }).eq('id', id!);
+    setSavingTrip(false);
+    if (error) { toast.error(error.message); return; }
+    await supabase.from('trip_events').insert({
+      trip_id: id!, user_id: userId,
+      event_type: 'edit',
+      description: 'Detalii cursă editate'
+    });
+    toast.success('Cursă actualizată!');
+    setEditingTrip(false);
+    loadTrip();
+  };
+
   const saveFinancial = async () => {
     setSavingFin(true);
     const { error } = await supabase.from('trips').update({
