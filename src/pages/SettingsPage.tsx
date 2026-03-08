@@ -216,7 +216,8 @@ export default function SettingsPage() {
         address: company.address || null,
         contact_email: company.contact_email || null,
         contact_phone: company.contact_phone || null,
-      })
+        logo_url: company.logo_url || null,
+      } as any)
       .eq('id', companyId);
     setCompanySaving(false);
     if (error) {
@@ -225,6 +226,29 @@ export default function SettingsPage() {
       setOriginalCompany(company);
       setCompanyEditing(false);
       toast({ title: 'Profil companie actualizat' });
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !companyId) return;
+    setLogoUploading(true);
+    try {
+      const ext = file.name.split('.').pop() || 'png';
+      const filePath = `logos/${companyId}.${ext}`;
+      const { error: uploadErr } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      const logoUrl = urlData.publicUrl + '?t=' + Date.now();
+      await supabase.from('companies').update({ logo_url: logoUrl } as any).eq('id', companyId);
+      setCompany(prev => ({ ...prev, logo_url: logoUrl }));
+      setOriginalCompany(prev => ({ ...prev, logo_url: logoUrl }));
+      toast({ title: 'Logo actualizat' });
+    } catch (err: any) {
+      toast({ title: 'Eroare', description: err.message, variant: 'destructive' });
+    } finally {
+      setLogoUploading(false);
+      if (logoInputRef.current) logoInputRef.current.value = '';
     }
   };
 
