@@ -39,7 +39,7 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
         <div className="flex items-start gap-2">
           <MapPin className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
           <div>
-            <div className="text-xs text-muted-foreground">Încărcare</div>
+            <div className="text-xs text-muted-foreground">{t('driver.loading')}</div>
             <div>{trip.pickup_address}</div>
             {trip.pickup_date && <div className="text-xs text-muted-foreground">{format(new Date(trip.pickup_date), 'dd.MM.yyyy HH:mm')}</div>}
           </div>
