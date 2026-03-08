@@ -57,7 +57,7 @@ export function useDashboardLayout() {
       const saved = data.layout as unknown as WidgetLayout[];
       const merged = WIDGET_REGISTRY.map(w => {
         const found = saved.find(s => s.id === w.id);
-        return found ?? { id: w.id, visible: w.defaultVisible };
+        return found ? { ...found, size: found.size || w.size } : { id: w.id, visible: w.defaultVisible, size: w.size };
       });
       // Preserve saved order, add new ones at end
       const ordered: WidgetLayout[] = [];
