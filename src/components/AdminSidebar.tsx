@@ -4,7 +4,7 @@ import { useAuthStore } from '@/lib/auth-store';
 import { supabase } from '@/integrations/supabase/client';
 import {
   LayoutDashboard, Route, Users, Truck, Container, Building2,
-  DollarSign, MessageSquare, Settings, LogOut, ChevronLeft, ChevronRight, Globe, FileText, X, MapPin
+  DollarSign, MessageSquare, Settings, LogOut, ChevronLeft, ChevronRight, Globe, FileText, X, MapPin, UserCog
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -21,7 +21,8 @@ const adminLinks = [
   { key: 'nav.map', to: '/map', icon: MapPin },
   { key: 'nav.financial', to: '/financial', icon: DollarSign },
   { key: 'nav.chat', to: '/chat', icon: MessageSquare },
-  { key: 'nav.users', to: '/users', icon: Settings },
+  { key: 'nav.users', to: '/users', icon: UserCog },
+  { key: 'nav.settings', to: '/settings', icon: Settings },
 ];
 
 const langLabels: Record<Language, string> = { ro: '🇷🇴', en: '🇬🇧', es: '🇪🇸' };
