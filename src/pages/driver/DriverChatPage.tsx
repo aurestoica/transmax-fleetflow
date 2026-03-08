@@ -14,6 +14,7 @@ export default function DriverChatPage() {
   const { t } = useI18n();
   const { userId, isAdmin } = useAuthStore();
   const [tripId, setTripId] = useState('');
+  const [tripLoading, setTripLoading] = useState(true);
   const [newMsg, setNewMsg] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { markAsRead } = useUnreadMessages();
