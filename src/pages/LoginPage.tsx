@@ -33,6 +33,10 @@ export default function LoginPage() {
   const [regError, setRegError] = useState('');
   const [regLoading, setRegLoading] = useState(false);
 
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -40,10 +44,24 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setError(t('auth.loginError'));
+      setShowForgot(true);
     } else {
       navigate('/', { replace: true });
     }
     setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError(t('auth.enterEmailFirst'));
+      return;
+    }
+    setForgotLoading(true);
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setForgotLoading(false);
+    setForgotSent(true);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
