@@ -105,7 +105,7 @@ export default function PlatformDashboardPage() {
                     <div className="text-xs text-muted-foreground">{c.contact_email || t('platform.noEmail')} • {c.cif || t('platform.noCif')}</div>
                   </div>
                   <span className="text-[10px] font-medium bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 px-2 py-0.5 rounded-full whitespace-nowrap">
-                    Așteaptă aprobare
+                    {t('platform.awaitingApproval')}
                   </span>
                 </div>
               </Link>
