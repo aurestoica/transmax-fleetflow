@@ -162,7 +162,7 @@ export default function SettingsPage() {
       if (companyId) {
         const { data: companyData } = await supabase
           .from('companies')
-          .select('name, cif, address, contact_email, contact_phone')
+          .select('name, cif, address, contact_email, contact_phone, logo_url')
           .eq('id', companyId)
           .single();
         if (companyData) {
@@ -172,6 +172,7 @@ export default function SettingsPage() {
             address: companyData.address || '',
             contact_email: companyData.contact_email || '',
             contact_phone: companyData.contact_phone || '',
+            logo_url: (companyData as any).logo_url || '',
           };
           setCompany(c);
           setOriginalCompany(c);
