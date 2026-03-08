@@ -46,7 +46,7 @@ export default function TripDetailPage() {
     cargo_type: '', weight_tons: '', observations: ''
   });
 
-  useEffect(() => { loadTrip(); }, [id]);
+  useEffect(() => { loadTrip(); loadDropdowns(); }, [id]);
 
   // Realtime location updates for this trip
   useEffect(() => {
