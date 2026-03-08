@@ -329,9 +329,10 @@ export default function TripDetailPage() {
                     {trip.delivery_date && <div className="text-xs text-muted-foreground">{format(new Date(trip.delivery_date), 'dd.MM.yyyy HH:mm')}</div>}
                   </div>
                 </div>
-                {trip.clients?.company_name && <div className="flex items-center gap-3"><Package className="h-4 w-4 text-muted-foreground" /><span>Client: {trip.clients.company_name}</span></div>}
-                {trip.drivers?.full_name && <div className="flex items-center gap-3"><User className="h-4 w-4 text-muted-foreground" /><span>Șofer: {trip.drivers.full_name}</span></div>}
-                {trip.vehicles?.plate_number && <div className="flex items-center gap-3"><Truck className="h-4 w-4 text-muted-foreground" /><span>{trip.vehicles.plate_number} - {trip.vehicles.model}</span></div>}
+                {trip.clients?.company_name && <div className="flex items-center gap-3"><Package className="h-4 w-4 text-muted-foreground" /><span>Client: <Link to="/clients" className="text-primary hover:underline">{trip.clients.company_name}</Link></span></div>}
+                {trip.drivers?.full_name && <div className="flex items-center gap-3"><User className="h-4 w-4 text-muted-foreground" /><span>Șofer: <Link to="/drivers" className="text-primary hover:underline">{trip.drivers.full_name}</Link></span></div>}
+                {trip.vehicles?.plate_number && <div className="flex items-center gap-3"><Truck className="h-4 w-4 text-muted-foreground" /><span><Link to="/vehicles" className="text-primary hover:underline">{trip.vehicles.plate_number} - {trip.vehicles.model}</Link></span></div>}
+                {trip.trailers?.plate_number && <div className="flex items-center gap-3"><Truck className="h-4 w-4 text-muted-foreground" /><span>Remorcă: <Link to="/trailers" className="text-primary hover:underline">{trip.trailers.plate_number}</Link></span></div>}
                 {trip.cargo_type && <div className="text-muted-foreground">Marfă: {trip.cargo_type} ({trip.weight_tons}t)</div>}
                 {trip.observations && <div className="text-muted-foreground">Obs: {trip.observations}</div>}
                 {trip.distance_km && <div className="text-muted-foreground">Distanță: {trip.distance_km} km</div>}
