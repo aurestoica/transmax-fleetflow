@@ -18,6 +18,7 @@ export default function DriverLayout() {
   const { t } = useI18n();
   const { fullName } = useAuthStore();
   const location = useLocation();
+  const { unreadCount } = useUnreadMessages();
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
