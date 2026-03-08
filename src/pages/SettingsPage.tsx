@@ -105,10 +105,12 @@ export default function SettingsPage() {
   const [originalSettings, setOriginalSettings] = useState<NotificationSettings>(defaultSettings);
 
   // Company profile state
-  const [company, setCompany] = useState<CompanyProfile>({ name: '', cif: '', address: '', contact_email: '', contact_phone: '' });
-  const [originalCompany, setOriginalCompany] = useState<CompanyProfile>({ name: '', cif: '', address: '', contact_email: '', contact_phone: '' });
+  const [company, setCompany] = useState<CompanyProfile>({ name: '', cif: '', address: '', contact_email: '', contact_phone: '', logo_url: '' });
+  const [originalCompany, setOriginalCompany] = useState<CompanyProfile>({ name: '', cif: '', address: '', contact_email: '', contact_phone: '', logo_url: '' });
   const [companyEditing, setCompanyEditing] = useState(false);
   const [companySaving, setCompanySaving] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   // User profile state
   const [profile, setProfile] = useState<UserProfile>({ full_name: '', phone: '', email: '' });
