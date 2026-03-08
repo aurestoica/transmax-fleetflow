@@ -35,15 +35,15 @@ export default function FinancialPage() {
 
       <div className="grid sm:grid-cols-3 gap-4 mb-8">
         <div className="stat-card">
-          <div className="flex items-center gap-2 mb-2"><DollarSign className="h-5 w-5 text-primary" /><span className="text-sm text-muted-foreground">Venit Total</span></div>
+          <div className="flex items-center gap-2 mb-2"><DollarSign className="h-5 w-5 text-primary" /><span className="text-sm text-muted-foreground">{t('financial.totalRevenue')}</span></div>
           <div className="text-2xl font-display font-bold">€{totals.revenue.toLocaleString()}</div>
         </div>
         <div className="stat-card">
-          <div className="flex items-center gap-2 mb-2"><TrendingDown className="h-5 w-5 text-destructive" /><span className="text-sm text-muted-foreground">Cheltuieli</span></div>
+          <div className="flex items-center gap-2 mb-2"><TrendingDown className="h-5 w-5 text-destructive" /><span className="text-sm text-muted-foreground">{t('financial.expenses')}</span></div>
           <div className="text-2xl font-display font-bold">€{totalExpenses.toLocaleString()}</div>
         </div>
         <div className="stat-card">
-          <div className="flex items-center gap-2 mb-2"><TrendingUp className="h-5 w-5 text-success" /><span className="text-sm text-muted-foreground">Profit ({margin}%)</span></div>
+          <div className="flex items-center gap-2 mb-2"><TrendingUp className="h-5 w-5 text-success" /><span className="text-sm text-muted-foreground">{t('financial.profit')} ({margin}%)</span></div>
           <div className={`text-2xl font-display font-bold ${totalProfit >= 0 ? 'text-success' : 'text-destructive'}`}>€{totalProfit.toLocaleString()}</div>
         </div>
       </div>
@@ -53,14 +53,14 @@ export default function FinancialPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Cursă</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Client</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Venit</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Combustibil</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Taxe</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Altele</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Avans</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Profit</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t('financial.trip')}</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t('financial.client')}</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground">{t('financial.revenue')}</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground">{t('financial.fuel')}</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground">{t('financial.taxes')}</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground">{t('financial.other')}</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground">{t('financial.advance')}</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground">{t('financial.profit')}</th>
               </tr>
             </thead>
             <tbody>
