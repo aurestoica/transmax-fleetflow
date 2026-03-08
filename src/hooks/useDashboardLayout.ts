@@ -25,6 +25,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
 export interface WidgetLayout {
   id: string;
   visible: boolean;
+  size: 'full' | 'half';
 }
 
 export const DEFAULT_LAYOUT: WidgetLayout[] = WIDGET_REGISTRY.map(w => ({
