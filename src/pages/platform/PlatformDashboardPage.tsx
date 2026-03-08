@@ -151,11 +151,11 @@ export default function PlatformDashboardPage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 text-center">
-                  <div><div className="text-lg font-bold text-foreground">{c.users}</div><div className="text-[10px] text-muted-foreground">Utilizatori</div></div>
-                  <div><div className="text-lg font-bold text-foreground">{c.drivers}</div><div className="text-[10px] text-muted-foreground">Șoferi</div></div>
-                  <div><div className="text-lg font-bold text-foreground">{c.vehicles}</div><div className="text-[10px] text-muted-foreground">Vehicule</div></div>
-                  <div><div className="text-lg font-bold text-foreground">{c.activeTrips}</div><div className="text-[10px] text-muted-foreground">Active</div></div>
-                  <div><div className="text-lg font-bold text-primary">€{c.revenue.toLocaleString()}</div><div className="text-[10px] text-muted-foreground">Venit</div></div>
+                  <div><div className="text-lg font-bold text-foreground">{c.users}</div><div className="text-[10px] text-muted-foreground">{t('platform.usersCount')}</div></div>
+                  <div><div className="text-lg font-bold text-foreground">{c.drivers}</div><div className="text-[10px] text-muted-foreground">{t('platform.driversCount')}</div></div>
+                  <div><div className="text-lg font-bold text-foreground">{c.vehicles}</div><div className="text-[10px] text-muted-foreground">{t('platform.vehiclesCount')}</div></div>
+                  <div><div className="text-lg font-bold text-foreground">{c.activeTrips}</div><div className="text-[10px] text-muted-foreground">{t('platform.activeCount')}</div></div>
+                  <div><div className="text-lg font-bold text-primary">€{c.revenue.toLocaleString()}</div><div className="text-[10px] text-muted-foreground">{t('platform.revenueCount')}</div></div>
                 </div>
               </div>
             </div>
