@@ -79,12 +79,16 @@ export default function ClientDetailPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
-        <Link to="/clients" className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></Link>
-        <Building2 className="h-5 w-5 text-primary" />
-        <h1 className="page-title flex-1">{client.company_name}</h1>
-        <Button variant="outline" size="sm" onClick={openEdit}><Pencil className="h-3.5 w-3.5 mr-1" />Editează</Button>
-        <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteOpen(true)}><Trash2 className="h-3.5 w-3.5" /></Button>
+      <div className="mb-6 space-y-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <Link to="/clients" className="text-muted-foreground hover:text-foreground flex-shrink-0"><ArrowLeft className="h-5 w-5" /></Link>
+          <Building2 className="h-5 w-5 text-primary flex-shrink-0" />
+          <h1 className="page-title flex-1 truncate">{client.company_name}</h1>
+        </div>
+        <div className="flex items-center gap-2 pl-8">
+          <Button variant="outline" size="sm" onClick={openEdit}><Pencil className="h-3.5 w-3.5 mr-1" />Editează</Button>
+          <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteOpen(true)}><Trash2 className="h-3.5 w-3.5" /></Button>
+        </div>
       </div>
 
       {/* Edit dialog */}
