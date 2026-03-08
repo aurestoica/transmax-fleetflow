@@ -41,7 +41,6 @@ export default function RevenueSummaryWidget() {
 
   const totalExpenses = data.fuelCost + data.roadTaxes + data.otherExpenses + data.driverAdvances;
   const profit = data.revenue - totalExpenses;
-  const monthName = new Date().toLocaleDateString('ro-RO', { month: 'long', year: 'numeric' });
 
   return (
     <div className="bg-card rounded-xl border overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
