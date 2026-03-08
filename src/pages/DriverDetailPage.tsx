@@ -3,13 +3,15 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import StatusBadge from '@/components/StatusBadge';
+import DriverAvatarUpload from '@/components/DriverAvatarUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, Phone, Mail, CreditCard, Star, Route, FileText, Pencil, Trash2, MoreVertical } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, CreditCard, Star, Route, FileText, Pencil, Trash2, MoreVertical, Check, X, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -20,39 +22,34 @@ export default function DriverDetailPage() {
   const [driver, setDriver] = useState<any>(null);
   const [trips, setTrips] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Edit
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState({ full_name: '', phone: '', email: '', license_number: '', license_expiry: '', tachograph_card: '', tachograph_expiry: '', notes: '' });
-
-  // Delete
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => { loadData(); }, [id]);
 
   const loadData = async () => {
-    const [driverRes, tripsRes, docsRes] = await Promise.all([
+    const [driverRes, tripsRes, docsRes, requestsRes] = await Promise.all([
       supabase.from('drivers').select('*').eq('id', id!).single(),
       supabase.from('trips').select('id, trip_number, pickup_address, delivery_address, status, revenue, pickup_date').eq('driver_id', id!).order('created_at', { ascending: false }),
       supabase.from('documents').select('*').eq('driver_id', id!).order('created_at', { ascending: false }),
+      supabase.from('profile_change_requests').select('*').eq('driver_id', id!).eq('status', 'pending').order('created_at', { ascending: false }),
     ]);
     setDriver(driverRes.data);
     setTrips(tripsRes.data ?? []);
     setDocuments(docsRes.data ?? []);
+    setPendingRequests(requestsRes.data ?? []);
     setLoading(false);
   };
 
   const openEdit = () => {
     setForm({
-      full_name: driver.full_name || '',
-      phone: driver.phone || '',
-      email: driver.email || '',
-      license_number: driver.license_number || '',
-      license_expiry: driver.license_expiry || '',
-      tachograph_card: driver.tachograph_card || '',
-      tachograph_expiry: driver.tachograph_expiry || '',
-      notes: driver.notes || '',
+      full_name: driver.full_name || '', phone: driver.phone || '', email: driver.email || '',
+      license_number: driver.license_number || '', license_expiry: driver.license_expiry || '',
+      tachograph_card: driver.tachograph_card || '', tachograph_expiry: driver.tachograph_expiry || '', notes: driver.notes || '',
     });
     setEditOpen(true);
   };
@@ -72,6 +69,41 @@ export default function DriverDetailPage() {
     navigate('/drivers');
   };
 
+  const handleApprove = async (req: any) => {
+    try {
+      const changes = req.changes as Record<string, any>;
+      const driverUpdates: Record<string, any> = {};
+      if (changes.full_name !== undefined) driverUpdates.full_name = changes.full_name;
+      if (changes.phone !== undefined) driverUpdates.phone = changes.phone;
+      if (changes.avatar_url !== undefined) driverUpdates.avatar_url = changes.avatar_url;
+
+      if (Object.keys(driverUpdates).length > 0) {
+        const { error } = await supabase.from('drivers').update(driverUpdates).eq('id', req.driver_id);
+        if (error) throw error;
+      }
+
+      // Also update profile if name/phone changed
+      if (changes.full_name || changes.phone) {
+        const profileUpdates: Record<string, any> = {};
+        if (changes.full_name) profileUpdates.full_name = changes.full_name;
+        if (changes.phone) profileUpdates.phone = changes.phone;
+        await supabase.from('profiles').update(profileUpdates).eq('user_id', req.user_id);
+      }
+
+      await supabase.from('profile_change_requests').update({ status: 'approved', reviewed_at: new Date().toISOString() }).eq('id', req.id);
+      toast.success('Cerere aprobată!');
+      loadData();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleReject = async (reqId: string) => {
+    await supabase.from('profile_change_requests').update({ status: 'rejected', reviewed_at: new Date().toISOString() }).eq('id', reqId);
+    toast.success('Cerere respinsă');
+    loadData();
+  };
+
   if (loading || !driver) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
 
   const isExpiringSoon = (date: string | null) => {
@@ -81,11 +113,22 @@ export default function DriverDetailPage() {
   };
   const isExpired = (date: string | null) => date ? new Date(date) < new Date() : false;
 
+  const changeLabels: Record<string, string> = { full_name: 'Nume', phone: 'Telefon', avatar_url: 'Poză profil' };
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-6 min-w-0">
         <Link to="/drivers" className="text-muted-foreground hover:text-foreground flex-shrink-0"><ArrowLeft className="h-5 w-5" /></Link>
-        <h1 className="page-title flex-1 truncate">{driver.full_name}</h1>
+        <DriverAvatarUpload
+          driverId={driver.id}
+          avatarUrl={driver.avatar_url}
+          driverName={driver.full_name}
+          size="md"
+          onUpdated={(url) => setDriver({ ...driver, avatar_url: url })}
+        />
+        <div className="flex-1 min-w-0">
+          <h1 className="page-title truncate">{driver.full_name}</h1>
+        </div>
         <StatusBadge status={driver.status} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -97,6 +140,44 @@ export default function DriverDetailPage() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {/* Pending change requests */}
+      {pendingRequests.length > 0 && (
+        <div className="mb-6 space-y-2">
+          <h3 className="text-sm font-semibold flex items-center gap-2 text-amber-600">
+            <Clock className="h-4 w-4" />
+            Cereri de modificare ({pendingRequests.length})
+          </h3>
+          {pendingRequests.map(req => {
+            const changes = req.changes as Record<string, any>;
+            return (
+              <div key={req.id} className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 flex items-center gap-3">
+                <div className="flex-1 text-sm">
+                  {Object.entries(changes).map(([key, val]) => (
+                    <div key={key}>
+                      <span className="font-medium">{changeLabels[key] || key}:</span>{' '}
+                      {key === 'avatar_url' ? (
+                        val ? <span className="text-primary">Poză nouă</span> : <span className="text-destructive">Ștergere poză</span>
+                      ) : (
+                        <span className="text-foreground">"{String(val)}"</span>
+                      )}
+                    </div>
+                  ))}
+                  <div className="text-xs text-muted-foreground mt-1">{format(new Date(req.created_at), 'dd.MM.yyyy HH:mm')}</div>
+                </div>
+                <div className="flex gap-1.5">
+                  <Button size="sm" variant="outline" className="h-7 text-emerald-600 border-emerald-300 hover:bg-emerald-50" onClick={() => handleApprove(req)}>
+                    <Check className="h-3.5 w-3.5 mr-1" />Aprobă
+                  </Button>
+                  <Button size="sm" variant="outline" className="h-7 text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => handleReject(req.id)}>
+                    <X className="h-3.5 w-3.5 mr-1" />Respinge
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Edit dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
