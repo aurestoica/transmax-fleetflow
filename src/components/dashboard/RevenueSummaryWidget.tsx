@@ -4,7 +4,7 @@ import { useI18n } from '@/lib/i18n';
 import { DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 
 export default function RevenueSummaryWidget() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [data, setData] = useState({ revenue: 0, fuelCost: 0, roadTaxes: 0, otherExpenses: 0, driverAdvances: 0, tripsCount: 0 });
   const [loading, setLoading] = useState(true);
 
