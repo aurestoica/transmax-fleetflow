@@ -7,9 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2, Users, Truck, Route, ArrowLeft, Plus, Check, X, Shield, DollarSign, Pencil, Trash2, Container } from 'lucide-react';
+import { Building2, Users, Truck, Route, ArrowLeft, Plus, Check, X, Shield, DollarSign, Pencil, Trash2, Container, Loader2, Camera } from 'lucide-react';
 import StatusBadge from '@/components/StatusBadge';
 import { toast } from 'sonner';
+import { useRef, useState as useStateExtra } from 'react';
 
 export default function CompanyDetailPage() {
   const { id } = useParams<{ id: string }>();
