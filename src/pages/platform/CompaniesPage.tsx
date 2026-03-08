@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Building2, Check, X } from 'lucide-react';
+import { Plus, Building2, Check, X, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export default function CompaniesPage() {
@@ -31,7 +32,9 @@ export default function CompaniesPage() {
     loadData();
   };
 
-  const toggleActive = async (id: string, currentActive: boolean) => {
+  const toggleActive = async (id: string, currentActive: boolean, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     await supabase.from('companies').update({ is_active: !currentActive } as any).eq('id', id);
     loadData();
   };
@@ -65,25 +68,28 @@ export default function CompaniesPage() {
 
       <div className="space-y-3">
         {companies.map(c => (
-          <div key={c.id} className="bg-card rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ boxShadow: 'var(--shadow-card)' }}>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Building2 className="h-5 w-5 text-primary" />
+          <Link key={c.id} to={`/companies/${c.id}`}>
+            <div className="bg-card rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-primary/30 transition-colors" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Building2 className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <div className="font-semibold text-foreground">{c.name}</div>
+                  <div className="text-xs text-muted-foreground">{c.cif || 'Fără CIF'} • {c.contact_email || 'Fără email'}</div>
+                </div>
               </div>
-              <div>
-                <div className="font-semibold text-foreground">{c.name}</div>
-                <div className="text-xs text-muted-foreground">{c.cif || 'Fără CIF'} • {c.contact_email || 'Fără email'}</div>
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${c.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {c.is_active ? <><Check className="h-3 w-3" />Activă</> : <><X className="h-3 w-3" />Inactivă</>}
+                </span>
+                <Button variant="outline" size="sm" onClick={(e) => toggleActive(c.id, c.is_active, e)}>
+                  {c.is_active ? 'Dezactivează' : 'Activează'}
+                </Button>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${c.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {c.is_active ? <><Check className="h-3 w-3" />Activă</> : <><X className="h-3 w-3" />Inactivă</>}
-              </span>
-              <Button variant="outline" size="sm" onClick={() => toggleActive(c.id, c.is_active)}>
-                {c.is_active ? 'Dezactivează' : 'Activează'}
-              </Button>
-            </div>
-          </div>
+          </Link>
         ))}
         {companies.length === 0 && <div className="text-center text-muted-foreground py-8">Nicio companie încă</div>}
       </div>
