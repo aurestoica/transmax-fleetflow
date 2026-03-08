@@ -71,7 +71,7 @@ export default function PlatformDashboardPage() {
     { label: t('platform.totalRevenue'), value: `€${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'text-primary' },
   ];
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">Se încarcă...</div>;
+  if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">{t('common.loading')}</div>;
 
   return (
     <div>
