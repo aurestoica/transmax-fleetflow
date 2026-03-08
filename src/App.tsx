@@ -50,6 +50,8 @@ function AppRoutes() {
         <Route element={<PlatformLayout />}>
           <Route path="/" element={<PlatformDashboardPage />} />
           <Route path="/companies" element={<CompaniesPage />} />
+          <Route path="/companies/:id" element={<CompanyDetailPage />} />
+          <Route path="/platform-users" element={<PlatformUsersPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

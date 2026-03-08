@@ -5,9 +5,12 @@ import { Building2, LayoutDashboard, LogOut, Shield, Menu, X } from 'lucide-reac
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
+import { Users } from 'lucide-react';
+
 const platformLinks = [
   { label: 'Dashboard', to: '/', icon: LayoutDashboard },
   { label: 'Companii', to: '/companies', icon: Building2 },
+  { label: 'Utilizatori', to: '/platform-users', icon: Users },
 ];
 
 export default function PlatformLayout() {
