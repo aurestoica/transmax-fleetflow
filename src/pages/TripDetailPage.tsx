@@ -7,6 +7,7 @@ import StatusBadge from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, MapPin, Truck, User, Package, DollarSign, FileText, Image, Eye, Download, Pencil, X, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -32,7 +33,33 @@ export default function TripDetailPage() {
   const [finForm, setFinForm] = useState({ revenue: '', fuel_cost: '', road_taxes: '', other_expenses: '', driver_advance: '', distance_km: '' });
   const [savingFin, setSavingFin] = useState(false);
 
-  useEffect(() => { loadTrip(); }, [id]);
+  // Trip details edit mode
+  const [editingTrip, setEditingTrip] = useState(false);
+  const [savingTrip, setSavingTrip] = useState(false);
+  const [clients, setClients] = useState<any[]>([]);
+  const [driversList, setDriversList] = useState<any[]>([]);
+  const [vehiclesList, setVehiclesList] = useState<any[]>([]);
+  const [trailersList, setTrailersList] = useState<any[]>([]);
+  const [tripForm, setTripForm] = useState({
+    client_id: '', driver_id: '', vehicle_id: '', trailer_id: '',
+    pickup_address: '', pickup_date: '', delivery_address: '', delivery_date: '',
+    cargo_type: '', weight_tons: '', observations: ''
+  });
+
+  const loadDropdowns = async () => {
+    const [c, d, v, tr] = await Promise.all([
+      supabase.from('clients').select('id, company_name'),
+      supabase.from('drivers').select('id, full_name, status'),
+      supabase.from('vehicles').select('id, plate_number, model, status'),
+      supabase.from('trailers').select('id, plate_number, status'),
+    ]);
+    setClients(c.data ?? []);
+    setDriversList(d.data ?? []);
+    setVehiclesList(v.data ?? []);
+    setTrailersList(tr.data ?? []);
+  };
+
+  useEffect(() => { loadTrip(); loadDropdowns(); }, [id]);
 
   // Realtime location updates for this trip
   useEffect(() => {
@@ -115,6 +142,54 @@ export default function TripDetailPage() {
     loadTrip();
   };
 
+  const startEditTrip = () => {
+    const toLocal = (d: string | null) => {
+      if (!d) return '';
+      try { return format(new Date(d), "yyyy-MM-dd'T'HH:mm"); } catch { return ''; }
+    };
+    setTripForm({
+      client_id: trip.client_id || '',
+      driver_id: trip.driver_id || '',
+      vehicle_id: trip.vehicle_id || '',
+      trailer_id: trip.trailer_id || '',
+      pickup_address: trip.pickup_address || '',
+      pickup_date: toLocal(trip.pickup_date),
+      delivery_address: trip.delivery_address || '',
+      delivery_date: toLocal(trip.delivery_date),
+      cargo_type: trip.cargo_type || '',
+      weight_tons: trip.weight_tons?.toString() || '',
+      observations: trip.observations || '',
+    });
+    setEditingTrip(true);
+  };
+
+  const saveTrip = async () => {
+    setSavingTrip(true);
+    const { error } = await supabase.from('trips').update({
+      client_id: tripForm.client_id || null,
+      driver_id: tripForm.driver_id || null,
+      vehicle_id: tripForm.vehicle_id || null,
+      trailer_id: tripForm.trailer_id || null,
+      pickup_address: tripForm.pickup_address,
+      delivery_address: tripForm.delivery_address,
+      pickup_date: tripForm.pickup_date || null,
+      delivery_date: tripForm.delivery_date || null,
+      cargo_type: tripForm.cargo_type || null,
+      weight_tons: tripForm.weight_tons ? parseFloat(tripForm.weight_tons) : null,
+      observations: tripForm.observations || null,
+    }).eq('id', id!);
+    setSavingTrip(false);
+    if (error) { toast.error(error.message); return; }
+    await supabase.from('trip_events').insert({
+      trip_id: id!, user_id: userId,
+      event_type: 'edit',
+      description: 'Detalii cursă editate'
+    });
+    toast.success('Cursă actualizată!');
+    setEditingTrip(false);
+    loadTrip();
+  };
+
   const saveFinancial = async () => {
     setSavingFin(true);
     const { error } = await supabase.from('trips').update({
@@ -148,34 +223,129 @@ export default function TripDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Trip info */}
         <div className="bg-card rounded-xl border p-5 space-y-4" style={{ boxShadow: 'var(--shadow-card)' }}>
-          <h3 className="font-display font-semibold">{t('common.details')}</h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-start gap-3">
-              <MapPin className="h-4 w-4 text-success mt-0.5" />
-              <div><div className="text-muted-foreground text-xs">Încărcare</div><div>{trip.pickup_address}</div>
-                {trip.pickup_date && <div className="text-xs text-muted-foreground">{format(new Date(trip.pickup_date), 'dd.MM.yyyy HH:mm')}</div>}
+          <div className="flex items-center justify-between">
+            <h3 className="font-display font-semibold">{t('common.details')}</h3>
+            {!editingTrip ? (
+              <Button variant="ghost" size="sm" onClick={startEditTrip}>
+                <Pencil className="h-3.5 w-3.5 mr-1" />Editează
+              </Button>
+            ) : (
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => setEditingTrip(false)}>
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+                <Button size="sm" onClick={saveTrip} disabled={savingTrip || !tripForm.pickup_address || !tripForm.delivery_address}>
+                  <Check className="h-3.5 w-3.5 mr-1" />Salvează
+                </Button>
               </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <MapPin className="h-4 w-4 text-destructive mt-0.5" />
-              <div><div className="text-muted-foreground text-xs">Descărcare</div><div>{trip.delivery_address}</div>
-                {trip.delivery_date && <div className="text-xs text-muted-foreground">{format(new Date(trip.delivery_date), 'dd.MM.yyyy HH:mm')}</div>}
-              </div>
-            </div>
-            {trip.clients?.company_name && <div className="flex items-center gap-3"><Package className="h-4 w-4 text-muted-foreground" /><span>Client: {trip.clients.company_name}</span></div>}
-            {trip.drivers?.full_name && <div className="flex items-center gap-3"><User className="h-4 w-4 text-muted-foreground" /><span>Șofer: {trip.drivers.full_name}</span></div>}
-            {trip.vehicles?.plate_number && <div className="flex items-center gap-3"><Truck className="h-4 w-4 text-muted-foreground" /><span>{trip.vehicles.plate_number} - {trip.vehicles.model}</span></div>}
-            {trip.cargo_type && <div className="text-muted-foreground">Marfă: {trip.cargo_type} ({trip.weight_tons}t)</div>}
-            {trip.distance_km && <div className="text-muted-foreground">Distanță: {trip.distance_km} km</div>}
+            )}
           </div>
 
-          <div className="pt-3 border-t">
-            <label className="text-xs text-muted-foreground">Schimbă status:</label>
-            <Select value={trip.status} onValueChange={changeStatus}>
-              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-              <SelectContent>{allStatuses.map(s => <SelectItem key={s} value={s}>{t(`status.${s}`)}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
+          {editingTrip ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">Client</Label>
+                  <Select value={tripForm.client_id} onValueChange={v => setTripForm({...tripForm, client_id: v})}>
+                    <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Selectează..." /></SelectTrigger>
+                    <SelectContent>{clients.map(c => <SelectItem key={c.id} value={c.id}>{c.company_name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Șofer</Label>
+                  <Select value={tripForm.driver_id} onValueChange={v => setTripForm({...tripForm, driver_id: v})}>
+                    <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Selectează..." /></SelectTrigger>
+                    <SelectContent>
+                      {driversList.filter(d => d.status === 'available' || d.id === trip.driver_id).map(d => (
+                        <SelectItem key={d.id} value={d.id}>{d.full_name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Camion</Label>
+                  <Select value={tripForm.vehicle_id} onValueChange={v => setTripForm({...tripForm, vehicle_id: v})}>
+                    <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Selectează..." /></SelectTrigger>
+                    <SelectContent>
+                      {vehiclesList.filter(v => v.status === 'available' || v.id === trip.vehicle_id).map(v => (
+                        <SelectItem key={v.id} value={v.id}>{v.plate_number} {v.model ? `- ${v.model}` : ''}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Remorcă</Label>
+                  <Select value={tripForm.trailer_id} onValueChange={v => setTripForm({...tripForm, trailer_id: v})}>
+                    <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Selectează..." /></SelectTrigger>
+                    <SelectContent>
+                      {trailersList.filter(tr => tr.status === 'available' || tr.id === trip.trailer_id).map(tr => (
+                        <SelectItem key={tr.id} value={tr.id}>{tr.plate_number}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Adresă încărcare *</Label>
+                  <Input value={tripForm.pickup_address} onChange={e => setTripForm({...tripForm, pickup_address: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Data încărcare</Label>
+                  <Input type="datetime-local" value={tripForm.pickup_date} onChange={e => setTripForm({...tripForm, pickup_date: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Adresă descărcare *</Label>
+                  <Input value={tripForm.delivery_address} onChange={e => setTripForm({...tripForm, delivery_address: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Data descărcare</Label>
+                  <Input type="datetime-local" value={tripForm.delivery_date} onChange={e => setTripForm({...tripForm, delivery_date: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Tip marfă</Label>
+                  <Input value={tripForm.cargo_type} onChange={e => setTripForm({...tripForm, cargo_type: e.target.value})} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Greutate (tone)</Label>
+                  <Input type="number" value={tripForm.weight_tons} onChange={e => setTripForm({...tripForm, weight_tons: e.target.value})} className="h-8 text-sm" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Observații</Label>
+                <Textarea value={tripForm.observations} onChange={e => setTripForm({...tripForm, observations: e.target.value})} className="text-sm min-h-[60px]" />
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start gap-3">
+                  <MapPin className="h-4 w-4 text-success mt-0.5" />
+                  <div><div className="text-muted-foreground text-xs">Încărcare</div><div>{trip.pickup_address}</div>
+                    {trip.pickup_date && <div className="text-xs text-muted-foreground">{format(new Date(trip.pickup_date), 'dd.MM.yyyy HH:mm')}</div>}
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="h-4 w-4 text-destructive mt-0.5" />
+                  <div><div className="text-muted-foreground text-xs">Descărcare</div><div>{trip.delivery_address}</div>
+                    {trip.delivery_date && <div className="text-xs text-muted-foreground">{format(new Date(trip.delivery_date), 'dd.MM.yyyy HH:mm')}</div>}
+                  </div>
+                </div>
+                {trip.clients?.company_name && <div className="flex items-center gap-3"><Package className="h-4 w-4 text-muted-foreground" /><span>Client: {trip.clients.company_name}</span></div>}
+                {trip.drivers?.full_name && <div className="flex items-center gap-3"><User className="h-4 w-4 text-muted-foreground" /><span>Șofer: {trip.drivers.full_name}</span></div>}
+                {trip.vehicles?.plate_number && <div className="flex items-center gap-3"><Truck className="h-4 w-4 text-muted-foreground" /><span>{trip.vehicles.plate_number} - {trip.vehicles.model}</span></div>}
+                {trip.cargo_type && <div className="text-muted-foreground">Marfă: {trip.cargo_type} ({trip.weight_tons}t)</div>}
+                {trip.observations && <div className="text-muted-foreground">Obs: {trip.observations}</div>}
+                {trip.distance_km && <div className="text-muted-foreground">Distanță: {trip.distance_km} km</div>}
+              </div>
+
+              <div className="pt-3 border-t">
+                <label className="text-xs text-muted-foreground">Schimbă status:</label>
+                <Select value={trip.status} onValueChange={changeStatus}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>{allStatuses.map(s => <SelectItem key={s} value={s}>{t(`status.${s}`)}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Financial */}
