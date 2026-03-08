@@ -552,7 +552,9 @@ export default function SettingsPage() {
             onClick={async () => {
               const { email } = useAuthStore.getState();
               if (!email) return;
-              const { error } = await supabase.auth.resetPasswordForEmail(email);
+              const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/reset-password`,
+              });
               if (error) toast({ title: 'Eroare', description: error.message, variant: 'destructive' });
               else toast({ title: 'Email trimis', description: 'Verifică inbox-ul pentru link-ul de resetare.' });
             }}
