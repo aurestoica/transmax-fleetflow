@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
-import { Bell, Mail, Shield, Palette, Save, Loader2 } from 'lucide-react';
+import { Bell, Mail, Shield, Palette, Save, Loader2, ScrollText, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface NotificationSettings {
   email_enabled: boolean;
