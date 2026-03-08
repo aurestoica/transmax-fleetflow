@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Truck, LogIn, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +23,8 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setError(t('auth.loginError'));
+    } else {
+      navigate('/', { replace: true });
     }
     setLoading(false);
   };
