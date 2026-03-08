@@ -12,7 +12,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const [{ data: roles }, { data: profile }] = await Promise.all([
         supabase.from('user_roles').select('role').eq('user_id', uid),
-        supabase.from('profiles').select('full_name').eq('user_id', uid).single(),
+        supabase.from('profiles').select('full_name, company_id').eq('user_id', uid).single(),
       ]);
 
       setAuth({
@@ -20,6 +20,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         email,
         fullName: profile?.full_name ?? '',
         roles: (roles?.map(r => r.role) ?? []) as UserRole[],
+        companyId: (profile as any)?.company_id ?? null,
       });
 
       // Initialize push notifications once

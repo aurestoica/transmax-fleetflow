@@ -48,6 +48,7 @@ export type Database = {
         Row: {
           address: string | null
           cif: string | null
+          company_id: string | null
           company_name: string
           contact_email: string | null
           contact_name: string | null
@@ -61,6 +62,7 @@ export type Database = {
         Insert: {
           address?: string | null
           cif?: string | null
+          company_id?: string | null
           company_name: string
           contact_email?: string | null
           contact_name?: string | null
@@ -74,6 +76,7 @@ export type Database = {
         Update: {
           address?: string | null
           cif?: string | null
+          company_id?: string | null
           company_name?: string
           contact_email?: string | null
           contact_name?: string | null
@@ -82,6 +85,50 @@ export type Database = {
           id?: string
           notes?: string | null
           rate_per_km?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      companies: {
+        Row: {
+          address: string | null
+          cif: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          cif?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          cif?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -190,6 +237,7 @@ export type Database = {
       drivers: {
         Row: {
           avatar_url: string | null
+          company_id: string | null
           created_at: string | null
           email: string | null
           full_name: string
@@ -207,6 +255,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          company_id?: string | null
           created_at?: string | null
           email?: string | null
           full_name: string
@@ -224,6 +273,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          company_id?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string
@@ -239,7 +289,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "drivers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       expiry_notifications_sent: {
         Row: {
@@ -472,6 +530,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          company_id: string | null
           created_at: string | null
           email: string | null
           full_name: string
@@ -483,6 +542,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          company_id?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string
@@ -494,6 +554,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          company_id?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string
@@ -503,11 +564,20 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trailers: {
         Row: {
           capacity_tons: number | null
+          company_id: string | null
           created_at: string | null
           id: string
           itp_expiry: string | null
@@ -519,6 +589,7 @@ export type Database = {
         }
         Insert: {
           capacity_tons?: number | null
+          company_id?: string | null
           created_at?: string | null
           id?: string
           itp_expiry?: string | null
@@ -530,6 +601,7 @@ export type Database = {
         }
         Update: {
           capacity_tons?: number | null
+          company_id?: string | null
           created_at?: string | null
           id?: string
           itp_expiry?: string | null
@@ -539,7 +611,15 @@ export type Database = {
           type?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trailers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trip_events: {
         Row: {
@@ -580,6 +660,7 @@ export type Database = {
         Row: {
           cargo_type: string | null
           client_id: string | null
+          company_id: string | null
           created_at: string | null
           delivery_address: string
           delivery_date: string | null
@@ -604,6 +685,7 @@ export type Database = {
         Insert: {
           cargo_type?: string | null
           client_id?: string | null
+          company_id?: string | null
           created_at?: string | null
           delivery_address: string
           delivery_date?: string | null
@@ -628,6 +710,7 @@ export type Database = {
         Update: {
           cargo_type?: string | null
           client_id?: string | null
+          company_id?: string | null
           created_at?: string | null
           delivery_address?: string
           delivery_date?: string | null
@@ -655,6 +738,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trips_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
           {
@@ -702,6 +792,7 @@ export type Database = {
         Row: {
           avg_consumption: number | null
           capacity_tons: number | null
+          company_id: string | null
           created_at: string | null
           id: string
           insurance_expiry: string | null
@@ -718,6 +809,7 @@ export type Database = {
         Insert: {
           avg_consumption?: number | null
           capacity_tons?: number | null
+          company_id?: string | null
           created_at?: string | null
           id?: string
           insurance_expiry?: string | null
@@ -734,6 +826,7 @@ export type Database = {
         Update: {
           avg_consumption?: number | null
           capacity_tons?: number | null
+          company_id?: string | null
           created_at?: string | null
           id?: string
           insurance_expiry?: string | null
@@ -747,13 +840,22 @@ export type Database = {
           vin?: string | null
           year?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_user_company_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -762,6 +864,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_platform_owner: { Args: { _user_id: string }; Returns: boolean }
       notify_admins:
         | { Args: { _message?: string; _title: string }; Returns: undefined }
         | {
@@ -790,7 +893,7 @@ export type Database = {
           }
     }
     Enums: {
-      app_role: "owner" | "dispatcher" | "driver"
+      app_role: "owner" | "dispatcher" | "driver" | "platform_owner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -918,7 +1021,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["owner", "dispatcher", "driver"],
+      app_role: ["owner", "dispatcher", "driver", "platform_owner"],
     },
   },
 } as const
