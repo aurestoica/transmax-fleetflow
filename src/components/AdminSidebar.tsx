@@ -128,7 +128,7 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebar
           className="hidden md:flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 w-full transition-colors"
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          {!collapsed && <span className="text-xs">Minimizează</span>}
+          {!collapsed && <span className="text-xs">{t('common.minimize')}</span>}
         </button>
       </div>
 

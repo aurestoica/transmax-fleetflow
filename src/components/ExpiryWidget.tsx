@@ -143,7 +143,7 @@ export default function ExpiryWidget() {
 
       {items.length === 0 ? (
         <div className="px-5 py-8 text-center text-muted-foreground text-sm">
-          ✅ Nicio expirare în următoarele 30 de zile
+          ✅ {t('widget.noExpiry') || 'Nicio expirare în următoarele 30 de zile'}
         </div>
       ) : (
         <div className="divide-y max-h-[320px] overflow-y-auto">
