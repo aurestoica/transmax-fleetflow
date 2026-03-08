@@ -385,6 +385,28 @@ export default function SettingsPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Logo upload */}
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 rounded-full border-2 border-border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                {company.logo_url ? (
+                  <img src={company.logo_url} alt="Logo" className="h-full w-full object-cover" />
+                ) : (
+                  <Building2 className="h-7 w-7 text-muted-foreground" />
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-medium">Logo companie</p>
+                <p className="text-xs text-muted-foreground mb-2">Imaginea va apărea în sidebar-ul tuturor utilizatorilor companiei</p>
+                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} disabled={logoUploading}>
+                  {logoUploading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Pencil className="h-3 w-3 mr-1" />}
+                  {company.logo_url ? 'Schimbă logo' : 'Încarcă logo'}
+                </Button>
+              </div>
+            </div>
+
+            <Separator />
+
             {companyEditing ? (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -419,6 +441,7 @@ export default function SettingsPage() {
                   </Button>
                 </div>
               </>
+
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
