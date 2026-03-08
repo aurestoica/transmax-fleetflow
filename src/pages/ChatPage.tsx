@@ -35,9 +35,18 @@ export default function ChatPage() {
   }, [selectedTrip]);
 
   const loadMessages = async () => {
-    const { data } = await supabase.from('messages').select('*, profiles:sender_id(full_name)')
+    const { data: msgs } = await supabase.from('messages').select('*')
       .eq('trip_id', selectedTrip).order('created_at');
-    setMessages(data ?? []);
+    if (!msgs || msgs.length === 0) { setMessages([]); return; }
+
+    // Get unique sender IDs and fetch their profiles
+    const senderIds = [...new Set(msgs.map(m => m.sender_id))];
+    const { data: profiles } = await supabase.from('profiles').select('user_id, full_name')
+      .in('user_id', senderIds);
+    const profileMap = new Map((profiles ?? []).map(p => [p.user_id, p.full_name]));
+
+    const enriched = msgs.map(m => ({ ...m, sender_name: profileMap.get(m.sender_id) ?? 'User' }));
+    setMessages(enriched);
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
   };
 
@@ -68,7 +77,7 @@ export default function ChatPage() {
               return (
                 <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[70%] rounded-xl px-4 py-2 ${isMe ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                    {!isMe && <div className="text-xs font-medium mb-1 opacity-70">{msg.profiles?.full_name ?? 'User'}</div>}
+                    {!isMe && <div className="text-xs font-medium mb-1 opacity-70">{msg.sender_name ?? 'User'}</div>}
                     <div className="text-sm">{msg.content}</div>
                     <div className={`text-[10px] mt-1 ${isMe ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>
                       {format(new Date(msg.created_at), 'HH:mm')}
