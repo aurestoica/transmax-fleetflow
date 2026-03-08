@@ -22,7 +22,13 @@ export function useUnreadMessages() {
 
     const fetchCount = () => {
       const lastSeen = localStorage.getItem(`chat_last_seen_${userId}`);
-      const since = lastSeen || new Date(0).toISOString();
+      if (!lastSeen) {
+        // New account: mark everything as read by setting "now" as baseline
+        localStorage.setItem(`chat_last_seen_${userId}`, new Date().toISOString());
+        setCount(0);
+        return;
+      }
+      const since = lastSeen;
 
       supabase
         .from('messages')
