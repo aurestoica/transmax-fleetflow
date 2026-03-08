@@ -76,7 +76,7 @@ function TripCard({ trip, showActions, onStatusChange, t }: TripCardProps) {
           {trip.weight_tons && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Weight className="h-3.5 w-3.5" />
-              <span>Greutate: <span className="text-foreground">{trip.weight_tons} tone</span></span>
+              <span>{t('driver.weight')}: <span className="text-foreground">{trip.weight_tons} t</span></span>
             </div>
           )}
           {trip.distance_km && (
