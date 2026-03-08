@@ -204,6 +204,35 @@ export default function CompaniesPage() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Filter tabs */}
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        {([
+          { key: 'all' as const, label: 'Toate' },
+          { key: 'pending' as const, label: 'Cereri noi', count: pendingCount },
+          { key: 'active' as const, label: 'Active' },
+          { key: 'inactive' as const, label: 'Inactive' },
+        ]).map(f => (
+          <button
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              filter === f.key
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {f.label}
+            {f.count ? (
+              <span className={`ml-1.5 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] font-bold ${
+                filter === f.key ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-destructive text-destructive-foreground'
+              }`}>
+                {f.count}
+              </span>
+            ) : null}
+          </button>
+        ))}
+      </div>
+
       {/* Search */}
       <div className="relative max-w-sm mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
