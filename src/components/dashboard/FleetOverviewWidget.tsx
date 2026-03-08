@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 export default function FleetOverviewWidget() {
+  const { t } = useI18n();
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
