@@ -1,15 +1,14 @@
 import { Outlet, NavLink as RouterNavLink, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/lib/auth-store';
 import { supabase } from '@/integrations/supabase/client';
-import { Building2, LayoutDashboard, LogOut, Shield, Menu, X } from 'lucide-react';
+import { Building2, LayoutDashboard, LogOut, Shield, Menu, X, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-
-import { Users } from 'lucide-react';
+import { usePendingCompanies } from '@/hooks/usePendingCompanies';
 
 const platformLinks = [
   { label: 'Dashboard', to: '/', icon: LayoutDashboard },
-  { label: 'Companii', to: '/companies', icon: Building2 },
+  { label: 'Companii', to: '/companies', icon: Building2, badgeKey: 'companies' as const },
   { label: 'Utilizatori', to: '/platform-users', icon: Users },
 ];
 
