@@ -132,7 +132,7 @@ export default function PlatformDashboardPage() {
       {/* Per-company breakdown */}
       <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
         <TrendingUp className="h-5 w-5 text-primary" />
-        Statistici per companie
+        {t('platform.stats')}
       </h2>
       <div className="space-y-3">
         {companyStats.map(c => (
