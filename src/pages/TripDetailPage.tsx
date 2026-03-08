@@ -33,6 +33,19 @@ export default function TripDetailPage() {
   const [finForm, setFinForm] = useState({ revenue: '', fuel_cost: '', road_taxes: '', other_expenses: '', driver_advance: '', distance_km: '' });
   const [savingFin, setSavingFin] = useState(false);
 
+  // Trip details edit mode
+  const [editingTrip, setEditingTrip] = useState(false);
+  const [savingTrip, setSavingTrip] = useState(false);
+  const [clients, setClients] = useState<any[]>([]);
+  const [driversList, setDriversList] = useState<any[]>([]);
+  const [vehiclesList, setVehiclesList] = useState<any[]>([]);
+  const [trailersList, setTrailersList] = useState<any[]>([]);
+  const [tripForm, setTripForm] = useState({
+    client_id: '', driver_id: '', vehicle_id: '', trailer_id: '',
+    pickup_address: '', pickup_date: '', delivery_address: '', delivery_date: '',
+    cargo_type: '', weight_tons: '', observations: ''
+  });
+
   useEffect(() => { loadTrip(); }, [id]);
 
   // Realtime location updates for this trip
