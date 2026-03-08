@@ -8,7 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Search, Phone, Mail, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Search, Phone, Mail, Pencil, Trash2, Clock } from 'lucide-react';
+import DriverAvatarDisplay from '@/components/DriverAvatarDisplay';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 const emptyForm = { full_name: '', phone: '', email: '', license_number: '', license_expiry: '', tachograph_card: '', tachograph_expiry: '', notes: '' };
