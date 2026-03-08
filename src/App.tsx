@@ -7,6 +7,7 @@ import AuthProvider from "@/components/AuthProvider";
 import { useAuthStore } from "@/lib/auth-store";
 import AdminLayout from "@/components/AdminLayout";
 import DriverLayout from "@/components/DriverLayout";
+import PlatformLayout from "@/components/PlatformLayout";
 import DashboardPage from "@/pages/DashboardPage";
 import TripsPage from "@/pages/TripsPage";
 import TripDetailPage from "@/pages/TripDetailPage";
@@ -31,13 +32,29 @@ import DriverDocumentsPage from "@/pages/driver/DriverDocumentsPage";
 import DriverLocationPage from "@/pages/driver/DriverLocationPage";
 import DriverChatPage from "@/pages/driver/DriverChatPage";
 import DriverProfilePage from "@/pages/driver/DriverProfilePage";
+import PlatformDashboardPage from "@/pages/platform/PlatformDashboardPage";
+import CompaniesPage from "@/pages/platform/CompaniesPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
 function AppRoutes() {
-  const { isDriver, isAdmin } = useAuthStore();
+  const { isDriver, isAdmin, isPlatformOwner } = useAuthStore();
 
+  // Platform owner sees platform management
+  if (isPlatformOwner()) {
+    return (
+      <Routes>
+        <Route element={<PlatformLayout />}>
+          <Route path="/" element={<PlatformDashboardPage />} />
+          <Route path="/companies" element={<CompaniesPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    );
+  }
+
+  // Driver-only users
   if (isDriver() && !isAdmin()) {
     return (
       <Routes>
@@ -54,6 +71,7 @@ function AppRoutes() {
     );
   }
 
+  // Company admin/dispatcher
   return (
     <Routes>
       <Route element={<AdminLayout />}>

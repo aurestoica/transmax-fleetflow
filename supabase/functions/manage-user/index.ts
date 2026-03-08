@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
 
     // Check if caller is owner
     const { data: callerRoles } = await supabaseAdmin.from("user_roles").select("role").eq("user_id", caller.id);
-    if (!callerRoles?.some(r => r.role === "owner")) throw new Error("Not authorized");
+    if (!callerRoles?.some(r => r.role === "owner" || r.role === "platform_owner")) throw new Error("Not authorized");
 
     const { action, user_id, full_name, email, phone, role } = await req.json();
 

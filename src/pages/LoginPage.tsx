@@ -111,8 +111,20 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-8 text-center text-xs text-muted-foreground">
-            © 2026 TRANS MAX SIB. All rights reserved.
+            © 2026 Transport Management Platform
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              setEmail('');
+              setPassword('');
+              const emailInput = document.getElementById('email');
+              if (emailInput) emailInput.focus();
+            }}
+            className="mt-4 w-full text-center text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors"
+          >
+            Administrare Platformă
+          </button>
         </div>
       </div>
     </div>

@@ -31,10 +31,17 @@ Deno.serve(async (req) => {
 
     // Check if caller is owner
     const { data: callerRoles } = await supabaseAdmin.from("user_roles").select("role").eq("user_id", caller.id);
-    if (!callerRoles?.some(r => r.role === "owner")) throw new Error("Not authorized");
+    if (!callerRoles?.some(r => r.role === "owner" || r.role === "platform_owner")) throw new Error("Not authorized");
 
-    const { email, password, full_name, role } = await req.json();
+    const { email, password, full_name, role, company_id } = await req.json();
     if (!email || !password || !full_name || !role) throw new Error("Missing fields");
+
+    // Determine company_id: platform owners must specify; company owners use their own
+    let targetCompanyId = company_id;
+    if (!targetCompanyId) {
+      const { data: callerProfile } = await supabaseAdmin.from("profiles").select("company_id").eq("user_id", caller.id).single();
+      targetCompanyId = callerProfile?.company_id;
+    }
 
     // Create user
     const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
@@ -50,12 +57,18 @@ Deno.serve(async (req) => {
     // Assign role
     await supabaseAdmin.from("user_roles").insert({ user_id: userId, role });
 
+    // Set company on profile
+    if (targetCompanyId) {
+      await supabaseAdmin.from("profiles").update({ company_id: targetCompanyId }).eq("user_id", userId);
+    }
+
     // If driver, create driver record
     if (role === "driver") {
       await supabaseAdmin.from("drivers").insert({
         user_id: userId,
         full_name,
         email,
+        company_id: targetCompanyId,
       });
     }
 
