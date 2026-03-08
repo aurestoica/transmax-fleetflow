@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Eye, EyeOff } from 'lucide-react';
+import { GripVertical, Eye, EyeOff, Maximize2, Minimize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SortableWidgetProps {
@@ -8,10 +8,12 @@ interface SortableWidgetProps {
   children: React.ReactNode;
   isEditing: boolean;
   visible: boolean;
+  size: 'full' | 'half';
   onToggleVisibility: () => void;
+  onToggleSize: () => void;
 }
 
-export default function SortableWidget({ id, children, isEditing, visible, onToggleVisibility }: SortableWidgetProps) {
+export default function SortableWidget({ id, children, isEditing, visible, size, onToggleVisibility, onToggleSize }: SortableWidgetProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled: !isEditing });
 
   const style = {
@@ -33,6 +35,13 @@ export default function SortableWidget({ id, children, isEditing, visible, onTog
     >
       {isEditing && (
         <div className="absolute -top-2 -right-2 z-10 flex items-center gap-1">
+          <button
+            onClick={onToggleSize}
+            className="h-7 w-7 rounded-full flex items-center justify-center shadow-md border bg-card border-border text-foreground hover:bg-muted transition-colors"
+            title={size === 'full' ? 'Half width' : 'Full width'}
+          >
+            {size === 'full' ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+          </button>
           <button
             onClick={onToggleVisibility}
             className={cn(

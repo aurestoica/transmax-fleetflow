@@ -25,11 +25,13 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
 export interface WidgetLayout {
   id: string;
   visible: boolean;
+  size: 'full' | 'half';
 }
 
 export const DEFAULT_LAYOUT: WidgetLayout[] = WIDGET_REGISTRY.map(w => ({
   id: w.id,
   visible: w.defaultVisible,
+  size: w.size,
 }));
 
 export function useDashboardLayout() {
@@ -55,7 +57,7 @@ export function useDashboardLayout() {
       const saved = data.layout as unknown as WidgetLayout[];
       const merged = WIDGET_REGISTRY.map(w => {
         const found = saved.find(s => s.id === w.id);
-        return found ?? { id: w.id, visible: w.defaultVisible };
+        return found ? { ...found, size: found.size || w.size } : { id: w.id, visible: w.defaultVisible, size: w.size };
       });
       // Preserve saved order, add new ones at end
       const ordered: WidgetLayout[] = [];
@@ -65,7 +67,7 @@ export function useDashboardLayout() {
       }
       for (const w of WIDGET_REGISTRY) {
         if (!ordered.find(o => o.id === w.id)) {
-          ordered.push({ id: w.id, visible: w.defaultVisible });
+          ordered.push({ id: w.id, visible: w.defaultVisible, size: w.size });
         }
       }
       setLayout(ordered);
