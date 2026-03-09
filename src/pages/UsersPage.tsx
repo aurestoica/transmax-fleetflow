@@ -30,7 +30,15 @@ export default function UsersPage() {
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
-    const { data: profiles } = await supabase.from('profiles').select('*');
+    const { companyId } = useAuthStore.getState();
+    
+    // Filter profiles by company_id so each company only sees its own users
+    let profilesQuery = supabase.from('profiles').select('*');
+    if (companyId) {
+      profilesQuery = profilesQuery.eq('company_id', companyId);
+    }
+    
+    const { data: profiles } = await profilesQuery;
     const { data: roles } = await supabase.from('user_roles').select('*');
 
     const merged = (profiles ?? []).map(p => ({
