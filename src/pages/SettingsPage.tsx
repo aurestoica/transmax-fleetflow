@@ -408,7 +408,7 @@ export default function SettingsPage() {
               <div>
                 <p className="text-sm font-medium">Logo companie</p>
                 <p className="text-xs text-muted-foreground mb-2">Imaginea va apărea în sidebar-ul tuturor utilizatorilor companiei</p>
-                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFileSelect} />
                 <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} disabled={logoUploading}>
                   {logoUploading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Pencil className="h-3 w-3 mr-1" />}
                   {company.logo_url ? 'Schimbă logo' : 'Încarcă logo'}
