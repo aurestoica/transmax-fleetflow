@@ -19,7 +19,7 @@ const roleLabels: Record<string, string> = {
 
 export default function UsersPage() {
   const { t } = useI18n();
-  const { isOwner, userId } = useAuthStore();
+  const { isOwner, userId, companyId, isPlatformOwner } = useAuthStore();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -27,7 +27,7 @@ export default function UsersPage() {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [form, setForm] = useState({ email: '', password: '', full_name: '', phone: '', role: 'dispatcher' });
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { if (companyId || isPlatformOwner()) loadData(); }, [companyId]);
 
   const loadData = async () => {
     const { companyId } = useAuthStore.getState();
