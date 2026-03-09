@@ -19,7 +19,7 @@ const roleLabels: Record<string, string> = {
 
 export default function UsersPage() {
   const { t } = useI18n();
-  const { isOwner, userId } = useAuthStore();
+  const { isOwner, userId, companyId, isPlatformOwner } = useAuthStore();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -27,11 +27,9 @@ export default function UsersPage() {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [form, setForm] = useState({ email: '', password: '', full_name: '', phone: '', role: 'dispatcher' });
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { if (companyId || isPlatformOwner()) loadData(); }, [companyId]);
 
   const loadData = async () => {
-    const { companyId } = useAuthStore.getState();
-    
     // Filter profiles by company_id so each company only sees its own users
     let profilesQuery = supabase.from('profiles').select('*');
     if (companyId) {
@@ -41,10 +39,16 @@ export default function UsersPage() {
     const { data: profiles } = await profilesQuery;
     const { data: roles } = await supabase.from('user_roles').select('*');
 
-    const merged = (profiles ?? []).map(p => ({
+    let merged = (profiles ?? []).map(p => ({
       ...p,
       roles: (roles ?? []).filter(r => r.user_id === p.user_id).map(r => r.role),
     }));
+    
+    // Non-platform owners should not see platform_owner users
+    if (!isPlatformOwner()) {
+      merged = merged.filter(u => !u.roles.includes('platform_owner'));
+    }
+    
     setUsers(merged);
     setLoading(false);
   };
