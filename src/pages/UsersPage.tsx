@@ -30,8 +30,6 @@ export default function UsersPage() {
   useEffect(() => { if (companyId || isPlatformOwner()) loadData(); }, [companyId]);
 
   const loadData = async () => {
-    const { companyId } = useAuthStore.getState();
-    
     // Filter profiles by company_id so each company only sees its own users
     let profilesQuery = supabase.from('profiles').select('*');
     if (companyId) {
@@ -41,10 +39,16 @@ export default function UsersPage() {
     const { data: profiles } = await profilesQuery;
     const { data: roles } = await supabase.from('user_roles').select('*');
 
-    const merged = (profiles ?? []).map(p => ({
+    let merged = (profiles ?? []).map(p => ({
       ...p,
       roles: (roles ?? []).filter(r => r.user_id === p.user_id).map(r => r.role),
     }));
+    
+    // Non-platform owners should not see platform_owner users
+    if (!isPlatformOwner()) {
+      merged = merged.filter(u => !u.roles.includes('platform_owner'));
+    }
+    
     setUsers(merged);
     setLoading(false);
   };
