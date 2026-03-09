@@ -12,6 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { useRef } from 'react';
 import { Bell, Mail, Shield, Building2, Save, Loader2, ScrollText, ChevronRight, User, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ImageCropDialog from '@/components/ImageCropDialog';
 
 interface NotificationSettings {
   email_enabled: boolean;
@@ -111,6 +112,7 @@ export default function SettingsPage() {
   const [companySaving, setCompanySaving] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const [logoCropSrc, setLogoCropSrc] = useState<string | null>(null);
 
   // User profile state
   const [profile, setProfile] = useState<UserProfile>({ full_name: '', phone: '', email: '' });
@@ -229,14 +231,24 @@ export default function SettingsPage() {
     }
   };
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !companyId) return;
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { toast({ title: 'Selectează o imagine', variant: 'destructive' }); return; }
+    if (file.size > 5 * 1024 * 1024) { toast({ title: 'Imaginea trebuie să fie sub 5MB', variant: 'destructive' }); return; }
+    const reader = new FileReader();
+    reader.onload = () => setLogoCropSrc(reader.result as string);
+    reader.readAsDataURL(file);
+    if (logoInputRef.current) logoInputRef.current.value = '';
+  };
+
+  const handleLogoCropComplete = async (croppedBlob: Blob) => {
+    setLogoCropSrc(null);
+    if (!companyId) return;
     setLogoUploading(true);
     try {
-      const ext = file.name.split('.').pop() || 'png';
-      const filePath = `logos/${companyId}.${ext}`;
-      const { error: uploadErr } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+      const filePath = `logos/${companyId}.jpeg`;
+      const { error: uploadErr } = await supabase.storage.from('avatars').upload(filePath, croppedBlob, { upsert: true, contentType: 'image/jpeg' });
       if (uploadErr) throw uploadErr;
       const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
       const logoUrl = urlData.publicUrl + '?t=' + Date.now();
@@ -248,7 +260,6 @@ export default function SettingsPage() {
       toast({ title: 'Eroare', description: err.message, variant: 'destructive' });
     } finally {
       setLogoUploading(false);
-      if (logoInputRef.current) logoInputRef.current.value = '';
     }
   };
 
@@ -397,7 +408,7 @@ export default function SettingsPage() {
               <div>
                 <p className="text-sm font-medium">Logo companie</p>
                 <p className="text-xs text-muted-foreground mb-2">Imaginea va apărea în sidebar-ul tuturor utilizatorilor companiei</p>
-                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFileSelect} />
                 <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} disabled={logoUploading}>
                   {logoUploading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Pencil className="h-3 w-3 mr-1" />}
                   {company.logo_url ? 'Schimbă logo' : 'Încarcă logo'}
@@ -583,6 +594,18 @@ export default function SettingsPage() {
           </CardHeader>
         </Link>
       </Card>
+
+      {/* Logo crop dialog */}
+      {logoCropSrc && (
+        <ImageCropDialog
+          open={!!logoCropSrc}
+          imageSrc={logoCropSrc}
+          onClose={() => setLogoCropSrc(null)}
+          onCropComplete={handleLogoCropComplete}
+          cropShape="round"
+          title="Ajustează logo-ul companiei"
+        />
+      )}
     </div>
   );
 }

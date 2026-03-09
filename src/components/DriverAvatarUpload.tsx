@@ -5,6 +5,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Camera, Trash2, Loader2, Eye, ImagePlus } from 'lucide-react';
 import { toast } from 'sonner';
+import ImageCropDialog from '@/components/ImageCropDialog';
 
 interface DriverAvatarUploadProps {
   driverId: string;
@@ -18,6 +19,7 @@ interface DriverAvatarUploadProps {
 export default function DriverAvatarUpload({ driverId, avatarUrl, driverName, onUpdated, size = 'md', editable = true }: DriverAvatarUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const sizeClasses = { sm: 'h-10 w-10', md: 'h-16 w-16', lg: 'h-20 w-20' };
@@ -25,18 +27,25 @@ export default function DriverAvatarUpload({ driverId, avatarUrl, driverName, on
 
   const initials = driverName?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?';
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) { toast.error('Selectează o imagine'); return; }
-    if (file.size > 2 * 1024 * 1024) { toast.error('Imaginea trebuie să fie sub 2MB'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error('Imaginea trebuie să fie sub 5MB'); return; }
 
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(reader.result as string);
+    reader.readAsDataURL(file);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    setCropSrc(null);
     setUploading(true);
     try {
-      const ext = file.name.split('.').pop();
-      const path = `drivers/${driverId}/avatar.${ext}`;
-      await supabase.storage.from('avatars').remove([`drivers/${driverId}/avatar.jpg`, `drivers/${driverId}/avatar.png`, `drivers/${driverId}/avatar.webp`]);
-      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+      const path = `drivers/${driverId}/avatar.jpeg`;
+      await supabase.storage.from('avatars').remove([`drivers/${driverId}/avatar.jpg`, `drivers/${driverId}/avatar.png`, `drivers/${driverId}/avatar.webp`, path]);
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, croppedBlob, { upsert: true, contentType: 'image/jpeg' });
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
       const urlWithCache = `${publicUrl}?t=${Date.now()}`;
@@ -48,14 +57,13 @@ export default function DriverAvatarUpload({ driverId, avatarUrl, driverName, on
       toast.error(err.message);
     } finally {
       setUploading(false);
-      if (fileRef.current) fileRef.current.value = '';
     }
   };
 
   const handleDelete = async () => {
     setUploading(true);
     try {
-      await supabase.storage.from('avatars').remove([`drivers/${driverId}/avatar.jpg`, `drivers/${driverId}/avatar.png`, `drivers/${driverId}/avatar.webp`]);
+      await supabase.storage.from('avatars').remove([`drivers/${driverId}/avatar.jpg`, `drivers/${driverId}/avatar.png`, `drivers/${driverId}/avatar.webp`, `drivers/${driverId}/avatar.jpeg`]);
       const { error } = await supabase.from('drivers').update({ avatar_url: null }).eq('id', driverId);
       if (error) throw error;
       onUpdated(null);
@@ -78,7 +86,7 @@ export default function DriverAvatarUpload({ driverId, avatarUrl, driverName, on
 
   return (
     <div className="flex items-center gap-3">
-      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
 
       {editable && !uploading ? (
         <DropdownMenu>
@@ -108,6 +116,18 @@ export default function DriverAvatarUpload({ driverId, avatarUrl, driverName, on
         </DropdownMenu>
       ) : (
         <div>{avatarElement}</div>
+      )}
+
+      {/* Crop dialog */}
+      {cropSrc && (
+        <ImageCropDialog
+          open={!!cropSrc}
+          imageSrc={cropSrc}
+          onClose={() => setCropSrc(null)}
+          onCropComplete={handleCropComplete}
+          cropShape="round"
+          title="Ajustează poza de profil"
+        />
       )}
 
       {/* Full-size preview dialog */}
