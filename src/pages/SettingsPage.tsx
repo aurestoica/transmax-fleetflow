@@ -112,6 +112,7 @@ export default function SettingsPage() {
   const [companySaving, setCompanySaving] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const [logoCropSrc, setLogoCropSrc] = useState<string | null>(null);
 
   // User profile state
   const [profile, setProfile] = useState<UserProfile>({ full_name: '', phone: '', email: '' });
