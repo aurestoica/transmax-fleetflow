@@ -594,6 +594,18 @@ export default function SettingsPage() {
           </CardHeader>
         </Link>
       </Card>
+
+      {/* Logo crop dialog */}
+      {logoCropSrc && (
+        <ImageCropDialog
+          open={!!logoCropSrc}
+          imageSrc={logoCropSrc}
+          onClose={() => setLogoCropSrc(null)}
+          onCropComplete={handleLogoCropComplete}
+          cropShape="round"
+          title="Ajustează logo-ul companiei"
+        />
+      )}
     </div>
   );
 }
