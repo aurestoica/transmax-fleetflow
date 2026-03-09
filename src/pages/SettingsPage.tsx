@@ -12,6 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { useRef } from 'react';
 import { Bell, Mail, Shield, Building2, Save, Loader2, ScrollText, ChevronRight, User, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ImageCropDialog from '@/components/ImageCropDialog';
 
 interface NotificationSettings {
   email_enabled: boolean;
