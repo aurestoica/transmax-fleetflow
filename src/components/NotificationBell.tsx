@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { getNotificationRoute } from '@/lib/notification-routing';
 
 interface Notification {
   id: string;
@@ -56,27 +57,6 @@ export default function NotificationBell() {
   }, []);
 
   const unreadCount = notifications.filter(n => !n.read).length;
-
-  const getNotificationRoute = (n: Notification): string | null => {
-    if (n.entity_type && n.entity_id) {
-      switch (n.entity_type) {
-        case 'trip': return `/trips/${n.entity_id}`;
-        case 'chat': return `/chat?trip=${n.entity_id}`;
-        case 'document': return `/documents`;
-        case 'vehicle': return `/vehicles/${n.entity_id}`;
-        case 'trailer': return `/trailers/${n.entity_id}`;
-        case 'driver': return `/drivers/${n.entity_id}`;
-        default: break;
-      }
-    }
-    const text = `${n.title} ${n.message || ''}`.toLowerCase();
-    if (text.includes('cursă') || text.includes('cursa') || text.includes('trip')) return '/trips';
-    if (text.includes('document')) return '/documents';
-    if (text.includes('locație') || text.includes('locatie') || text.includes('gps')) return '/map';
-    if (text.includes('mesaj') || text.includes('chat')) return '/chat';
-    if (text.includes('șofer') || text.includes('sofer') || text.includes('driver')) return '/drivers';
-    return null;
-  };
 
   const handleNotificationClick = async (n: Notification) => {
     await markAsRead(n.id);
