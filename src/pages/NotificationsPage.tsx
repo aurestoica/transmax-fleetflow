@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { getNotificationRoute } from '@/lib/notification-routing';
 
 interface Notification {
   id: string;
@@ -78,33 +79,12 @@ export default function NotificationsPage() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const getRoute = (n: Notification): string | null => {
-    if (n.entity_type && n.entity_id) {
-      switch (n.entity_type) {
-        case 'trip': return `/trips/${n.entity_id}`;
-        case 'chat': return `/chat?trip=${n.entity_id}`;
-        case 'document': return `/documents`;
-        case 'vehicle': return `/vehicles/${n.entity_id}`;
-        case 'trailer': return `/trailers/${n.entity_id}`;
-        case 'driver': return `/drivers/${n.entity_id}`;
-        default: break;
-      }
-    }
-    const text = `${n.title} ${n.message || ''}`.toLowerCase();
-    if (text.includes('cursă') || text.includes('cursa') || text.includes('trip')) return '/trips';
-    if (text.includes('document')) return '/documents';
-    if (text.includes('locație') || text.includes('locatie') || text.includes('gps')) return '/map';
-    if (text.includes('mesaj') || text.includes('chat')) return '/chat';
-    if (text.includes('șofer') || text.includes('sofer') || text.includes('driver')) return '/drivers';
-    return null;
-  };
-
   const handleClick = async (n: Notification) => {
     if (!n.read) {
       await supabase.from('notifications').update({ read: true }).eq('id', n.id);
       setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x));
     }
-    const route = getRoute(n);
+    const route = getNotificationRoute(n);
     if (route) navigate(route);
   };
 

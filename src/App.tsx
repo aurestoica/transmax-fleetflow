@@ -72,6 +72,8 @@ function AppRoutes() {
           <Route path="/driver/location" element={<DriverLocationPage />} />
           <Route path="/driver/chat" element={<DriverChatPage />} />
           <Route path="/driver/profile" element={<DriverProfilePage />} />
+          <Route path="/driver/notifications" element={<NotificationsPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
